@@ -1,6 +1,15 @@
 <?php
 // search_filter_scripts.php
 
+/**
+ * Function to bring over the scripts that make the search filter form do its thing
+ *
+ * @param $unique_id
+ * @param $product_category
+ * @param $specialKeys
+ * @return false|string
+ */
+
 function get_search_script($unique_id, $product_category, $specialKeys) {
     ob_start();
     ?>
@@ -73,6 +82,7 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
             const targetURL = `https://boilersandmachinery.com/product-listings/?${params.toString()}`;
             console.log("Target URL:", targetURL);
             window.location.href = targetURL; // Open in same tab
+            //window.open(targetURL, '_blank');  //open in new tab
         });
     </script>
     <?php

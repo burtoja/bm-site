@@ -59,8 +59,10 @@ function advanced_product_search_form_shortcode($atts) {
 		?> 
     </div>
     <?php
+
     // Include JavaScript
     echo get_search_script($unique_id, $product_category, $specialFilterKeys);
     return ob_get_clean();
+
 }
 add_shortcode('product_search_form', 'advanced_product_search_form_shortcode');
