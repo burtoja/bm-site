@@ -2,14 +2,12 @@
 // collapsible_filter_box.php
 
 // Include necessary helper files
-//include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search_functions.php');
-//include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search_scripts.php');
-
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/list_handler.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/general_form_element_functions.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/special_case_form_element_functions.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/search_filter_scripts.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/search_filter_toggle_button.php');
+include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search_functions.php');
 
 $product_category = isset($_GET['k']) ? $_GET['k'] : '';
 
