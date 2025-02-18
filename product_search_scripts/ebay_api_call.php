@@ -6,35 +6,6 @@
 
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search_functions.php');
 
-/**
- * This is the main shortcode function called by the site when the results
- * of the ebay api call are desired to be displayed
- */
-function api_ebay_call_shortcode() {
-    $current_query = get_search_parameters();
-    $auth_token = get_ebay_oauth_token();
-
-    if (strpos($auth_token, "ERR") === 0) {
-        die("Internal error. Token Failure");
-    }
-
-    $pagination = get_pagination_parameters();
-    $search_keyword_phrase = build_search_keyword_phrase($current_query);
-
-    // Modify API endpoint to include pagination offset
-    $api_endpoint = construct_api_endpoint($search_keyword_phrase, $current_query, $pagination['offset'], $pagination['results_per_page']);
-
-    $response_decoded = fetch_ebay_data($api_endpoint, $auth_token);
-
-    // Render results with pagination
-    return render_results_page($response_decoded, $current_query) . render_pagination_links($response_decoded->total, $pagination['current_page'], $pagination['results_per_page']);
-    //return render_results_page($response_decoded, $current_query) . render_pagination_links($response_decoded->totalResults, $pagination['current_page'], $pagination['results_per_page']);
-}
-
-add_shortcode('api_ebay_call', 'api_ebay_call_shortcode');
-
-
-
 //////////////////////////////
 // Function Definitions
 /////////////////////////////
@@ -197,6 +168,39 @@ function render_pagination_links($total_results, $current_page, $results_per_pag
 
     $pagination_html = '<div class="pagination">';
 
+    $range = 3; // Number of pages to show on each side of current page
+    $start = max(1, $current_page - $range);
+    $end = min($total_pages, $current_page + $range);
+
+    if ($current_page > 1) {
+        $query_params = $_GET;
+        $query_params['pg'] = 1;
+        $pagination_html .= '<a href="?' . http_build_query($query_params) . '">First</a> ';
+
+        $query_params['pg'] = $current_page - 1;
+        $pagination_html .= '<a href="?' . http_build_query($query_params) . '">Prev</a> ';
+    }
+
+    for ($i = $start; $i <= $end; $i++) {
+        $query_params['pg'] = $i;
+        $pagination_html .= '<a href="?' . http_build_query($query_params) . '"' . ($i == $current_page ? ' class="active"' : '') . '>' . $i . '</a> ';
+    }
+
+    if ($current_page < $total_pages) {
+        $query_params['pg'] = $current_page + 1;
+        $pagination_html .= '<a href="?' . http_build_query($query_params) . '">Next</a> ';
+
+        $query_params['pg'] = $total_pages;
+        $pagination_html .= '<a href="?' . http_build_query($query_params) . '">Last</a> ';
+    }
+
+    $pagination_html .= '</div>';
+    return $pagination_html;
+    $total_pages = ceil($total_results / $results_per_page);
+    if ($total_pages <= 1) return ''; // No pagination needed
+
+    $pagination_html = '<div class="pagination">';
+
     for ($i = 1; $i <= $total_pages; $i++) {
         $query_params = $_GET;
         $query_params['pg'] = $i;
@@ -207,3 +211,29 @@ function render_pagination_links($total_results, $current_page, $results_per_pag
     $pagination_html .= '</div>';
     return $pagination_html;
 }
+
+/**
+ * This is the main shortcode function called by the site when the results
+ * of the ebay api call are desired to be displayed
+ */
+function api_ebay_call_shortcode() {
+    $current_query = get_search_parameters();
+    $auth_token = get_ebay_oauth_token();
+
+    if (strpos($auth_token, "ERR") === 0) {
+        die("Internal error. Token Failure");
+    }
+
+    $pagination = get_pagination_parameters();
+    $search_keyword_phrase = build_search_keyword_phrase($current_query);
+
+    // Modify API endpoint to include pagination offset
+    $api_endpoint = construct_api_endpoint($search_keyword_phrase, $current_query, $pagination['offset'], $pagination['results_per_page']);
+
+    $response_decoded = fetch_ebay_data($api_endpoint, $auth_token);
+
+    // Render results with pagination
+    return render_results_page($response_decoded, $current_query) .  . render_pagination_links($response_decoded->total, $pagination['current_page'], $pagination['results_per_page']);
+}
+
+add_shortcode('api_ebay_call', 'api_ebay_call_shortcode');
