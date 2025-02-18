@@ -33,12 +33,12 @@ function displayCollapsibleFilterBox($product_category, $unique_id = 'collapsibl
         <div id="search-box-<?php echo $unique_id; ?>" style="padding: 10px; border: 1px solid #ccc;">
             <?php
             echo add_condition_element($product_category, $unique_id, $search_params['condition']);
-            echo add_type_element($product_category, $unique_id);
-            echo add_manufacturer_element($product_category, $unique_id);
+            echo add_type_element($product_category, $unique_id, $search_params['type']);
+            echo add_manufacturer_element($product_category, $unique_id, $search_params['manufacturer']);
             echo $specialFilterHTML;
-            echo add_search_box_element($unique_id);
+            echo add_search_box_element($unique_id, $search_params['search_keyword_phrase']);
             echo add_price_filter_elements($unique_id);
-            echo add_sort_by_element($unique_id);
+            echo add_sort_by_element($unique_id, $search_params['sort_select']);
             echo add_search_button($unique_id);
             ?>
         </div>
