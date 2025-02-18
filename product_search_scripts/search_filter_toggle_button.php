@@ -45,6 +45,7 @@ function get_toggle_search_script($unique_id) {
 
             if (btn && box) {
                 btn.addEventListener('click', function() {
+                    console.log("TOGGLE BUTTON CLICKED");
                     box.style.display = (box.style.display === 'none') ? 'block' : 'none';
                 });
             }
