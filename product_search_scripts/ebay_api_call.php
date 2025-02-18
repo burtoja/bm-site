@@ -112,14 +112,8 @@ function render_results_page($response_decoded, $params) {
     echo "<h4>" . ($total_results > 0 ? number_format($total_results) . ' Products Found' : 'No products found. Please refine search.') . "</h4>";
     
     /////////////////////////////
-    ///  BEGIN Brute force insertion
-    ///
-    /// TODO: Brought this block over with brute force to get the special
-    /// to get the $selectedSpecialArr
-    /// Need to refactor...$current_query should just be the $param array
-    /// passed into this function
+    /// TODO: Break this out into function
 
-    $current_query = $_GET;
     $search_keyword_phrase = isset($_GET['k']) ? $_GET['k'] : '';
     $condition = isset($_GET['condition']) ? strtoupper($_GET['condition']) : ''; // "NEW" or "USED"
     $manufacturer = isset($_GET['manufacturer']) ? $_GET['manufacturer'] : '';
@@ -146,7 +140,7 @@ function render_results_page($response_decoded, $params) {
         }
     }
 
-    ///////////////////////////END Brute force insertion///////////////////
+    ///////////////////////////END Possible function //////////////////
 
     //Build results filter box for top of page
 	include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/collapsible_filter_box.php');
