@@ -177,7 +177,7 @@ function render_pagination_links($total_results, $current_page, $results_per_pag
     $end = min($total_pages, $current_page + $range);
 
     if ($current_page > 1) {
-        $query_params = array_merge($_GET, ['pg' => 1]);
+        $query_params = array_merge($_GET, ['pg' => $current_page]);
         $query_params['pg'] = 1;
         $query_string = http_build_query($query_params);
         $pagination_html .= '<a href="?' . $query_string . '">First</a> ';
