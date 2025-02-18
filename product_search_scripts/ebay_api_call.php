@@ -114,7 +114,7 @@ function render_results_page($response_decoded, $params) {
     /////////////////////////////
     ///  BEGIN Brute force insertion
     ///
-    /// Brought this block over with brute force to get the special
+    /// TODO: Brought this block over with brute force to get the special
     /// to get the $selectedSpecialArr
     /// Need to refactor...$current_query should just be the $param array
     /// passed into this function
