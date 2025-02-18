@@ -27,8 +27,7 @@ function api_ebay_call_shortcode() {
     $response_decoded = fetch_ebay_data($api_endpoint, $auth_token);
 
     // Render results with pagination
-    return render_results_page($response_decoded, $current_query) . '<pre>' . print_r($response_decoded, true) . '</pre>' . render_pagination_links($response_decoded->totalResults, $pagination['current_page'], $pagination['results_per_page']);
-
+    return render_results_page($response_decoded, $current_query) . render_pagination_links($response_decoded->total, $pagination['current_page'], $pagination['results_per_page']);
     //return render_results_page($response_decoded, $current_query) . render_pagination_links($response_decoded->totalResults, $pagination['current_page'], $pagination['results_per_page']);
 }
 
