@@ -8,6 +8,7 @@ include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/special_case_
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/search_filter_scripts.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/search_filter_toggle_button.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search_functions.php');
+include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/slugify.php');
 
 $product_category = isset($_GET['k']) ? $_GET['k'] : '';
 
@@ -28,7 +29,7 @@ function displayCollapsibleFilterBox($product_category, $unique_id = 'collapsibl
     echo render_toggle_search_button($unique_id);
     ?>
     <div id="filters-container-<?php echo $unique_id; ?>" style="display: none; border: 1px solid #ccc; padding: 1em; margin-top: 1em;">
-        <h4 style="margin-top: 0;">Refine Your Search for <?php echo htmlspecialchars($product_category); ?></h4>
+        <h4 style="margin-top: 0;">Refine Your Search for <?php echo deslugify($product_category); ?></h4>
         <input type="hidden" name="k" value="<?php echo htmlspecialchars($product_category); ?>">
         <div id="search-box-<?php echo $unique_id; ?>" style="padding: 10px; border: 1px solid #ccc;">
             <?php

@@ -12,4 +12,15 @@ function slugify($string) {
   return trim($string, '_');
 }
 
+/**
+ * Deslugifies strings and capitalizes the first character of every word
+ */
+function deslugify($slug) {
+    // Replace underscores with spaces
+    $string = str_replace('_', ' ', $slug);
+    // Capitalize the first letter of each word
+    return ucwords($string);
+}
+
+
 ?>

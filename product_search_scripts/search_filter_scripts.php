@@ -50,9 +50,7 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
                     const params = new URLSearchParams();
                     if (product_category_<?php echo $unique_id; ?>.indexOf('_') === -1) {
                         params.append('k', product_category_<?php echo $unique_id; ?>);
-                        //console.log("PRODUCT CATEGORY (DOES NOT HAVE SLUGS) = " + product_category_<?php echo $unique_id; ?> );
                     } else {
-                        //console.log("PRODUCT CATEGORY (HAS SLUGS) = " + product_category_<?php echo $unique_id; ?> );
                         params.append('k', product_category_<?php echo $unique_id; ?>);
                     }
                     if (condition) params.append('condition', condition);
