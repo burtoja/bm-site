@@ -97,7 +97,6 @@ function add_manufacturer_element($product_category, $unique_id, $selectedManufa
                 <option value="">Select a Manufacturer (or leave blank to see all)</option>';
 
     $file_path = $_SERVER["DOCUMENT_ROOT"] . '/product_info_lists/list_' . $product_category . '_manufacturers.txt';
-    error_log("ORIGINAL FILEPATH = " . $file_path);  // For debugging
 
     $manufacturer_list = get_names_and_search_terms($file_path);
     

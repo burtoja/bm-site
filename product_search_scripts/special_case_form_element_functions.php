@@ -32,7 +32,6 @@
 function add_special_filter_elements($product_category, $unique_id, $selectedValues = []) {
     $form_element = "";
     $specialFilterKeys = [];
-    error_log("SELECTED VALUES ARRAR FROM add_special_filter_elements(): " . print_r($selectedValues, true));
 
     if ($product_category == "pumps") {
         $form_element .= add_pump_media_type_element($product_category, $unique_id, $selectedValues);

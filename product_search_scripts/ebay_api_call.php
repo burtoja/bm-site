@@ -5,8 +5,6 @@
  **/
 
 function api_ebay_call_shortcode() {
-    error_log("START");
-    
     $current_query = get_search_parameters();
     $auth_token = get_ebay_oauth_token();
     
