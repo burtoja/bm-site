@@ -18,6 +18,7 @@ function render_toggle_search_button($unique_id) {
         </button>
     </div>
     <?php
+    echo get_toggle_search_script($unique_id);
     return ob_get_clean();
 }
 
