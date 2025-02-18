@@ -6,21 +6,32 @@
 
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search_functions.php');
 
+/**
+ * This is the main shortcode function called by the site when the results
+ * of the ebay api call are desired to be displayed
+ *
+ * @return string|void
+ */
 function api_ebay_call_shortcode() {
     $current_query = get_search_parameters();
     $auth_token = get_ebay_oauth_token();
-    
+
     if (strpos($auth_token, "ERR") === 0) {
         die("Internal error. Token Failure");
     }
-    
+
+    $pagination = get_pagination_parameters();
     $search_keyword_phrase = build_search_keyword_phrase($current_query);
-    $api_endpoint = construct_api_endpoint($search_keyword_phrase, $current_query);
-    
+
+    // Modify API endpoint to include pagination offset
+    $api_endpoint = construct_api_endpoint($search_keyword_phrase, $current_query, $pagination['offset'], $pagination['results_per_page']);
+
     $response_decoded = fetch_ebay_data($api_endpoint, $auth_token);
-    
-    return render_results_page($response_decoded, $current_query);
+
+    // Render results with pagination
+    return render_results_page($response_decoded, $current_query) . render_pagination_links($response_decoded['totalResults'], $pagination['current_page'], $pagination['results_per_page']);
 }
+
 add_shortcode('api_ebay_call', 'api_ebay_call_shortcode');
 
 
@@ -154,4 +165,47 @@ function render_results_page($response_decoded, $params) {
         echo "</table>";
     }
     return ob_get_clean();
+}
+
+/**
+ * Extracts and manages pagination parameters from the request.
+ *
+ * @return array Associative array with pagination details (current page, offset, results per page)
+ */
+function get_pagination_parameters() {
+    $current_query = $_GET;
+    $current_page = isset($current_query['pg']) ? (int)$current_query['pg'] : 1;
+    $results_per_page = 50; // Adjust as needed
+    $offset = ($current_page - 1) * $results_per_page;
+
+    return [
+        'current_page' => $current_page,
+        'offset' => $offset,
+        'results_per_page' => $results_per_page,
+    ];
+}
+
+/**
+ * Generates pagination links for the results page.
+ *
+ * @param int $total_results Total number of results returned from API.
+ * @param int $current_page Current active page.
+ * @param int $results_per_page Number of results per page.
+ * @return string HTML output for pagination links.
+ */
+function render_pagination_links($total_results, $current_page, $results_per_page) {
+    $total_pages = ceil($total_results / $results_per_page);
+    if ($total_pages <= 1) return ''; // No pagination needed
+
+    $pagination_html = '<div class="pagination">';
+
+    for ($i = 1; $i <= $total_pages; $i++) {
+        $query_params = $_GET;
+        $query_params['pg'] = $i;
+        $query_string = http_build_query($query_params);
+        $pagination_html .= '<a href="?' . $query_string . '"' . ($i == $current_page ? ' class="active"' : '') . '>' . $i . '</a> ';
+    }
+
+    $pagination_html .= '</div>';
+    return $pagination_html;
 }
