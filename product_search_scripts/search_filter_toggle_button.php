@@ -16,13 +16,6 @@ function render_toggle_search_button($unique_id) {
                 style="padding: 0.5em 1em; font-size: 1em; cursor: pointer;">
             Show/Hide Search Filters
         </button>
-
-        <div id="filters-container-<?php echo $unique_id; ?>" style="display: none; border: 1px solid #ccc; padding: 1em; margin-top: 1em;">
-            <?php
-            // Dynamically insert the toggle script
-            echo get_toggle_search_script($unique_id);
-            ?>
-        </div>
     </div>
     <?php
     return ob_get_clean();
