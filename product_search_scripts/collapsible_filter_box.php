@@ -27,8 +27,9 @@ function displayCollapsibleFilterBox($product_category, $unique_id = 'collapsibl
     ob_start();
     echo render_toggle_search_button($unique_id);
     ?>
-        <p>TESTING</p>
+        <p>TESTING OUTSIDE BOX</p>
     <div id="filters-container-<?php echo $unique_id; ?>" style="display: none; border: 1px solid #ccc; padding: 1em; margin-top: 1em;">
+        <p>TESTING INSIDE BOX</p>
         <h4 style="margin-top: 0;">Refine Your Search for <?php echo htmlspecialchars($product_category); ?></h4>
         <input type="hidden" name="k" value="<?php echo htmlspecialchars($product_category); ?>">
         <div id="search-box-<?php echo $unique_id; ?>" style="padding: 10px; border: 1px solid #ccc;">
