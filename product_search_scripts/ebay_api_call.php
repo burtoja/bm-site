@@ -124,6 +124,7 @@ function fetch_ebay_data($api_endpoint, $auth_token) {
  **/
 function render_results_page($response_decoded, $params) {
     ob_start();
+    error_log(print_r($params, true)); //TESTING
     $total_results = isset($response_decoded->total) ? (int)$response_decoded->total : 0;
     echo "<h4>" . ($total_results > 0 ? number_format($total_results) . ' Products Found' : 'No products found. Please refine search.') . "</h4>";
     
