@@ -113,7 +113,7 @@ function render_results_page($response_decoded, $params) {
     
     //Build results filter box for top of page
 	include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/collapsible_filter_box.php');
-	echo displayCollapsibleFilterBox($product_category, 'results1', $selectedSpecialArr);
+	echo displayCollapsibleFilterBox($params['k'], 'results1', $selectedSpecialArr);
     
     if (isset($response_decoded->itemSummaries)) {
         echo "<table>";
