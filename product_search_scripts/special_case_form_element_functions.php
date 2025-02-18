@@ -282,11 +282,13 @@ function add_storage_tanks_special_elements($product_category, $unique_id, $sele
     $form_element = '';
     $special_keys = ["use", "material", "fluid", "capacity", "pressure", "mounting", "code", "misc"];
     foreach ($special_keys as $key) {
-        if ($key == "misc") {
-            $form_element .= build_checkbox_options($product_category, $unique_id, $key, $selectedValues[$key] ?? '');
-        } else {
-            $form_element .= build_pulldown_menu($product_category, $unique_id, $key, $selectedValues[$key] ?? '');
-        }
+        $form_element .= build_pulldown_menu($product_category, $unique_id, $key, $selectedValues[$key] ?? '');
+
+//        if ($key == "misc") {
+//            $form_element .= build_checkbox_options($product_category, $unique_id, $key, $selectedValues[$key] ?? '');
+//        } else {
+//            $form_element .= build_pulldown_menu($product_category, $unique_id, $key, $selectedValues[$key] ?? '');
+//        }
     }
     return $form_element;
 }
