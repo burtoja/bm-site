@@ -91,7 +91,7 @@ function render_results_page($response_decoded, $params) {
     error_log(print_r($params, true)); //TESTING
     $total_results = isset($response_decoded->total) ? (int)$response_decoded->total : 0;
     if ($total_results >= 10000) {
-        echo "<h4>Over 10,000 products found</h4>It is recommended that you refine the search using the filters below.<br>";
+        echo "<h4>Over 10,000 products found</h4>It is recommended that you refine the search using the filters below.<br><br>";
     } else {
         echo "<h4>" . ($total_results > 0 ? number_format($total_results) . ' Products Found' : 'No products found. Please refine search.') . "</h4>";
     }
