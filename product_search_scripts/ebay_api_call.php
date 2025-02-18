@@ -163,7 +163,8 @@ function get_pagination_parameters() {
  * @return string HTML output for pagination links.
  */
 function render_pagination_links($total_results, $current_page, $results_per_page) {
-    $total_pages = ceil($total_results / $results_per_page);
+    $max_results = min($total_results, 10000); // Cap at 10,000
+    $total_pages = ceil($max_results / $results_per_page);
     if ($total_pages <= 1) return ''; // No pagination needed
 
     $pagination_html = '<div class="pagination">';
