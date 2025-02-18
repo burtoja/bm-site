@@ -4,6 +4,8 @@
  * v6.0 (02/13/2025): Pulled out of Snippet plugin in WP
  **/
 
+include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search_functions.php');
+
 function api_ebay_call_shortcode() {
     $current_query = get_search_parameters();
     $auth_token = get_ebay_oauth_token();
