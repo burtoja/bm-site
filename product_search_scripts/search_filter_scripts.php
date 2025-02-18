@@ -17,17 +17,6 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
         const product_category_<?php echo $unique_id; ?> = '<?php echo esc_js($product_category); ?>';
         const specialFilterKeys_<?php echo $unique_id; ?> = <?php echo json_encode($specialKeys); ?>;
 
-        (function() {
-            // Toggle collapsible container
-            var btn = document.getElementById('toggle-filters-<?php echo $unique_id; ?>');
-            var box = document.getElementById('filters-container-<?php echo $unique_id; ?>');
-            btn.addEventListener('click', function() {
-                box.style.display = (box.style.display === 'none') ? 'block' : 'none';
-            });
-
-            console.log("Special filters for <?php echo $unique_id; ?>:", specialFilterKeys_<?php echo $unique_id; ?>);
-        })();
-
         // Execute action when Find Products button clicked
         document.addEventListener("DOMContentLoaded", function() {
             let btn = document.getElementById('find-products-button-<?php echo $unique_id; ?>');
