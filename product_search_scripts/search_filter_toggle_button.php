@@ -16,6 +16,13 @@ function render_toggle_search_button($unique_id) {
                 style="padding: 0.5em 1em; font-size: 1em; cursor: pointer;">
             Show/Hide Search Filters
         </button>
+
+        <div id="filters-container-<?php echo $unique_id; ?>" style="display: none; border: 1px solid #ccc; padding: 1em; margin-top: 1em;">
+            <?php
+            // Dynamically insert the toggle script
+            echo get_toggle_search_script($unique_id);
+            ?>
+        </div>
     </div>
     <?php
     return ob_get_clean();
@@ -32,17 +39,19 @@ function get_toggle_search_script($unique_id) {
     ob_start();
     ?>
     <script>
-        (function() {
+        document.addEventListener("DOMContentLoaded", function() {
             var btn = document.getElementById('toggle-filters-<?php echo $unique_id; ?>');
             var box = document.getElementById('filters-container-<?php echo $unique_id; ?>');
+
+            console.log("Script loaded. Button:", btn, "Box:", box);
 
             if (btn && box) {
                 btn.addEventListener('click', function() {
                     console.log("TOGGLE BUTTON CLICKED");
-                    box.style.display = (box.style.display === 'none') ? 'block' : 'none';
+                    box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
                 });
             }
-        })();
+        });
     </script>
     <?php
     return ob_get_clean();
