@@ -187,9 +187,9 @@ function render_pagination_links($total_results, $current_page, $results_per_pag
         $query_params['pg'] = $i;
         $query_string = http_build_query($query_params);
         if ($i == $current_page) {
-            $pagination_html .= '<a href="?' . $query_string . '" class="active" style="border:2px;">' . $i . '</a> ';
+            $pagination_html .= '<a href="?' . $query_string . '" class="active" style="border:2px solid;">' . $i . '</a> ';
         } else {
-            $pagination_html .= '<a href="?' . $query_string . '" class="active" style="border:1px;">' . $i . '</a> ';
+            $pagination_html .= '<a href="?' . $query_string . '" class="active" style="border:1px solid;">' . $i . '</a> ';
         }
     }
 
