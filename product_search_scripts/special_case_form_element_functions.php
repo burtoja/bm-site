@@ -423,7 +423,9 @@ function build_pulldown_menu($product_category, $unique_id, $special_filter_type
  * @return string The HTML string for the checkbox options.
  */
 function build_checkbox_options($product_category, $unique_id, $special_filter_type, $selectedValues = []) {
-    $checkbox_html = "HELLO AGAIN";
+    $checkbox_html = "";
+    //TODO:  Need to implement this function and apply to appropriate filters
+
     // $options = get_special_filter_options($special_filter_type); // Fetches the possible values from the database or file.
     // $checkbox_html = "<div class='checkbox-group' id='{$product_category}_{$special_filter_type}_group'>";
 
