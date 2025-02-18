@@ -9,8 +9,6 @@ include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search
 /**
  * This is the main shortcode function called by the site when the results
  * of the ebay api call are desired to be displayed
- *
- * @return string|void
  */
 function api_ebay_call_shortcode() {
     $current_query = get_search_parameters();
@@ -114,7 +112,7 @@ function fetch_ebay_data($api_endpoint, $auth_token) {
 /**
  * Renders the html to build the page
  * 
- * @return  html object
+ * @return false|string
  **/
 function render_results_page($response_decoded, $params) {
     ob_start();
@@ -150,7 +148,6 @@ function render_results_page($response_decoded, $params) {
             $selectedSpecialArr[$key] = $val;
         }
     }
-
     ///////////////////////////END Possible function //////////////////
 
     //Build results filter box for top of page
