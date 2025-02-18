@@ -175,37 +175,32 @@ function render_pagination_links($total_results, $current_page, $results_per_pag
     if ($current_page > 1) {
         $query_params = $_GET;
         $query_params['pg'] = 1;
-        $pagination_html .= '<a href="?' . http_build_query($query_params) . '">First</a> ';
+        $query_string = http_build_query($query_params);
+        $pagination_html .= '<a href="?' . $query_string . '">First</a> ';
 
         $query_params['pg'] = $current_page - 1;
-        $pagination_html .= '<a href="?' . http_build_query($query_params) . '">Prev</a> ';
+        $query_string = http_build_query($query_params);
+        $pagination_html .= '<a href="?' . $query_string . '">Prev</a> ';
     }
 
     for ($i = $start; $i <= $end; $i++) {
         $query_params['pg'] = $i;
-        $pagination_html .= '<a href="?' . http_build_query($query_params) . '"' . ($i == $current_page ? ' class="active"' : '') . '>' . $i . '</a> ';
+        $query_string = http_build_query($query_params);
+        if ($i == $current_page) {
+            $pagination_html .= '<a href="?' . $query_string . '" class="active">' . $i . '</a> ';
+        } else {
+            $pagination_html .= '<a href="?' . $query_string . '">' . $i . '</a> ';
+        }
     }
 
     if ($current_page < $total_pages) {
         $query_params['pg'] = $current_page + 1;
-        $pagination_html .= '<a href="?' . http_build_query($query_params) . '">Next</a> ';
+        $query_string = http_build_query($query_params);
+        $pagination_html .= '<a href="?' . $query_string . '">Next</a> ';
 
         $query_params['pg'] = $total_pages;
-        $pagination_html .= '<a href="?' . http_build_query($query_params) . '">Last</a> ';
-    }
-
-    $pagination_html .= '</div>';
-    return $pagination_html;
-    $total_pages = ceil($total_results / $results_per_page);
-    if ($total_pages <= 1) return ''; // No pagination needed
-
-    $pagination_html = '<div class="pagination">';
-
-    for ($i = 1; $i <= $total_pages; $i++) {
-        $query_params = $_GET;
-        $query_params['pg'] = $i;
         $query_string = http_build_query($query_params);
-        $pagination_html .= '<a href="?' . $query_string . '"' . ($i == $current_page ? ' class="active"' : '') . '>' . $i . '</a> ';
+        $pagination_html .= '<a href="?' . $query_string . '">Last</a> ';
     }
 
     $pagination_html .= '</div>';
