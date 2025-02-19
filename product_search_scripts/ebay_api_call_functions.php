@@ -18,9 +18,9 @@ function get_ebay_oauth_token() {
  **/
 function build_search_keyword_phrase($params) {
     $phrase = $params['search_keyword_phrase'];
-    if (!empty($params['manufacturer'])) {
-        $phrase .= "+" . $params['manufacturer'];
-    }
+//    if (!empty($params['manufacturer'])) {
+//        $phrase .= "+" . $params['manufacturer'];
+//    }
     if (!empty($params['type'])) {
         $phrase .= "+" . $params['type'];
     }
@@ -40,6 +40,10 @@ function construct_api_endpoint($search_keyword_phrase, $params) {
     $filters = [];
     if (!empty($params['condition'])) {
         $filters[] = 'conditions:{' . $params['condition'] . '}';
+    }
+    if (!empty($params['manufacturer'])) {
+        $brand_filter = rawurlencode($params['manufacturer']);
+        $api_endpoint .= "&filter=brand:({$brand_filter})";
     }
     if (!empty($params['min_price']) || !empty($params['max_price'])) {
         $min_price = $params['min_price'] ?: '0';
