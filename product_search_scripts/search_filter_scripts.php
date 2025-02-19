@@ -164,7 +164,7 @@ function custom_manufacturer_list_listener($product_category, $unique_id) {
                 })
                 .catch(err => {
             console.error("Error fetching manufacturers:" + fetchUrl + " -- ", err);
-        });
+            });
         });
     </script>
     <?php
