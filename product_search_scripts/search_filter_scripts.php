@@ -84,7 +84,21 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
             }
         });
 
-        // Switch to "Custom Range" radio if the user types into the Min/Max fields
+    </script>
+    <?php
+    echo custom_price_entry_listener();
+    return ob_get_clean();
+}
+
+
+/**
+ * Listener to switch to "Custom Range" radio if the user types into the Min/Max fields
+ * @return false|string
+ */
+function custom_price_entry_listener() {
+    ob_start();
+    ?>
+    <script>
         document.getElementById('min_price-<?php echo $unique_id; ?>').addEventListener('input', function() {
             if (this.value.trim() !== '') {
                 document.querySelector('input[name="price_range_option<?php echo '-' . $unique_id; ?>"][value="custom"]').checked = true;
@@ -96,9 +110,13 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
                 document.querySelector('input[name="price_range_option<?php echo '-' . $unique_id; ?>"][value="custom"]').checked = true;
             }
         });
-
     </script>
     <?php
     return ob_get_clean();
 }
+
+
+
 ?>
+
+
