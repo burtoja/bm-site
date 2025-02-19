@@ -29,33 +29,11 @@ function render_results_page($response_decoded, $params) {
     /////////////////////////////
     /// TODO: Break this out into function
 
-    $condition = isset($_GET['condition']) ? strtoupper($_GET['condition']) : ''; // "NEW" or "USED"
-    $manufacturer = isset($_GET['manufacturer']) ? $_GET['manufacturer'] : '';
-    if ($manufacturer == "Not-Specified" || $manufacturer == "Other" || $manufacturer == "Unbranded") {
-        $manufacturer = '';
-    }
-    $type = isset($_GET['type']) ? $_GET['type'] : '';
-    $additional_filters = isset($_GET['filters']) ? $_GET['filters'] : '';
 
-    // Get special filter names and values from URL parameter list
-    include ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/get_special_filter_pairs_from_url.php');
-    $special_filters = get_special_filter_pairs_from_url();
-    error_log("SPECIAL FILTERS VAR: " . print_r($special_filters, true)); //TESTING
-
-    // Build an associative array
-    $selectedSpecialArr = [];
-    foreach ($special_filters as $pair) {
-        // $pair looks like "fuel=Oil+Fired+Boiler"
-        $parts = explode('=', $pair, 2);
-        if (count($parts) == 2) {
-            $key = urldecode($parts[0]);
-            $val = urldecode($parts[1]);
-            $selectedSpecialArr[$key] = $val;
-        }
-    }
     ///////////////////////////END Possible function //////////////////
 
     //Build results filter box for top of page
+    $selectedSpecialArr = get_filter_values_from_url();
 	include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/collapsible_filter_box.php');
 	echo displayCollapsibleFilterBox($params['k'], 'results1', $selectedSpecialArr);
     
@@ -91,6 +69,40 @@ function api_ebay_call_shortcode() {
 
     // Render results with pagination
     return render_results_page($response_decoded, $current_query) . render_pagination_links($response_decoded->total, $pagination['current_page'], $pagination['results_per_page']);
+}
+
+/**
+ * Gets the filter values from the parameters in the url and puts them into
+ * a usable array.
+ *
+ * @return array
+ */
+function get_filter_values_from_url() {
+    $condition = isset($_GET['condition']) ? strtoupper($_GET['condition']) : ''; // "NEW" or "USED"
+    $manufacturer = isset($_GET['manufacturer']) ? $_GET['manufacturer'] : '';
+    if ($manufacturer == "Not-Specified" || $manufacturer == "Other" || $manufacturer == "Unbranded") {
+        $manufacturer = '';
+    }
+    $type = isset($_GET['type']) ? $_GET['type'] : '';
+    $additional_filters = isset($_GET['filters']) ? $_GET['filters'] : '';
+
+    // Get special filter names and values from URL parameter list
+    include ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/get_special_filter_pairs_from_url.php');
+    $special_filters = get_special_filter_pairs_from_url();
+    error_log("SPECIAL FILTERS VAR: " . print_r($special_filters, true)); //TESTING
+
+    // Build an associative array
+    $selectedSpecialArr = [];
+    foreach ($special_filters as $pair) {
+        // $pair looks like "fuel=Oil+Fired+Boiler"
+        $parts = explode('=', $pair, 2);
+        if (count($parts) == 2) {
+            $key = urldecode($parts[0]);
+            $val = urldecode($parts[1]);
+            $selectedSpecialArr[$key] = $val;
+        }
+    }
+    return $selectedSpecialArr;
 }
 
 add_shortcode('api_ebay_call', 'api_ebay_call_shortcode');
