@@ -38,7 +38,7 @@ function displayCollapsibleFilterBox($product_category, $unique_id = 'collapsibl
             echo add_manufacturer_element($product_category, $unique_id, $search_params['manufacturer']);
             echo $specialFilterHTML;
             echo add_search_box_element($unique_id, $search_params['search_keyword_phrase']);
-            echo add_price_filter_elements($unique_id);  //TODO: pre-populate the price filter option
+            echo add_price_filter_elements($unique_id, 'anyPrice', $search_params['min_price'], $search_params['max_price']);  //TODO: pre-populate the price filter option
             echo add_sort_by_element($unique_id, $search_params['sort_select']);
             echo add_search_button($unique_id);
             ?>
