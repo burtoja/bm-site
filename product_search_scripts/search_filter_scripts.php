@@ -83,10 +83,9 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
                 console.error("Find Products button not found! ID:", 'find-products-button-<?php echo $unique_id; ?>');
             }
         });
-
     </script>
     <?php
-    echo custom_price_entry_listener();
+    echo custom_price_entry_listener($unique_id);
     return ob_get_clean();
 }
 
@@ -95,7 +94,7 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
  * Listener to switch to "Custom Range" radio if the user types into the Min/Max fields
  * @return false|string
  */
-function custom_price_entry_listener() {
+function custom_price_entry_listener($unique_id) {
     ob_start();
     ?>
     <script>
