@@ -175,11 +175,11 @@ function render_pagination_links($total_results, $current_page, $results_per_pag
     $range = 3; // Number of pages to show on each side of current page
     $start = max(1, $current_page - $range);
     $end = min($total_pages, $current_page + $range);
+    $query_params = array_merge($_GET, ['pg' => 1]); //add pg parameter to filters in url
 
     if ($current_page > 1) {
         //Create FIRST page link
-        $query_params = array_merge($_GET, ['pg' => $current_page]);
-        $query_params['pg'] = 1;
+        $query_params['pg'] = $current_page;
         $query_string = http_build_query($query_params);
         $pagination_html .= '<a href="?' . $query_string . '">First</a> ';
 
