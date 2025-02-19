@@ -86,6 +86,7 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
     </script>
     <?php
     echo custom_price_entry_listener($unique_id);
+    echo custom_manufacturer_list_listener($product_category, $unique_id);
     return ob_get_clean();
 }
 
@@ -114,6 +115,61 @@ function custom_price_entry_listener($unique_id) {
     return ob_get_clean();
 }
 
+
+/**
+ * Listener to switch to alternate manufacturer list in pull down
+ * if one is provided for a specific product type
+ *
+ * @param $product_category
+ * @param $unique_id
+ * @return false|string
+ */
+function custom_manufacturer_list_listener($product_category, $unique_id) {
+    ob_start();
+    ?>
+    <script>
+    // Listen for Type changes, populate Manufacturer dynamically
+    document.getElementById('type-<?php echo $unique_id; ?>').addEventListener('change', function() {
+        const selectedType = this.value; // e.g. "submersible"
+        let fetchUrl;
+            const categoryLower = '<?php echo strtolower($product_category); ?>';
+
+            // Build the URL for get_manufacturers.php
+            if (!selectedType) {
+                // No type selected - revert to original list
+                fetchUrl = `/product_search_scripts/get_manufacturers.php?category=${encodeURIComponent(categoryLower)}`;
+                console.log("#1 - fetchUrl = ", fetchUrl);  //TESTING
+            } else {
+                // Type selected - load specific file
+                fetchUrl = `/product_search_scripts/get_manufacturers.php?category=${encodeURIComponent(categoryLower)}&type=${encodeURIComponent(selectedType)}`;
+                console.log("#2 - fetchUrl = ", fetchUrl);  //TESTING
+            }
+
+            // Fetch from the endpoint
+            fetch(fetchUrl)
+            .then(response => response.json())
+                .then(data => {
+            // data should be an array of strings from the text file
+            const mSelect = document.getElementById('manufacturer-<?php echo $unique_id; ?>');
+            mSelect.innerHTML = '<option value="">**Select a Manufacturer (or leave blank to see all)</option>';
+
+            data.forEach(manuf => {
+                // If you have lines with <override> in them, parse them here if needed
+                // Otherwise just create an <option>
+                let opt = document.createElement('option');
+                        opt.value = manuf;
+                        opt.textContent = manuf;
+                        mSelect.appendChild(opt);
+                    });
+                })
+                .catch(err => {
+            console.error("Error fetching manufacturers:" + fetchUrl + " -- ", err);
+        });
+        });
+    </script>
+    <?php
+    return ob_get_clean();
+}
 
 
 
