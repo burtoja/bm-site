@@ -138,11 +138,9 @@ function custom_manufacturer_list_listener($product_category, $unique_id) {
             if (!selectedType) {
                 // No type selected - revert to original list
                 fetchUrl = `/product_search_scripts/get_manufacturers.php?category=${encodeURIComponent(categoryLower)}`;
-                console.log("#1 - fetchUrl = ", fetchUrl);  //TESTING
             } else {
                 // Type selected - load specific file
                 fetchUrl = `/product_search_scripts/get_manufacturers.php?category=${encodeURIComponent(categoryLower)}&type=${encodeURIComponent(selectedType)}`;
-                console.log("#2 - fetchUrl = ", fetchUrl);  //TESTING
             }
 
             // Fetch from the endpoint
@@ -151,7 +149,7 @@ function custom_manufacturer_list_listener($product_category, $unique_id) {
                 .then(data => {
             // data should be an array of strings from the text file
             const mSelect = document.getElementById('manufacturer-<?php echo $unique_id; ?>');
-            mSelect.innerHTML = '<option value="">**Select a Manufacturer (or leave blank to see all)</option>';
+            mSelect.innerHTML = '<option value="">Select a Manufacturer (or leave blank to see all)</option>';
 
             data.forEach(manuf => {
                 // If you have lines with <override> in them, parse them here if needed
