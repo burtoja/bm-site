@@ -18,13 +18,13 @@ function get_ebay_oauth_token() {
  **/
 function build_search_keyword_phrase($params) {
     $phrase = $params['search_keyword_phrase'];
-//    if (!empty($params['manufacturer'])) {
-//        $phrase .= "+" . $params['manufacturer'];
-//    }
+    //MOVED manufacturer to search only in brand field
+    //    if (!empty($params['manufacturer'])) {
+    //        $phrase .= "+" . $params['manufacturer'];
+    //    }
     if (!empty($params['type'])) {
         $phrase .= "+" . $params['type'];
     }
-    error_log("SEARCH PHRASE = " . str_replace('%2B', '+', rawurlencode($phrase)));
     return str_replace('%2B', '+', rawurlencode($phrase));
 }
 
@@ -42,14 +42,14 @@ function construct_api_endpoint($search_keyword_phrase, $params) {
     if (!empty($params['condition'])) {
         $filters[] = 'conditions:{' . $params['condition'] . '}';
     }
-    if (!empty($params['manufacturer'])) {
-        $brand_filter = rawurlencode($params['manufacturer']);
-        $api_endpoint .= "&filter=brand:({$brand_filter})";
-    }
     if (!empty($params['min_price']) || !empty($params['max_price'])) {
         $min_price = $params['min_price'] ?: '0';
         $max_price = $params['max_price'] ?: '999999';
         $filters[] = 'price:[' . $min_price . '..' . $max_price . '],priceCurrency:USD';
+    }
+    if (!empty($params['manufacturer'])) {
+        $brand_filter = rawurlencode($params['manufacturer']);
+        $filters[] = 'brand:{' . $brand_filter . '}';
     }
     if (!empty($filters)) {
         $api_endpoint .= "&filter=" . rawurlencode(implode(',', $filters));
