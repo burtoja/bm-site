@@ -58,7 +58,7 @@ function construct_api_endpoint($search_keyword_phrase, $params) {
         $api_endpoint .= "&filter=" . urlencode(implode(",", $filters));
     }
     $api_endpoint .= "&limit=50&offset=" . (($params['pg'] - 1) * 50) . "&sort=" . (($params['sort_select'] === 'price_asc') ? 'price' : '-price');
-    error_log("API ENDPOINT = " . $api_endpoint); //TESTING
+    error_log("API ENDPOINT = " . urldecode($api_endpoint)); //TESTING
     return $api_endpoint;
 }
 
