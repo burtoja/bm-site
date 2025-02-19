@@ -8,7 +8,8 @@
  **/
 function get_search_parameters() {
     $params = $_GET;
-    $params['search_keyword_phrase'] = isset($_GET['k']) ? $_GET['k'] : '';
+    $params['k'] = isset($_GET['k']) ? $_GET['k'] : '';
+    $params['search_keyword_phrase'] = isset($_GET['filters']) ? $_GET['filters'] : '';
     $params['condition'] = isset($_GET['condition']) ? strtoupper($_GET['condition']) : '';
     $params['manufacturer'] = isset($_GET['manufacturer']) ? $_GET['manufacturer'] : '';
     $params['type'] = isset($_GET['type']) ? $_GET['type'] : '';

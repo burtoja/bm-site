@@ -98,7 +98,7 @@ function render_results_page($response_decoded, $params) {
     /////////////////////////////
     /// TODO: Break this out into function
 
-    $search_keyword_phrase = isset($_GET['k']) ? $_GET['k'] : '';
+    //$search_keyword_phrase = isset($_GET['k']) ? $_GET['k'] : '';
     $condition = isset($_GET['condition']) ? strtoupper($_GET['condition']) : ''; // "NEW" or "USED"
     $manufacturer = isset($_GET['manufacturer']) ? $_GET['manufacturer'] : '';
     if ($manufacturer == "Not-Specified" || $manufacturer == "Other" || $manufacturer == "Unbranded") {
