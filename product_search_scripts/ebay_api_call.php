@@ -177,16 +177,19 @@ function render_pagination_links($total_results, $current_page, $results_per_pag
     $end = min($total_pages, $current_page + $range);
 
     if ($current_page > 1) {
+        //Create FIRST page link
         $query_params = array_merge($_GET, ['pg' => $current_page]);
         $query_params['pg'] = 1;
         $query_string = http_build_query($query_params);
         $pagination_html .= '<a href="?' . $query_string . '">First</a> ';
 
+        //Create PREV page link
         $query_params['pg'] = $current_page - 1;
         $query_string = http_build_query($query_params);
         $pagination_html .= '<a href="?' . $query_string . '">Prev</a> ';
     }
 
+    //Create numbered page links
     for ($i = $start; $i <= $end; $i++) {
         $query_params['pg'] = $i;
         $query_string = http_build_query($query_params);
@@ -197,11 +200,13 @@ function render_pagination_links($total_results, $current_page, $results_per_pag
         }
     }
 
+    //Create NEXT page link
     if ($current_page < $total_pages) {
         $query_params['pg'] = $current_page + 1;
         $query_string = http_build_query($query_params);
         $pagination_html .= '<a href="?' . $query_string . '">Next</a> ';
 
+        //Create LAST page link
         $query_params['pg'] = $total_pages;
         $query_string = http_build_query($query_params);
         $pagination_html .= '<a href="?' . $query_string . '">Last</a> ';
