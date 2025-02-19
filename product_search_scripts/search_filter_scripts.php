@@ -40,7 +40,7 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
                         maxPrice = '';
                     } else {
                         minPrice = document.getElementById('min_price-<?php echo $unique_id; ?>')?.value.trim() || '';
-                        maxPrice = document.getElementById('max_price-<?php echo $unique_id; ?>')?.value.trim() || '';
+                        maxPrice = document.getElementById('max_price-<?php echo $unique_id; ?>')?.value.trim() || '333';
                     }
 
                     // Sort
