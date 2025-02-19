@@ -39,7 +39,7 @@ function build_search_keyword_phrase($params) {
 function construct_api_endpoint($search_keyword_phrase, $params) {
     $category_id = "12576";
     $api_endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?q=" . urlencode($search_keyword_phrase);
-    $api_endpoint .= "&category_ids=" . $category_id;
+    $api_endpoint .= "&category_ids:" . $category_id;
 
     $filters = [];
     if (!empty($params['condition'])) {
