@@ -93,6 +93,8 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
 
 /**
  * Listener to switch to "Custom Range" radio if the user types into the Min/Max fields
+ *
+ * @param $unique_id
  * @return false|string
  */
 function custom_price_entry_listener($unique_id) {
