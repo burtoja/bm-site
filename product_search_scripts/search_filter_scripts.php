@@ -40,7 +40,7 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
                         maxPrice = '';
                     } else {
                         minPrice = document.getElementById('min_price-<?php echo $unique_id; ?>')?.value.trim() || '';
-                        maxPrice = document.getElementById('max_price-<?php echo $unique_id; ?>')?.value.trim() || '333';
+                        maxPrice = document.getElementById('max_price-<?php echo $unique_id; ?>')?.value.trim() || '';
                     }
 
                     // Sort
@@ -83,6 +83,20 @@ function get_search_script($unique_id, $product_category, $specialKeys) {
                 console.error("Find Products button not found! ID:", 'find-products-button-<?php echo $unique_id; ?>');
             }
         });
+
+        // Switch to "Custom Range" radio if the user types into the Min/Max fields
+        document.getElementById('min_price-<?php echo $unique_id; ?>').addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                document.querySelector('input[name="price_range_option<?php echo '-' . $unique_id; ?>"][value="custom"]').checked = true;
+            }
+        });
+
+        document.getElementById('max_price-<?php echo $unique_id; ?>').addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                document.querySelector('input[name="price_range_option<?php echo '-' . $unique_id; ?>"][value="custom"]').checked = true;
+            }
+        });
+
     </script>
     <?php
     return ob_get_clean();
