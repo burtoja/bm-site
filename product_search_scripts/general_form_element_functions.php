@@ -158,6 +158,15 @@ function add_search_box_element($unique_id, $defaultFilters = '') {
  * @param string $defaultMax            Pre-filled maximum price
  */
 function add_price_filter_elements($unique_id, $selectedPriceOption = 'anyPrice', $defaultMin = '', $defaultMax = '') {
+    // Determine which radio should be selected
+    if ($defaultMax === '100' && ($defaultMin === '' || $defaultMin === '0')) {
+        $selectedPriceOption = 'under100';
+    } elseif ($defaultMin === '' && $defaultMax === '') {
+        $selectedPriceOption = 'anyPrice';
+    } else {
+        $selectedPriceOption = 'custom';
+    }
+
     // Escape values for safe HTML output
     $safeMin = htmlspecialchars($defaultMin, ENT_QUOTES);
     $safeMax = htmlspecialchars($defaultMax, ENT_QUOTES);
