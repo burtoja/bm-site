@@ -47,7 +47,7 @@ function render_results_page($response_decoded, $params) {
  * This is the main shortcode function called by the site when the results
  * of the ebay api call are desired to be displayed
  */
-function api_ebay_call_shortcode() {
+function block_product_search_results_shortcode() {
     $current_query = get_search_parameters();
     $auth_token = get_ebay_oauth_token();
 
@@ -67,4 +67,4 @@ function api_ebay_call_shortcode() {
     return render_results_page($response_decoded, $current_query) . render_pagination_links($response_decoded->total, $pagination['current_page'], $pagination['results_per_page']);
 }
 
-add_shortcode('api_ebay_call', 'api_ebay_call_shortcode');
+add_shortcode('block_product_search_results', 'block_product_search_results_shortcode');
