@@ -27,11 +27,6 @@ function render_results_page($response_decoded, $params) {
     } else {
         echo "<h4>" . ($total_results > 0 ? number_format($total_results) . ' Products Found' : 'No products found. Please refine search.') . "</h4>";
     }
-    /////////////////////////////
-    /// TODO: Break this out into function
-
-
-    ///////////////////////////END Possible function //////////////////
 
     //Build results filter box for top of page
     $selectedSpecialArr = get_filter_values_from_url();
@@ -71,6 +66,5 @@ function api_ebay_call_shortcode() {
     // Render results with pagination
     return render_results_page($response_decoded, $current_query) . render_pagination_links($response_decoded->total, $pagination['current_page'], $pagination['results_per_page']);
 }
-
 
 add_shortcode('api_ebay_call', 'api_ebay_call_shortcode');
