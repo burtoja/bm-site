@@ -24,6 +24,7 @@ function build_search_keyword_phrase($params) {
     if (!empty($params['type'])) {
         $phrase .= "+" . $params['type'];
     }
+    error_log("SEARCH PHRASE = " . str_replace('%2B', '+', rawurlencode($phrase)));
     return str_replace('%2B', '+', rawurlencode($phrase));
 }
 
