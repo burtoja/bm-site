@@ -17,7 +17,10 @@ function get_ebay_oauth_token() {
  * @return  string with the conditioned keyword phrase
  **/
 function build_search_keyword_phrase($params) {
-    $phrase = $params['search_keyword_phrase'];
+    $phrase = $params['k'];
+    if (!empty($params['search_keyword_phrase'])) {
+        $phrase .= "+" . $params['search_keyword_phrase'];
+    }
     //MOVED manufacturer to search only in brand field
     //    if (!empty($params['manufacturer'])) {
     //        $phrase .= "+" . $params['manufacturer'];
