@@ -19,7 +19,7 @@ include ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/search_filter_scri
 
 		
 /* Main Shortcode Function */
-function advanced_product_search_form_shortcode($atts) {
+function product_search_form_shortcode($atts) {
 	//Set up unique instance id number so multiple forms can work on same page
 	static $formCount = 0;
     $formCount++;
@@ -65,4 +65,4 @@ function advanced_product_search_form_shortcode($atts) {
     return ob_get_clean();
 
 }
-add_shortcode('product_search_form', 'advanced_product_search_form_shortcode');
+add_shortcode('product_search_form', 'product_search_form_shortcode');
