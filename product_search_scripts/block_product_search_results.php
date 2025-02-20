@@ -58,6 +58,7 @@ function block_product_search_results_shortcode() {
 
     $pagination = get_pagination_parameters();
     $search_keyword_phrase = build_search_keyword_phrase($current_query);
+    error_log("KEYWORD PHRASE 2 = " . $search_keyword_phrase);
 
     // $api_endpoint = construct_api_endpoint($search_keyword_phrase, $current_query, $pagination['offset'], $pagination['results_per_page']);
     $category_id = 12576; //Business & Industrial
