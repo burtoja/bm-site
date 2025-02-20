@@ -56,6 +56,7 @@ function extract_brands_from_response($json_response) {
  **/
 function construct_search_endpoint($search_keyword_phrase, $category_id, $manufacturer, $condition, $brand_list) {
     $search_keyword_phrase = urlencode($search_keyword_phrase);
+    $manufacturer = urlencode(str_replace("&", "%26", $manufacturer));
     $api_endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?q={$search_keyword_phrase}";
 
     // Add category ID

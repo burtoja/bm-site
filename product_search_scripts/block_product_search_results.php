@@ -60,7 +60,7 @@ function block_product_search_results_shortcode() {
     $search_keyword_phrase = build_search_keyword_phrase($current_query);
 
     // $api_endpoint = construct_api_endpoint($search_keyword_phrase, $current_query, $pagination['offset'], $pagination['results_per_page']);
-    $category_id = 12576;
+    $category_id = 12576; //Business & Industrial
     $brands_list = extract_brands_from_response(fetch_ebay_data(construct_brand_list_endpoint($category_id), $auth_token));
     $api_endpoint = construct_search_endpoint($search_keyword_phrase, $category_id, $current_query['manufacturer'], $current_query['condition'], $brands_list);
 
