@@ -21,14 +21,22 @@ function construct_brand_list_endpoint($category_id) {
 }
 
 /**
- * Extracts brand list from the API response (accepts JSON string)
+ * Extracts brand list from the API response (accepts JSON string or stdClass object)
  *
- * @param string $json_response The API response data in JSON format
+ * @param mixed $json_response The API response data (JSON string or stdClass)
  * @return array List of available brands
  **/
 function extract_brands_from_response($json_response) {
     $brands = [];
-    $response = json_decode($json_response, true);
+
+    if (is_string($json_response)) {
+        $response = json_decode($json_response, true);
+    } elseif ($json_response instanceof stdClass) {
+        $response = json_decode(json_encode($json_response), true);
+    } else {
+        return $brands; // Return empty array if format is unknown
+    }
+
     if (isset($response['refinement']['aspectDistributions'])) {
         foreach ($response['refinement']['aspectDistributions'] as $aspect) {
             if ($aspect['localizedAspectName'] === 'Brand') {
