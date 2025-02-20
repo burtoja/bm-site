@@ -33,6 +33,8 @@ function build_search_keyword_phrase($params) {
 
 /**
  * Constructs the API endpoint
+ * i.e.
+ * https://api.ebay.com/buy/browse/v1/item_summary/search?q=switchgear&category_ids=12576&aspect_filter=categoryId:12576,Brand:{COOPER}
  *
  * @return  string  API endpoint (url)
  **/
@@ -41,6 +43,7 @@ function construct_api_endpoint($search_keyword_phrase, $params) {
     $api_endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?q=" . urlencode($search_keyword_phrase);
     $api_endpoint .= "&category_ids=" . $category_id;
 
+    // Build filters
     $filters = [];
     if (!empty($params['condition'])) {
         $filters[] = 'conditions:{' . $params['condition'] . '}';
@@ -50,13 +53,19 @@ function construct_api_endpoint($search_keyword_phrase, $params) {
         $max_price = $params['max_price'] ?: '999999';
         $filters[] = 'price:[' . $min_price . '..' . $max_price . '],priceCurrency:USD';
     }
-    if (!empty($params['manufacturer'])) {
-        $brand_filter = rawurlencode($params['manufacturer']);
-        $filters[] = 'brand:{' . $brand_filter . '}';
-    }
     if (!empty($filters)) {
         $api_endpoint .= "&filter=" . urlencode(implode(",", $filters));
     }
+
+    // Build aspect_filter
+    $aspect_filters = ["categoryId:{$category_id}"];
+    if (!empty($params['manufacturer'])) {
+        $aspect_filters[] = "Brand:{" . $params['manufacturer'] . "}";
+    }
+    if (!empty($aspect_filters)) {
+        $api_endpoint .= "&aspect_filter=" . urlencode(implode(",", $aspect_filters));
+    }
+
     $api_endpoint .= "&limit=50&offset=" . (($params['pg'] - 1) * 50) . "&sort=" . (($params['sort_select'] === 'price_asc') ? 'price' : '-price');
     error_log("API ENDPOINT = " . $api_endpoint); //TESTING
     return $api_endpoint;
