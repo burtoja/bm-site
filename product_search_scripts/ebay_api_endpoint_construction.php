@@ -79,7 +79,7 @@ function construct_search_endpoint($search_keyword_phrase, $category_id, $manufa
 
     // Add sorting and pagination
     $api_endpoint .= "&limit=50&offset=0&sort=-price";
-
+    error_log("API ENDPOINT = " . $api_endpoint);
     return $api_endpoint;
 }
 ?>
