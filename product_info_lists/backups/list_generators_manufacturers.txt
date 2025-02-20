@@ -1,0 +1,63 @@
+AGCO
+AKSA 
+Alliance North America
+Alturdyne
+Atlas Copco
+Baldor
+Blue Star
+Briggs & Stratton
+Catepillar
+Cummins
+Dayton
+Delta Electronics
+Detroit
+Deutz
+Doosan
+Elliott Magnatek
+Energypac Systems
+Fermont MEP
+FG Wilson
+Ford
+GE
+Generac
+General Motors
+Gillette
+Hobart
+Hercules
+Hipower
+Honeywell
+Ingersoll Rand
+Isuzu
+John Deere
+John Hollingsworth
+Katolight
+Kohler
+Kubota
+Leroy Somer
+Lincoln
+Lister
+Onan
+Magnetek
+Magnaplus Marathon Electric
+Miller
+Miller Bobcat
+Mitsubishi
+MTU
+MultiQuip
+Northern Lights
+Olympian
+Palmer
+Perkins
+Powerhouse Diesel Generators PHD
+SDMO
+Silent Power
+SWP
+Taylor
+TECHTONGDA
+Triton
+Volvo Penta
+Wacker Neuson
+Waukesha
+Westerbeke
+Winco
+Yanmar

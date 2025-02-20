@@ -1,0 +1,10 @@
+Condensing  
+Dual Fuel
+Electric
+Firetube
+Gas
+Hot Water
+Oil
+Steam
+Waste Heat 
+Watertube

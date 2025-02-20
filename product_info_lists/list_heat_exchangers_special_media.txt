@@ -1,0 +1,7 @@
+Air to Air
+Air to Water
+Refrigerant to Air
+Water to Air
+Water to Oil
+Water to Water
+Steam to Air

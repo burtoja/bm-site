@@ -1,0 +1,15 @@
+Shell and Tube
+Plate
+Plate and Frame
+Double Pipe
+Air Cooled
+Finned Tube
+Spiral
+Air PreHeater
+Cooling Tower
+Condenser
+Economizer
+Evaporator
+Deareator
+ReBoiler
+ReGenerator

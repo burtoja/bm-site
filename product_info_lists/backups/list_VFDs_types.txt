@@ -1,0 +1,5 @@
+Voltage Source Inverter (VSI)
+Current Source Inverter (CSI)
+Pulse Width Modulation Inverter (PWM)
+Single Phase
+Three Phase

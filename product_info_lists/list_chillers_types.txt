@@ -1,0 +1,11 @@
+Air Cooled
+Water Cooled
+Vapor Absorption
+Vapor Compression
+Reciprocating
+Scroll
+Screw
+Centrifugal
+Explosion Proof
+Low Temperature
+Glycol

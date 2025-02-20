@@ -1,0 +1,11 @@
+Leather
+Metal
+Neoprene
+Nitrile
+Nylon
+Polyester
+Polyurethane
+Polyvinyl Chloride (PVC)
+Rubber
+Reinforced Rubber
+Urethane

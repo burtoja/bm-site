@@ -1,0 +1,9 @@
+Air
+Water
+Crossflow
+Counterflow
+Natural Draft
+Induced Draft
+Forced Draft
+Factory Assembled
+Field Erected

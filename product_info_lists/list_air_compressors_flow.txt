@@ -1,0 +1,6 @@
+Less than 100 L/min
+101-300 L/min
+301-500 L/min
+More Than 501 L/min
+Not Specified
+Other

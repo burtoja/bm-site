@@ -1,0 +1,12 @@
+Low Voltage
+Medium Voltage
+High Voltage
+Air Insulated
+Gas Insulated
+Hybrid Insulated
+Oil Insulated
+Vacuum Insulated
+Metal Clad
+Metal Enclosed
+Pad Mounted
+Vault or Subsurface

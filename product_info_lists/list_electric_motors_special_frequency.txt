@@ -1,0 +1,6 @@
+50 Hz(2,512) Items (2,512)
+50/60 Hz(5,265) Items (5,265)
+60 Hz(25,664) Items (25,664)
+60/90 Hz(24) Items (24)
+90 Hz(5) Items (5)
+Not Specified(193,675) Items (193,675)

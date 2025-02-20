@@ -1,0 +1,21 @@
+Arc Resistant
+AV Line
+Boltswitch
+Busway
+Distribution
+Fusible
+GFI Main
+GFI Switchboard
+HVL Load Current Interrupter
+I Line
+Load Current Interrupter
+Main Tie
+Meter Main
+MVS Load Current Interrupter
+Paralleling
+Powerlogic
+Power Vac
+Substation
+VR
+WL
+Walk-In

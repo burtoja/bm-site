@@ -1,0 +1,25 @@
+Acetylene
+Argon
+Chemical
+Compressed Air
+CO2
+Carbon Dioxide
+CNG
+Compressed Natural Gas
+Fuel
+Hydraulic Fluid
+Hydraulic Oil
+Hydrocarbon
+Liquid Nitrogen
+LNG
+Liquified Natural Gas
+Nitrogen
+Oil
+Oxygen
+Propane
+Refrigerant
+Sterile Storage
+Transmission Fluid
+Waste Oil
+Water
+Other

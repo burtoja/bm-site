@@ -1,0 +1,4 @@
+Gas
+Liquid
+Semi-Liquid
+Sludge

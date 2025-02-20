@@ -1,0 +1,15 @@
+Spur
+Helical
+Herringbone
+Bevel
+Worm
+Face
+Hypoid
+Parallel
+Right Angle
+In Line
+Worm
+Planetary
+Cycloidal
+
+

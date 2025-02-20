@@ -1,0 +1,24 @@
+AC
+DC
+Brushed
+Brushless
+Brushed DC
+Brushless DC
+Compound DC
+Direct Drive
+Gear
+Induction
+Linear
+Permanent magnet
+Reluctance
+Separately excited
+Separately excited DC
+Series
+Servomotor
+Shunt
+Stepper
+Synchronous
+Universal
+Unbranded
+Not Specified
+Other

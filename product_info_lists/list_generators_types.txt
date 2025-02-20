@@ -1,0 +1,13 @@
+Diesel
+Hydrogen
+Propane
+Natural Gas
+Natural Gas and Propane
+Dual fuel
+Hybrid
+Hydrogen
+PTO
+Solar
+Steam Turbine
+Wind Turbine
+Not Specified

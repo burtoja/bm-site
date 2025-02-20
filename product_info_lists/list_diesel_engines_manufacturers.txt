@@ -1,0 +1,43 @@
+* Industrial Diesel Engines (Not Inclusive)
+Allis Chalmers
+Boschung
+Burmeister and Wain *
+Case
+Caterpillar *
+Cummins *
+Daihatsu
+Dana
+Detroit *
+Deutz
+Doosan
+Fairbanks Morse *
+FPT
+Future Energy
+GM *
+Hydrogenics Cummins Diesel (Hydrogen Powered) Engine *
+Hyundai
+Isuzu *
+JAC
+JCB *
+John Deere *
+Keestrack
+Kohler
+Kubota *
+Lister Petter *
+Lombardini
+Lutain
+MAN *
+Naffco
+Northern Lights
+Perkins
+Quanchai
+Rolls Royce *
+SCNIA
+VM Motor
+Volvo Penta *
+Sulzer *
+Yanmar
+Wartsila *
+Weichai
+Westerbeke
+Other

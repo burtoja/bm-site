@@ -1,0 +1,71 @@
+* Industrial Generators (Not Inclusive)
+AGCO
+AKSA
+Alliance North America
+Alturdyne
+Atlas Copco *
+Baldor *
+Blue Star
+Briggs & Stratton
+Broadcrown *
+Catepillar *
+Cummins *
+Dayton
+Delta Electronics
+Detroit *
+Deutz
+Doosan *
+Elliott Magnatek
+Energypac Systems
+Fermont MEP
+FG Wilson
+Ford
+GE
+Generac *
+General Motors
+Gillette *
+Hobart
+Hercules
+Hipower *
+Honeywell
+Ingersoll Rand *
+Isuzu
+John Deere *
+John Hollingsworth
+Katolight *
+Kohler *
+Kubota
+Leroy Somer
+Lincoln
+Lister
+Olympian *
+Onan *
+Magnetek
+Magnaplus Marathon Electric
+Magnum *
+Miller
+Miller Bobcat
+Mitsubishi *
+MTU *
+MultiQuip *
+Northern Lights
+Olympian *
+Palmer
+Perkins *
+Powerhouse Diesel Generators PHD
+SDMO
+Silent Power
+SWP
+Taylor *
+Tecnogen *
+TECHTONGDA
+Triton *
+Volvo Penta *
+Wacker Neuson *
+Waukesha *
+Westerbeke
+Winco
+Yanmar
+Unbranded
+Not Specified
+Other
