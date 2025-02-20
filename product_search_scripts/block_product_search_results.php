@@ -12,6 +12,7 @@ include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/ebay_api_call_functions.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/pagination_functions.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/get_filter_values_from_url.php');
+include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/ebay_api_endpoint_construction.php');
 
 /**
  * Renders the html to build the page
@@ -58,8 +59,10 @@ function block_product_search_results_shortcode() {
     $pagination = get_pagination_parameters();
     $search_keyword_phrase = build_search_keyword_phrase($current_query);
 
-    // Modify API endpoint to include pagination offset
-    $api_endpoint = construct_api_endpoint($search_keyword_phrase, $current_query, $pagination['offset'], $pagination['results_per_page']);
+    // $api_endpoint = construct_api_endpoint($search_keyword_phrase, $current_query, $pagination['offset'], $pagination['results_per_page']);
+    $category_id = 12576;
+    $brands_list = extract_brands_from_response(fetch_ebay_data(construct_brand_list_endpoint($category_id), $auth_token));
+    $api_endpoint = construct_search_endpoint($search_keyword_phrase, $category_id, $current_query['manufacturer'], $current_query['condition'], $brands_list);
 
     $response_decoded = fetch_ebay_data($api_endpoint, $auth_token);
 
