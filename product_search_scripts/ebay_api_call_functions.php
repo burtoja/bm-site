@@ -34,7 +34,10 @@ function build_search_keyword_phrase($params) {
 /**
  * Constructs the API endpoint
  * i.e.
- * https://api.ebay.com/buy/browse/v1/item_summary/search?q=switchgear&category_ids=12576&aspect_filter=categoryId:12576,Brand:{COOPER}
+ * https://api.ebay.com/buy/browse/v1/item_summary/search?q=generators&category_ids=12576&filter=conditions:{NEW}&aspect_filter=categoryId:12576,Brand:{Dayton}&limit=50&offset=0&sort=-price
+ *
+ * https://api.ebay.com/buy/browse/v1/item_summary/search?q=switchgear&category_ids=12576&
+ * aspect_filter=categoryId:12576,Brand:{COOPER}
  *
  * @return  string  API endpoint (url)
  **/
