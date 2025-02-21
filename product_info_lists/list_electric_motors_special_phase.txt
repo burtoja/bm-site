@@ -1,4 +1,3 @@
-Single Phase(16,631) Items (16,631)
-Two Phase(271) Items (271)
-Three Phase(21,773) Items (21,773)
-Not Specified(188,217) Items (188,217)
+Single Phase
+Two Phase
+Three Phase

@@ -19,6 +19,3 @@ Shunt
 Stepper
 Synchronous
 Universal
-Unbranded
-Not Specified
-Other

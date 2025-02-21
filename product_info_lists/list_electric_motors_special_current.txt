@@ -1,4 +1,3 @@
 AC
 DC
 Universal
-Not Specified
