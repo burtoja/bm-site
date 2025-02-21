@@ -53,7 +53,7 @@ function add_type_element($product_category, $unique_id, $selectedType = '') {
                 Product Type:
             </label>
             <select id="type-' . $unique_id . '" style="padding: 8px; width: 35em; font-size: 16px;">
-                <option value="">Select a Product Type (or leave blank)</option>';
+                <option value="">All (unfiltered)</option>';
 
     // Load the list of types from text file
     $file_path = $_SERVER["DOCUMENT_ROOT"] . '/product_info_lists/list_' . $product_category . '_types.txt';
@@ -94,7 +94,7 @@ function add_manufacturer_element($product_category, $unique_id, $selectedManufa
                 Product Manufacturer/Brand:
             </label>
             <select id="manufacturer-' . $unique_id . '" style="padding: 8px; width: 35em; font-size: 16px;">
-                <option value="">Select a Manufacturer (or leave blank to see all)</option>';
+                <option value="">All (unfiltered)</option>';
 
     $file_path = $_SERVER["DOCUMENT_ROOT"] . '/product_info_lists/list_' . $product_category . '_manufacturers.txt';
 

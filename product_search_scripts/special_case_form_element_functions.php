@@ -391,7 +391,7 @@ function build_pulldown_menu($product_category, $unique_id, $special_filter_type
                 ' . htmlspecialchars($menu_display_name) . ' Type:
             </label>
             <select id="' . $menu_id . '-' . $unique_id . '" style="padding: 8px; width: 35em; font-size: 16px;">
-                <option value="">Type or Select a ' . htmlspecialchars($menu_display_name) . ' (or leave blank to see all)</option>';
+                <option value="">All (unfiltered)</option>';
 
     $file_path = $_SERVER["DOCUMENT_ROOT"] . '/product_info_lists/' . $reference_file_name;
     $special_types_list = get_names_and_search_terms($file_path);
