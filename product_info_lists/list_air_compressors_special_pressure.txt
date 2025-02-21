@@ -3,5 +3,3 @@
 150 Psi
 175 Psi
 225 Psi
-Not Specified
-Other

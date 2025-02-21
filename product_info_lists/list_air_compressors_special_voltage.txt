@@ -7,4 +7,3 @@
 230 V
 240 V
 460 V
-Not Specified

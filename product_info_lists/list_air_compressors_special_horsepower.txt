@@ -8,4 +8,3 @@ Less than 1
 5.5 to 10
 10.5 to 30
 30.5 to 50
-Other

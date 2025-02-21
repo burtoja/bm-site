@@ -4,4 +4,3 @@ Diaphragm
 Scroll
 Centrifugal
 Rotary Vane
-Not Specified

@@ -90,5 +90,3 @@ VIAIR
 Unbranded
 Westward
 ZEKS
-Not Specified
-Other
