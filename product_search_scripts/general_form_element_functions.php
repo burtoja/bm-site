@@ -91,7 +91,7 @@ function add_manufacturer_element($product_category, $unique_id, $selectedManufa
     $form_element = '
         <div style="margin-bottom: 16px;">
             <label for="manufacturer-' . $unique_id . '" style="display: block; margin-bottom: 8px; font-weight: bold;">
-                Product Manufacturer:
+                Product Manufacturer/Brand:
             </label>
             <select id="manufacturer-' . $unique_id . '" style="padding: 8px; width: 35em; font-size: 16px;">
                 <option value="">Select a Manufacturer (or leave blank to see all)</option>';
