@@ -1,17 +1,16 @@
-* Industrial Air Compressors ( Not Inclusive)
 AirMan
-Atlas Copco *
+Atlas Copco
 B&K Precision
 Bauer
 BelAire
-BOGE *
+BOGE
 Bostitch
 Boss Industries
 California Air Tools
 Campbell Hausfeld
-Caterpillar *
-Champion *
-Chicago Pneumatic *
+Caterpillar
+Champion
+Chicago Pneumatic
 Coaire
 Cochrane
 Coleman
@@ -19,17 +18,17 @@ CompAir
 Craftsman
 Curtis
 Dayton
-DeVilbiss *
+DeVilbiss
 DEWALT
 Doosan
-Dresser Rand *
+Dresser Rand
 Eaton
 ELGI
 Enerpac
 EPAuto
 Festo
-FS Elliott *
-Gardner Denver *
+FS Elliott
+Gardner Denver
 Gast
 Genesis
 Grip-Rite
@@ -38,35 +37,35 @@ GS Air
 Hankison
 Hitachi
 Honda
-HPDAVV *
+HPDAVV
 HPDMC
 Husky
-Hydrovane *
+Hydrovane
 Industrial Air
-Ingersoll Rand *
-Joy *
+Ingersoll Rand
+Joy
 JUN-AIR
-Kaeser *
-Kapa *
+Kaeser
+Kapa
 Kaishan
 Kellogg-American
 Killer Filter
-King Rox *
+King Rox
 KTH
-LeRoi *
+LeRoi
 Makita
 Master
-Mattei *
+Mattei
 Milwaukee
 Medo
 Nexus
 OMORFO
 Parker
-Pneu-Airtech *
+Pneu-Airtech
 PORTER-CABLE
 Prevost
 PUMA
-Quincy *
+Quincy
 RapidAir
 Rexroth
 Rigid
@@ -78,13 +77,13 @@ Schulz
 SENCO
 Siemens
 Silentaire
-SPEEDAIRE *
+SPEEDAIRE
 Stark
-Sullair *
-Sullivan *
-Sulzer *
+Sullair
+Sullivan
+Sulzer
 Thomas
-US Air *
+US Air
 US Rotary
 Vanair
 VIAIR

@@ -1,43 +1,41 @@
-* Industrial Diesel Engines (Not Inclusive)
 Allis Chalmers
 Boschung
-Burmeister and Wain *
+Burmeister and Wain
 Case
-Caterpillar *
-Cummins *
+Caterpillar
+Cummins
 Daihatsu
 Dana
-Detroit *
+Detroit
 Deutz
 Doosan
-Fairbanks Morse *
+Fairbanks Morse
 FPT
 Future Energy
-GM *
-Hydrogenics Cummins Diesel (Hydrogen Powered) Engine *
+GM
+Hydrogenics Cummins Diesel (Hydrogen Powered) Engine
 Hyundai
-Isuzu *
+Isuzu
 JAC
-JCB *
-John Deere *
+JCB
+John Deere
 Keestrack
 Kohler
-Kubota *
-Lister Petter *
+Kubota
+Lister Petter
 Lombardini
 Lutain
-MAN *
+MAN
 Naffco
 Northern Lights
 Perkins
 Quanchai
-Rolls Royce *
+Rolls Royce
 SCNIA
 VM Motor
-Volvo Penta *
-Sulzer *
+Volvo Penta
+Sulzer
 Yanmar
-Wartsila *
+Wartsila
 Weichai
 Westerbeke
-Other
