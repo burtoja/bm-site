@@ -1,23 +1,32 @@
 <?php
-function boilersa_list_categories_shortcode() {
-    global $wpdb;
+// Replace these with your actual credentials
+$host = 'localhost:3306';        // or the IP address of your DB server
+$username = 'boilersa_wp_g1klw';
+$password = 'b67a9!^rMA~CzqTu';
+$database = 'boilersa_category_search_filters';
 
-    $table = $wpdb->prefix . 'category_search_filters';
+// Create connection
+$conn = new mysqli($host, $username, $password, $database);
 
-    // Get unique category names
-    $categories = $wpdb->get_col("SELECT DISTINCT category_name FROM $table ORDER BY category_name ASC");
-
-    if (empty($categories)) {
-        return '<p>No categories found.</p>';
-    }
-
-    $output = '<ul>';
-    foreach ($categories as $category_name) {
-        $output .= '<li>' . esc_html($category_name) . '</li>';
-    }
-    $output .= '</ul>';
-
-    return $output;
+// Check connection
+if ($conn->connect_error) {
+die("Connection failed: " . $conn->connect_error);
 }
-add_shortcode('boilersa_categories', 'boilersa_list_categories_shortcode');
+
+// Run query
+$sql = "SELECT DISTINCT category_name FROM boilersa_category_search_filters ORDER BY category_name ASC";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+echo "<h2>Categories:</h2><ul>";
+    while ($row = $result->fetch_assoc()) {
+    echo "<li>" . htmlspecialchars($row['category_name']) . "</li>";
+    }
+    echo "</ul>";
+} else {
+echo "No categories found.";
+}
+
+$conn->close();
+
 ?>
