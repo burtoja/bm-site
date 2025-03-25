@@ -16,7 +16,7 @@ if ($conn->connect_error) {
 }
 
 // Run query
-$sql = "SELECT DISTINCT category_name FROM boilersa_category_search_filters ORDER BY category_name ASC";
+$sql = "SELECT DISTINCT category_name FROM categories ORDER BY name ASC";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
