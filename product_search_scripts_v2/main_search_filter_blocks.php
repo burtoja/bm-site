@@ -11,15 +11,15 @@
  * @return bool
  */
 function get_condition_filter($categoryId) {
-    ob_start();
-    echo '<div class="filter-item">';
-    echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Condition</div>';
-    echo '<div class="filter-options" style="display:none;">';
-    echo '<ul>';
-    echo '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="new"> New</label></li>';
-    echo '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="used"> Used</label></li>';
-    echo '</ul>';
-    echo '</div>'; // .filter-options
-    echo '</div>'; // .filter-item
-    return ob_get_clean();
+    $snippet = '';
+    $snippet .= '<div class="filter-item">';
+    $snippet .= '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Condition</div>';
+    $snippet .= '<div class="filter-options" style="display:none;">';
+    $snippet .= '<ul>';
+    $snippet .= '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="new"> New</label></li>';
+    $snippet .= '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="used"> Used</label></li>';
+    $snippet .= '</ul>';
+    $snippet .= '</div>';
+    $snippet .= '</div>';
+    return $snippet;
 }
