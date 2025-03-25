@@ -20,6 +20,14 @@ function boilersa_categories_shortcode($atts) {
             echo '<div class="toggle category-toggle" onclick="toggleVisibility(this)">[+] ' . $categoryName . '</div>';
             echo '<div class="category-filters" style="display:none;">';
 
+            // Condition Filter (New/Used/Any)
+            echo '<div class="condition-filter">';
+            echo '<strong>Condition:</strong><br>';
+            echo '<label><input type="radio" name="condition_' . $categoryId . '" value="new"> New</label><br>';
+            echo '<label><input type="radio" name="condition_' . $categoryId . '" value="used"> Used</label><br>';
+            echo '<label><input type="radio" name="condition_' . $categoryId . '" value=""> Any</label>';
+            echo '</div><br>';
+
             // Get filters linked to this category
             $filter_sql = "
                 SELECT f.id, f.name 
