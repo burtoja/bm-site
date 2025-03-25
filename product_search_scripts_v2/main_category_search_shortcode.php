@@ -42,67 +42,8 @@ function boilersa_categories_shortcode($atts) {
     // Add CSS
     echo render_main_category_listing_style_block();
     // Add JS
-    ?>
-
-
-    <script>
-        function toggleVisibility(el) {
-            const content = el.nextElementSibling;
-            if (!content) return;
-            if (content.style.display === "none") {
-                content.style.display = "block";
-                el.innerHTML = el.innerHTML.replace("[+]", "[-]");
-            } else {
-                content.style.display = "none";
-                el.innerHTML = el.innerHTML.replace("[-]", "[+]");
-            }
-        }
-
-
-    </script>
-    <script>
-        function toggleCustomPrice(radioBtn) {
-            const container = radioBtn.closest('.filter-options');
-            const customFields = container.querySelector('.custom-price-fields');
-            const allRadios = container.querySelectorAll('input[type="radio"]');
-
-            allRadios.forEach(radio => {
-                if (radio.value !== 'custom') {
-                    radio.addEventListener('click', () => {
-                        customFields.style.display = 'none';
-                    });
-                }
-            });
-
-            if (radioBtn.value === 'custom') {
-                customFields.style.display = 'block';
-            }
-        }
-
-        // On page load, add listeners for all "custom" price radios
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll('input[type="radio"][value="custom"]').forEach(radio => {
-                radio.addEventListener('click', function () {
-                    toggleCustomPrice(this);
-                });
-            });
-
-            // Add fallback listeners for non-custom to hide custom fields
-            document.querySelectorAll('input[type="radio"]').forEach(radio => {
-                if (radio.value !== 'custom') {
-                    radio.addEventListener('click', function () {
-                        const container = this.closest('.filter-options');
-                        const customFields = container.querySelector('.custom-price-fields');
-                        if (customFields) {
-                            customFields.style.display = 'none';
-                        }
-                    });
-                }
-            });
-        });
-    </script>
-
-    <?php
+    echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
+    echo '<script src="/product_search_scripts_v2/main_category_search_toggle_custom_price.js"></script>';
 
     return ob_get_clean();
 }
