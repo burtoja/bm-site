@@ -96,10 +96,12 @@ function boilersa_categories_shortcode($atts) {
 
         .category-filters {
             margin-left: 20px; /* indent filters under category */
+            color: cadetblue;
         }
 
         .filter-item {
             margin-bottom: 8px;
+            color: darkturquoise;
         }
 
         .filter-options {
