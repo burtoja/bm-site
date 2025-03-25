@@ -1,5 +1,6 @@
 <?php
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/db_connection.php');
+include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/main_search_filter_blocks.php');
 
 function boilersa_categories_shortcode($atts) {
     $conn = get_db_connection();
@@ -21,16 +22,7 @@ function boilersa_categories_shortcode($atts) {
             echo '<div class="category-filters" style="display:none;">';
 
             // Condition Filter (New/Used)
-            // Add "Condition" as a filter-style toggle
-            echo '<div class="filter-item">';
-            echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Condition</div>';
-            echo '<div class="filter-options" style="display:none;">';
-            echo '<ul>';
-            echo '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="new"> New</label></li>';
-            echo '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="used"> Used</label></li>';
-            echo '</ul>';
-            echo '</div>'; // .filter-options
-            echo '</div>'; // .filter-item
+            get_condition_filter();
 
             // Add "Price Range" as a toggleable filter
             echo '<div class="filter-item">';
