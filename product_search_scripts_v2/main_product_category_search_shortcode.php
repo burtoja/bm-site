@@ -23,63 +23,12 @@ function boilersa_categories_shortcode($atts) {
 
             // Condition Filter (New/Used)
             echo render_condition_filter($categoryId);
-
             // Add "Price Range" as a toggleable filter
             echo render_price_range_filter($categoryId);
-
             // Add "Sort Order" as a toggleable filter
             echo render_sort_order_filter($categoryId);
-
-
             // Get filters linked to this category
-            $filter_sql = "
-                SELECT f.id, f.name 
-                FROM filters f
-                JOIN category_filters cf ON f.id = cf.filter_id
-                WHERE cf.category_id = $categoryId
-                ORDER BY f.name ASC
-            ";
-            $filters = $conn->query($filter_sql);
-
-            if ($filters && $filters->num_rows > 0) {
-                while ($filter = $filters->fetch_assoc()) {
-                    $filterId = (int) $filter['id'];
-                    $filterName = htmlspecialchars($filter['name']);
-
-                    echo '<div class="filter-item">';
-                    echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] ' . $filterName . '</div>';
-                    echo '<div class="filter-options" style="display:none;">';
-
-                    // Get options for this filter
-                    $option_sql = "
-                        SELECT id, value 
-                        FROM filter_options 
-                        WHERE filter_id = $filterId 
-                        ORDER BY sort_order ASC
-                    ";
-                    $options = $conn->query($option_sql);
-
-                    if ($options && $options->num_rows > 0) {
-                        echo '<ul>';
-                        while ($opt = $options->fetch_assoc()) {
-                            $optionId = (int) $opt['id'];
-                            $optionLabel = htmlspecialchars($opt['value']);
-                            echo '<li><label><input type="checkbox" name="filter_' . $filterId . '[]" value="' . $optionId . '"> ' . $optionLabel . '</label></li>';
-                        }
-                        echo '</ul>';
-                    } else {
-                        echo '<em>No options</em>';
-                    }
-
-                    echo '</div>'; // .filter-options
-                    echo '</div>'; // .filter-item
-                }
-            } else {
-                echo '<em>No filters</em>';
-            }
-
-            echo '</div>'; // .category-filters
-            echo '</div>'; // .category-item
+            echo render_category_filters_from_db($categoryId, $conn);
         }
     } else {
         echo '<p>No categories found.</p>';

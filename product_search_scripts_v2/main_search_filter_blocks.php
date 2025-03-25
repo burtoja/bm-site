@@ -82,3 +82,64 @@ function render_sort_order_filter($categoryId) {
             echo '</div>';
     return ob_get_clean();
 }
+
+/**
+* Creates the filters specific to a given category
+ *
+ * @param $categoryId
+ * @param $conn
+ * @return bool
+ */
+function render_category_filters_from_db($categoryId, $conn) {
+    ob_start();
+    $filter_sql = "
+                SELECT f.id, f.name 
+                FROM filters f
+                JOIN category_filters cf ON f.id = cf.filter_id
+                WHERE cf.category_id = $categoryId
+                ORDER BY f.name ASC
+            ";
+    $filters = $conn->query($filter_sql);
+
+    if ($filters && $filters->num_rows > 0) {
+        while ($filter = $filters->fetch_assoc()) {
+            $filterId = (int) $filter['id'];
+            $filterName = htmlspecialchars($filter['name']);
+
+            echo '<div class="filter-item">';
+            echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] ' . $filterName . '</div>';
+            echo '<div class="filter-options" style="display:none;">';
+
+            // Get options for this filter
+            $option_sql = "
+                        SELECT id, value 
+                        FROM filter_options 
+                        WHERE filter_id = $filterId 
+                        ORDER BY sort_order ASC
+                    ";
+            $options = $conn->query($option_sql);
+
+            if ($options && $options->num_rows > 0) {
+                echo '<ul>';
+                while ($opt = $options->fetch_assoc()) {
+                    $optionId = (int) $opt['id'];
+                    $optionLabel = htmlspecialchars($opt['value']);
+                    echo '<li><label><input type="checkbox" name="filter_' . $filterId . '[]" value="' . $optionId . '"> ' . $optionLabel . '</label></li>';
+                }
+                echo '</ul>';
+            } else {
+                echo '<em>No options</em>';
+            }
+
+            echo '</div>'; // .filter-options
+            echo '</div>'; // .filter-item
+        }
+    } else {
+        echo '<em>No filters</em>';
+    }
+
+    echo '</div>'; // .category-filters
+    echo '</div>'; // .category-item
+
+    return ob_get_clean();
+}
