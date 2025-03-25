@@ -81,11 +81,42 @@ function boilersa_categories_shortcode($atts) {
     // Add JS & CSS
     ?>
     <style>
-        .toggle { cursor: pointer; margin: 6px 0; font-weight: bold; }
-        .toggle:hover { text-decoration: underline; }
-        .filter-options ul { margin: 0; padding-left: 20px; list-style-type: none; }
-        .category-item, .filter-item { margin-bottom: 10px; }
+        .toggle {
+            cursor: pointer;
+            margin: 6px 0;
+            font-weight: bold;
+        }
+        .toggle:hover {
+            text-decoration: underline;
+        }
+
+        .category-item {
+            margin-bottom: 10px;
+        }
+
+        .category-filters {
+            margin-left: 20px; /* indent filters under category */
+        }
+
+        .filter-item {
+            margin-bottom: 8px;
+        }
+
+        .filter-options {
+            margin-left: 20px; /* indent options under filter */
+        }
+
+        .filter-options ul {
+            margin: 0;
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        .filter-options li {
+            margin-bottom: 4px;
+        }
     </style>
+
     <script>
         function toggleVisibility(el) {
             const content = el.nextElementSibling;
