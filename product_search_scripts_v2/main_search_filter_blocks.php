@@ -21,5 +21,5 @@ function get_condition_filter($categoryId) {
     echo '</ul>';
     echo '</div>'; // .filter-options
     echo '</div>'; // .filter-item
-    return ob_clean();
+    return ob_get_clean();
 }
