@@ -26,6 +26,9 @@ function get_condition_filter($categoryId) {
 
 /**
  * Creates the price range  filter
+ * NOTE:  This function relies upon a JS script which must only run once
+ * which is why it is not included here.
+ *
  * @param $categoryId
  * @return bool
  */
@@ -53,6 +56,7 @@ function get_price_range_filter($categoryId)
 
     echo '</div>'; // .filter-options
     echo '</div>'; // .filter-item
+
     return ob_get_clean();
 }
 
