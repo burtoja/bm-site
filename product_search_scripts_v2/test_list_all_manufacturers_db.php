@@ -54,6 +54,20 @@ function boilersa_categories_shortcode($atts) {
             echo '</div>'; // .filter-options
             echo '</div>'; // .filter-item
 
+            // Add "Sort Order" as a toggleable filter
+            echo '<div class="filter-item">';
+            echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Sort Order</div>';
+            echo '<div class="filter-options" style="display:none;">';
+
+            $sortRadioName = 'sort_order_' . $categoryId;
+
+            echo '<label><input type="radio" name="' . $sortRadioName . '" value="high_to_low" checked> High to Low</label><br>';
+            echo '<label><input type="radio" name="' . $sortRadioName . '" value="low_to_high"> Low to High</label>';
+
+            echo '</div>'; // .filter-options
+            echo '</div>'; // .filter-item
+
+
             // Get filters linked to this category
             $filter_sql = "
                 SELECT f.id, f.name 
