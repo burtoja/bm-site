@@ -47,8 +47,8 @@ function boilersa_categories_shortcode($atts) {
 
             // Custom min/max inputs (hidden unless 'custom' is selected)
             echo '<div class="custom-price-fields" style="display:none; margin-top: 5px;">';
-            echo 'Min. Price: <input type="number" step="0.01" name="min_price_' . $categoryId . '" style="width: 100px;"><br>';
-            echo 'Max. Price: <input type="number" step="0.01" name="max_price_' . $categoryId . '" style="width: 100px;"><br>';
+            echo '<label class="price-input-label">$<input type="number" step="0.01" min="0" name="min_price_' . $categoryId . '" placeholder="Min" class="price-input"></label><br>';
+            echo '<label class="price-input-label">$<input type="number" step="0.01" min="0" name="max_price_' . $categoryId . '" placeholder="Max" class="price-input"></label><br>';
             echo '</div>';
 
             echo '</div>'; // .filter-options
