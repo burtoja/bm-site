@@ -1,6 +1,7 @@
 <?php
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/db_connection.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/main_search_filter_blocks.php');
+include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/category_listing_style_block.php');
 
 function boilersa_categories_shortcode($atts) {
     $conn = get_db_connection();
@@ -21,13 +22,13 @@ function boilersa_categories_shortcode($atts) {
             echo '<div class="toggle category-toggle" onclick="toggleVisibility(this)">[+] ' . $categoryName . '</div>';
             echo '<div class="category-filters" style="display:none;">';
 
-            // Condition Filter (New/Used)
+            // Add Condition Filter (New/Used)
             echo render_condition_filter($categoryId);
             // Add "Price Range" as a toggleable filter
             echo render_price_range_filter($categoryId);
             // Add "Sort Order" as a toggleable filter
             echo render_sort_order_filter($categoryId);
-            // Get filters linked to this category
+            // Add filters linked to this category from DB
             echo render_category_filters_from_db($categoryId, $conn);
         }
     } else {
@@ -38,49 +39,11 @@ function boilersa_categories_shortcode($atts) {
 
     $conn->close();
 
-    // Add JS & CSS
+    // Add CSS
+    echo render_main_category_listing_style_block();
+    // Add JS
     ?>
-    <style>
-        .toggle {
-            cursor: pointer;
-            margin: 6px 0;
-            font-weight: bold;
-        }
-        .toggle:hover {
-            text-decoration: underline;
-        }
 
-        .category-item {
-            margin-bottom: 10px;
-        }
-
-        .category-filters {
-            margin-left: 20px; /* indent filters under category */
-            color: cadetblue;
-        }
-
-        .filter-item {
-            margin-bottom: 8px;
-            color: darkturquoise;
-        }
-
-        .filter-options {
-            margin-left: 20px; /* indent options under filter */
-        }
-
-        .filter-options ul {
-            margin: 0;
-            padding-left: 0;
-            list-style-type: none;
-        }
-
-        .filter-options li {
-            margin-bottom: 4px;
-        }
-        .custom-price-fields input {
-            margin: 4px 0;
-        }
-    </style>
 
     <script>
         function toggleVisibility(el) {
