@@ -1,8 +1,8 @@
 <?php
 // Replace these with your actual credentials
 $host = 'localhost:3306';        // or the IP address of your DB server
-$username = 'boilersa_wp_g1klw';
-$password = 'b67a9!^rMA~CzqTu';
+$username = 'boilersa_app_user';
+$password = 'CzF06TTM^lCPWc$*';
 $database = 'boilersa_category_search_filters';
 
 // Create connection
