@@ -1,35 +1,29 @@
 <?php
+include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/db_connection.php');
 
+/**
+ * Main shortcode for displaying the category filters
+ * @param $atts
+ * @return void
+ */
 function boilersa_categories_shortcode($atts) {
-// Replace these with your actual credentials
-$host = 'localhost:3306';        // or the IP address of your DB server
-$username = 'boilersa_app_user';
-$password = 'CzF06TTM^lCPWc$*';
-$database = 'boilersa_category_search_filters';
+    $conn = get_db_connection();
 
-// Create connection
-$conn = new mysqli($host, $username, $password, $database);
+    // Run query
+    $sql = "SELECT * FROM categories";
+    $result = $conn->query($sql);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Run query
-$sql = "SELECT * FROM categories";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    echo "<h2>Categories:</h2><ul>";
-    while ($row = $result->fetch_assoc()) {
-        echo "<li>" . htmlspecialchars($row['name']) . "</li>";
+    if ($result->num_rows > 0) {
+        echo "<h2>Categories:</h2><ul>";
+        while ($row = $result->fetch_assoc()) {
+            echo "<li>" . htmlspecialchars($row['name']) . "</li>";
+        }
+        echo "</ul>";
+    } else {
+        echo "No categories found.";
     }
-    echo "</ul>";
-} else {
-    echo "No categories found.";
-}
 
-$conn->close();
+    $conn->close();
 
 }
 add_shortcode('boilersa_categories', 'boilersa_categories_shortcode');
