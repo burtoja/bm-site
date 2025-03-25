@@ -32,6 +32,27 @@ function boilersa_categories_shortcode($atts) {
             echo '</div>'; // .filter-options
             echo '</div>'; // .filter-item
 
+            // Add "Price Range" as a toggleable filter
+            echo '<div class="filter-item">';
+            echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Price Range</div>';
+            echo '<div class="filter-options" style="display:none;">';
+
+            // Unique radio name per category
+            $priceRadioName = 'price_range_' . $categoryId;
+
+            echo '<label><input type="radio" name="' . $priceRadioName . '" value="any" checked> Any Price</label><br>';
+            echo '<label><input type="radio" name="' . $priceRadioName . '" value="under_100"> Under $100</label><br>';
+
+            echo '<label><input type="radio" name="' . $priceRadioName . '" value="custom" onclick="toggleCustomPrice(this)"> Custom Price Range</label><br>';
+
+            // Custom min/max inputs (hidden unless 'custom' is selected)
+            echo '<div class="custom-price-fields" style="display:none; margin-top: 5px;">';
+            echo 'Min. Price: <input type="number" step="0.01" name="min_price_' . $categoryId . '" style="width: 100px;"><br>';
+            echo 'Max. Price: <input type="number" step="0.01" name="max_price_' . $categoryId . '" style="width: 100px;"><br>';
+            echo '</div>';
+
+            echo '</div>'; // .filter-options
+            echo '</div>'; // .filter-item
 
             // Get filters linked to this category
             $filter_sql = "
