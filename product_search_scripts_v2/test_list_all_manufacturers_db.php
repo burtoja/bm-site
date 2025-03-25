@@ -151,6 +151,9 @@ function boilersa_categories_shortcode($atts) {
         .filter-options li {
             margin-bottom: 4px;
         }
+        .custom-price-fields input {
+            margin: 4px 0;
+        }
     </style>
 
     <script>
