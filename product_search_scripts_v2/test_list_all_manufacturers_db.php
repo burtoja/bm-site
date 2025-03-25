@@ -16,13 +16,13 @@ if ($conn->connect_error) {
 }
 
 // Run query
-$sql = "SELECT DISTINCT category_name FROM categories ORDER BY name ASC";
+$sql = "SELECT * FROM categories";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     echo "<h2>Categories:</h2><ul>";
     while ($row = $result->fetch_assoc()) {
-        echo "<li>" . htmlspecialchars($row['category_name']) . "</li>";
+        echo "<li>" . htmlspecialchars($row['name']) . "</li>";
     }
     echo "</ul>";
 } else {
