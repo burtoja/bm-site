@@ -20,13 +20,18 @@ function boilersa_categories_shortcode($atts) {
             echo '<div class="toggle category-toggle" onclick="toggleVisibility(this)">[+] ' . $categoryName . '</div>';
             echo '<div class="category-filters" style="display:none;">';
 
-            // Condition Filter (New/Used/Any)
-            echo '<div class="condition-filter">';
-            echo '<strong>Condition:</strong><br>';
-            echo '<label><input type="radio" name="condition_' . $categoryId . '" value="new"> New</label><br>';
-            echo '<label><input type="radio" name="condition_' . $categoryId . '" value="used"> Used</label><br>';
-            echo '<label><input type="radio" name="condition_' . $categoryId . '" value=""> Any</label>';
-            echo '</div><br>';
+            // Condition Filter (New/Used)
+            // Add "Condition" as a filter-style toggle
+            echo '<div class="filter-item">';
+            echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Condition</div>';
+            echo '<div class="filter-options" style="display:none;">';
+            echo '<ul>';
+            echo '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="new"> New</label></li>';
+            echo '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="used"> Used</label></li>';
+            echo '</ul>';
+            echo '</div>'; // .filter-options
+            echo '</div>'; // .filter-item
+
 
             // Get filters linked to this category
             $filter_sql = "
