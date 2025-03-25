@@ -10,7 +10,7 @@
  * @param $categoryId
  * @return bool
  */
-function get_condition_filter($categoryId) {
+function render_condition_filter($categoryId) {
     $snippet = '';
     $snippet .= '<div class="filter-item">';
     $snippet .= '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Condition</div>';
@@ -32,10 +32,10 @@ function get_condition_filter($categoryId) {
  * @param $categoryId
  * @return bool
  */
-function get_price_range_filter($categoryId)
+function render_price_range_filter($categoryId)
 {
-// Add "Price Range" as a toggleable filter
     ob_start();
+
     echo '<div class="filter-item">';
     echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Price Range</div>';
     echo '<div class="filter-options" style="display:none;">';
@@ -54,9 +54,31 @@ function get_price_range_filter($categoryId)
     echo '<label class="price-input-label">$<input type="number" step="0.01" min="0" name="max_price_' . $categoryId . '" placeholder="Max" class="price-input"></label><br>';
     echo '</div>';
 
-    echo '</div>'; // .filter-options
-    echo '</div>'; // .filter-item
+    echo '</div>';
+    echo '</div>';
 
     return ob_get_clean();
 }
 
+/**
+ * Creates the sort order  filter
+ *
+ * @param $categoryId
+ * @return bool
+ */
+function render_sort_order_filter($categoryId) {
+
+    ob_start();
+    echo '<div class="filter-item">';
+            echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Sort Order</div>';
+            echo '<div class="filter-options" style="display:none;">';
+
+            $sortRadioName = 'sort_order_' . $categoryId;
+
+            echo '<label><input type="radio" name="' . $sortRadioName . '" value="high_to_low" checked> High to Low</label><br>';
+            echo '<label><input type="radio" name="' . $sortRadioName . '" value="low_to_high"> Low to High</label>';
+
+            echo '</div>';
+            echo '</div>';
+    return ob_get_clean();
+}

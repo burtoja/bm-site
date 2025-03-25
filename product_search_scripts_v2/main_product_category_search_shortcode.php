@@ -22,23 +22,13 @@ function boilersa_categories_shortcode($atts) {
             echo '<div class="category-filters" style="display:none;">';
 
             // Condition Filter (New/Used)
-            echo get_condition_filter($categoryId);
+            echo render_condition_filter($categoryId);
 
             // Add "Price Range" as a toggleable filter
-            echo get_price_range_filter($categoryId);
+            echo render_price_range_filter($categoryId);
 
             // Add "Sort Order" as a toggleable filter
-            echo '<div class="filter-item">';
-            echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Sort Order</div>';
-            echo '<div class="filter-options" style="display:none;">';
-
-            $sortRadioName = 'sort_order_' . $categoryId;
-
-            echo '<label><input type="radio" name="' . $sortRadioName . '" value="high_to_low" checked> High to Low</label><br>';
-            echo '<label><input type="radio" name="' . $sortRadioName . '" value="low_to_high"> Low to High</label>';
-
-            echo '</div>'; // .filter-options
-            echo '</div>'; // .filter-item
+            echo render_sort_order_filter($categoryId);
 
 
             // Get filters linked to this category
