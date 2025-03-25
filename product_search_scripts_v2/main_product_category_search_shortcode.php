@@ -22,7 +22,7 @@ function boilersa_categories_shortcode($atts) {
             echo '<div class="category-filters" style="display:none;">';
 
             // Condition Filter (New/Used)
-            get_condition_filter();
+            get_condition_filter($categoryId);
 
             // Add "Price Range" as a toggleable filter
             echo '<div class="filter-item">';

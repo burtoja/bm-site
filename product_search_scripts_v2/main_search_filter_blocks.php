@@ -7,9 +7,10 @@
 
 /**
  * Creates the new/used condition filter
+ * @param $categoryId
  * @return bool
  */
-function get_condition_filter() {
+function get_condition_filter($categoryId) {
     ob_start();
     echo '<div class="filter-item">';
     echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Condition</div>';
