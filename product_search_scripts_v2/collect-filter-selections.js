@@ -2,12 +2,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("product-filter-form");
 
     form.addEventListener("submit", function (e) {
-        e.preventDefault(); // prevent the form from submitting
+        e.preventDefault();
 
         const filterData = collectFilterSelections();
-        console.log("Collected Filter Data:", filterData);
+        const apiUrl = buildApiEndpoint(filterData);
 
-        //Use filterData to make your API call here
+        console.log("Calling API:", apiUrl);
+        fetchSearchResults(apiUrl);
     });
 });
 
