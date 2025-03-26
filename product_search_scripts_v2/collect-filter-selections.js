@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const apiUrl = buildApiEndpoint(filterData);
 
         console.log("Calling API:", apiUrl);
-        fetchSearchResults(apiUrl);
+        fetchSearchResults(apiUrl);  //make-api-call.js
     });
 });
 

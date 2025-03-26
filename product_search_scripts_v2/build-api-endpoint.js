@@ -15,5 +15,5 @@ function buildApiEndpoint(filterData) {
         }
     }
 
-    return '/your-api-endpoint.php?' + params.toString();
+    return 'https://api.ebay.com/buy/browse/v1/item_summary/search?q=&category_ids={$category_id}&fieldgroups=ASPECT_REFINEMENTS' + params.toString();
 }
