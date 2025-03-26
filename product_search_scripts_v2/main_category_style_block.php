@@ -59,6 +59,7 @@ function render_main_category_listing_style_block() {
                 padding: 10px;
                 text-align: left;
                 z-index: 1000;
+                background-color: black;
             }
         
             #search-button-wrapper button {
