@@ -1,3 +1,4 @@
+console.log("product_filter_form  JS loaded");
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("product-filter-form");
 
