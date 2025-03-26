@@ -60,6 +60,9 @@ function convertToQueryParams(filterData) {
                 const label = detectFilterLabel(key);
                 if (label) {
                     params[label] = value.join(',');
+                } else if (key.startsWith('filter_')) {
+                    // fallback: add raw filter name to query string
+                    params[key] = value.join(',');
                 }
             }
         } else if (typeof value === 'object' && key === 'custom_price') {
