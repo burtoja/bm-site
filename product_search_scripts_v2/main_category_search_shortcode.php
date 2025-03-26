@@ -49,15 +49,18 @@ function boilersa_categories_shortcode($atts) {
     // Add JS
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_custom_price.js"></script>';
-    echo '<script src="/product_search_scripts_v2/product_filter_form.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_reset_filters_button_action.js"></script>';
+
+    echo '</form>';
+
+    echo '<script src="/product_search_scripts_v2/product_filter_form.js"></script>';
     echo '<script src="/product_search_scripts_v2/build-api-endpoint.js"></script>';
     echo '<script src="/product_search_scripts_v2/make-api-call.js"></script>';
     echo '<script src="/product_search_scripts_v2/render-api-call-results.js"></script>';
 
 
 
-    echo '</form>';
+
 
     return ob_get_clean();
 }
