@@ -55,7 +55,7 @@ function render_main_category_listing_style_block() {
             
             #search-button-wrapper {
                 position: sticky;
-                top: 50px;
+                top: 0;
                 padding: 10px;
                 text-align: left;
                 z-index: 1000;
