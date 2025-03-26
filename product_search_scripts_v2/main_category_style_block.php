@@ -60,7 +60,7 @@ function render_main_category_listing_style_block() {
                 padding: 10px;
                 text-align: center;
                 z-index: 100;
-                border-top: 1px solid #ccc;
+                //border-top: 1px solid #ccc;
             }
         
             #search-button-wrapper button {
