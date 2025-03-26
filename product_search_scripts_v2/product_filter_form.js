@@ -51,6 +51,7 @@ function collectFilterSelections() {
 
         data[categoryName] = categoryData;
     });
+    console.log("Collected filter data:", filterData);
 
     return data;
 }
