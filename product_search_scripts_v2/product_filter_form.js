@@ -15,9 +15,9 @@ function collectFilterSelections() {
         const categoryData = {};
 
         categoryEl.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-            const key = cb.name;
-            if (!categoryData[key]) categoryData[key] = [];
-            categoryData[key].push(cb.value);
+            const rawName = cb.name.replace(/\[\]$/, ''); // strip [] if present
+            if (!categoryData[rawName]) categoryData[rawName] = [];
+            categoryData[rawName].push(cb.value);
         });
 
         categoryEl.querySelectorAll('input[type="radio"]:checked').forEach(rb => {
