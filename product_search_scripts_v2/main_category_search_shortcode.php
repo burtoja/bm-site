@@ -14,7 +14,7 @@ function boilersa_categories_shortcode($atts) {
     echo '<form id="product-filter-form" method="GET">';
 
     // Search sticky button at the top
-    echo '<div id="search-button-top">';
+    echo '<div id="search-button-wrapper">';
     echo '<button type="submit">Search</button>';
     echo '</div>';
 
