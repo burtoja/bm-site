@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const queryString = new URLSearchParams(flatParams).toString();
 
         console.log("Redirecting to:", queryString);
+        console.log("Collected filter data:", filterData);
         window.location.href = '/product-listings/?' + queryString;
     });
 });
@@ -51,7 +52,6 @@ function collectFilterSelections() {
 
         data[categoryName] = categoryData;
     });
-    console.log("Collected filter data:", filterData);
 
     return data;
 }
