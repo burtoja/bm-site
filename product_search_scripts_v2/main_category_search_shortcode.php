@@ -15,7 +15,8 @@ function boilersa_categories_shortcode($atts) {
 
     // Search sticky button at the top
     echo '<div id="search-button-wrapper">';
-    echo '<button type="submit">Search Products</button>';
+    echo '<button type="submit" class="search-btn">Search Products</button>';
+    echo '<button type="button" class="reset-btn" onclick="resetFilters()">Reset Filters</button>';
     echo '</div>';
 
     echo '<div class="category-list">';
@@ -51,6 +52,7 @@ function boilersa_categories_shortcode($atts) {
     // Add JS
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_custom_price.js"></script>';
+    echo '<script src="/product_search_scripts_v2/main_category_search_reset_filters_button_action.js"></script>';
 
     echo '</form>';
 

@@ -72,9 +72,44 @@ function render_main_category_listing_style_block() {
                 border: none;
             }
         
+            #sticky-search-top {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+            
+            .search-btn, .reset-btn {
+                padding: 10px 20px;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 6px;
+                cursor: pointer;
+                border: none;
+            }
+        
             #search-button-wrapper button:hover {
                 background-color: #005f8d;
             }
+            
+            .search-btn {
+                background-color: #0073aa;
+                color: white;
+            }
+            
+            .search-btn:hover {
+                background-color: #005f8d;
+            }
+            
+            .reset-btn {
+                background-color: #f2f2f2;
+                color: #333;
+            }
+            
+            .reset-btn:hover {
+                background-color: #e0e0e0;
+            }
+            
+
 
         </style>
     ';
