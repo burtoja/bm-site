@@ -55,12 +55,10 @@ function render_main_category_listing_style_block() {
             
             #search-button-wrapper {
                 position: sticky;
-                top: 0;
-                //background: white;
+                top: 20px;
                 padding: 10px;
                 text-align: center;
                 z-index: 1000;
-                //border-top: 1px solid #ccc;
             }
         
             #search-button-wrapper button {
