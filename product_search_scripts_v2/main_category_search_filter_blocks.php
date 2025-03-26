@@ -143,3 +143,17 @@ function render_category_filters_from_db($categoryId, $conn) {
 
     return ob_get_clean();
 }
+
+/**
+ * Renders the sticky submit and reset button for the main
+ * search form
+ * @return false|string
+ */
+function render_sticky_search_reset_buttons() {
+    ob_start();
+    echo '<div id="search-button-wrapper">';
+    echo '<button type="submit" class="search-btn">Search Products</button>';
+    echo '<button type="button" class="reset-btn" onclick="resetFilters()">Reset Filters</button>';
+    echo '</div>';
+    return ob_get_clean();
+}
