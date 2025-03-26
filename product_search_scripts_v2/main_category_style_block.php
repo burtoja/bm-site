@@ -57,7 +57,7 @@ function render_main_category_listing_style_block() {
                 position: sticky;
                 top: 50px;
                 padding: 10px;
-                text-align: center;
+                text-align: left;
                 z-index: 1000;
             }
         
