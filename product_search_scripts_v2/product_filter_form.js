@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         console.log("TESTING LISTENER");
         console.log("Collected filter data:", filterData);
-        console.log("Redirecting to:", queryString);
+        console.log("Redirecting to the following:", queryString);
 
         window.location.href = '/product-listings/?' + queryString;
     });
