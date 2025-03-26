@@ -80,7 +80,7 @@ function render_main_category_listing_style_block() {
             
             .search-btn, .reset-btn {
                 padding: 10px 20px;
-                margin: 10px;
+                margin: 10px 20px 10px 0px;
                 font-size: 16px;
                 font-weight: bold;
                 border-radius: 6px;
