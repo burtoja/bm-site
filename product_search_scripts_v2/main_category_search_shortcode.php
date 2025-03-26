@@ -11,6 +11,13 @@ function boilersa_categories_shortcode($atts) {
     $result = $conn->query($sql);
 
     ob_start();
+    echo '<form id="product-filter-form" method="GET">';
+
+    // Search sticky button at the top
+    echo '<div id="search-button-top">';
+    echo '<button type="submit">Search</button>';
+    echo '</div>';
+
     echo '<div class="category-list">';
 
     if ($result->num_rows > 0) {
@@ -45,10 +52,7 @@ function boilersa_categories_shortcode($atts) {
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_custom_price.js"></script>';
 
-    // Add sticky search button
-    echo '<div id="search-button-wrapper">';
-    echo '<button type="submit">Search Products</button>';
-    echo '</div>';
+    echo '</form>';
 
     return ob_get_clean();
 }
