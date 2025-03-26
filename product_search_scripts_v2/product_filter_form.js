@@ -1,4 +1,6 @@
-console.log("product_filter_form  JS loaded");
+/**
+ * Listener for the search button
+ */
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("product-filter-form");
 
@@ -14,6 +16,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+/**
+ * Collects the filter selections
+ * @returns {{}}
+ */
 function collectFilterSelections() {
     const form = document.getElementById("product-filter-form");
     const data = {};
@@ -49,6 +55,11 @@ function collectFilterSelections() {
     return data;
 }
 
+/**
+ * Converts filter selections to parameters for search
+ * @param filterData
+ * @returns {{}}
+ */
 function convertToQueryParams(filterData) {
     const params = {};
     const [categoryName, filters] = Object.entries(filterData)[0] || [];
