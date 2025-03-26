@@ -1,3 +1,6 @@
+/**
+ * Search button click listener
+ */
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("product-filter-form");
 
@@ -5,13 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
 
         const filterData = collectFilterSelections();
-        const apiUrl = buildApiEndpoint(filterData);
+        const flatParams = convertToQueryParams(filterData);
+        const queryString = new URLSearchParams(flatParams).toString();
 
-        console.log("Calling API:", apiUrl);
-        fetchSearchResults(apiUrl);  //make-api-call.js
+        // Redirect to the existing results page
+        window.location.href = '/product-listings/?' + queryString;
     });
 });
 
+/**
+ *  Function to collect the slected values in the filters
+ * @returns {{}}
+ */
 function collectFilterSelections() {
     const form = document.getElementById("product-filter-form");
     const data = {};
@@ -52,3 +60,68 @@ function collectFilterSelections() {
 
     return data;
 }
+
+/**
+ *
+ * @param key
+ * @returns {null|string}
+ */
+function detectFilterLabel(key) {
+    const map = {
+        'manufacturer': ['brand', 'manufacturer', 'make'],
+        'type': ['type', 'model', 'style'],
+        // add more mappings as needed
+    };
+
+    for (const label in map) {
+        for (const possible of map[label]) {
+            if (key.toLowerCase().includes(possible)) {
+                return label;
+            }
+        }
+    }
+
+    return null; // fallback: skip unmapped filters
+}
+
+
+/**
+ * Convert selected values that were collected into params for the query
+ * @param filterData
+ * @returns {{}}
+ */
+function convertToQueryParams(filterData) {
+    const params = {};
+
+    // For now, use only the first selected category
+    const [categoryName, filters] = Object.entries(filterData)[0] || [];
+
+    if (!filters) return params;
+
+    // Use the category as the keyword
+    params['k'] = categoryName;
+
+    for (const [key, value] of Object.entries(filters)) {
+        if (Array.isArray(value)) {
+            if (key.includes('condition')) {
+                params['condition'] = value.map(v => v.toUpperCase()).join(',');
+            } else {
+                // Assume these are filter options (like manufacturer or type)
+                const label = detectFilterLabel(key);
+                if (label) {
+                    params[label] = value.join(',');
+                }
+            }
+        } else if (typeof value === 'object' && value !== null && key === 'custom_price') {
+            if (value.min) params['min_price'] = value.min;
+            if (value.max) params['max_price'] = value.max;
+        } else if (key.startsWith('price_range') && value === 'under_100') {
+            params['max_price'] = 100;
+        } else if (key.startsWith('sort_order')) {
+            params['sort_select'] = value === 'low_to_high' ? 'price_asc' : 'price_desc';
+        }
+    }
+
+    return params;
+}
+
