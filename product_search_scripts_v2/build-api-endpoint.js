@@ -15,9 +15,7 @@ function buildApiEndpoint(filterData) {
         }
     }
     const endpointRoot = 'https://api.ebay.com/buy/browse/v1/item_summary/search?q=&category_ids={$category_id}&fieldgroups=ASPECT_REFINEMENTS';
-    const apiUrl = endpointRoot + + params.toString();
     //const apiUrl = '/product_search_scripts/search_ebay.php?' + params.toString();
 
-
-    return apiUrl;
+    return endpointRoot + params.toString();
 }
