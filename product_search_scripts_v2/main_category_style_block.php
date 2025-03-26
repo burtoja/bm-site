@@ -14,44 +14,70 @@ function render_main_category_listing_style_block() {
     echo'
         <style>
             .toggle {
-        cursor: pointer;
-        margin: 6px 0;
+                cursor: pointer;
+                margin: 6px 0;
                 font-weight: bold;
             }
             .toggle:hover {
-        text-decoration: underline;
+                text-decoration: underline;
             }
     
             .category-item {
-        margin-bottom: 10px;
+                margin-bottom: 10px;
             }
     
             .category-filters {
-        margin-left: 20px; /* indent filters under category */
+                margin-left: 20px; /* indent filters under category */
                 color: cadetblue;
             }
     
             .filter-item {
-        margin-bottom: 8px;
+                margin-bottom: 8px;
                 color: darkturquoise;
             }
     
             .filter-options {
-        margin-left: 20px; /* indent options under filter */
+                margin-left: 20px; /* indent options under filter */
             }
     
             .filter-options ul {
-        margin: 0;
-        padding-left: 0;
+                margin: 0;
+                padding-left: 0;
                 list-style-type: none;
             }
     
             .filter-options li {
-        margin-bottom: 4px;
+                margin-bottom: 4px;
             }
             .custom-price-fields input {
-        margin: 4px 0;
+                margin: 4px 0;
             }
+            
+            #search-button-wrapper {
+                position: sticky;
+                bottom: 20px;
+                background: white;
+                padding: 10px;
+                text-align: center;
+                z-index: 100;
+                border-top: 1px solid #ccc;
+            }
+        
+            #search-button-wrapper button {
+                padding: 10px 20px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                border-radius: 6px;
+                background-color: #0073aa;
+                color: white;
+                border: none;
+            }
+        
+            #search-button-wrapper button:hover {
+                background-color: #005f8d;
+            }
+
         </style>
     ';
 

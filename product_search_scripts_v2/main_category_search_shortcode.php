@@ -45,6 +45,11 @@ function boilersa_categories_shortcode($atts) {
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_custom_price.js"></script>';
 
+    // Add sticky search button
+    echo '<div id="search-button-wrapper">';
+    echo '<button type="submit">Search</button>';
+    echo '</div>';
+
     return ob_get_clean();
 }
 add_shortcode('boilersa_categories', 'boilersa_categories_shortcode');
