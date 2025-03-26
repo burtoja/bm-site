@@ -80,6 +80,7 @@ function render_main_category_listing_style_block() {
             
             .search-btn, .reset-btn {
                 padding: 10px 20px;
+                margin: 10px;
                 font-size: 16px;
                 font-weight: bold;
                 border-radius: 6px;
@@ -88,7 +89,7 @@ function render_main_category_listing_style_block() {
             }
         
             #search-button-wrapper button:hover {
-                background-color: #005f8d;
+                background-color: #005f8d;            
             }
             
             .search-btn {
