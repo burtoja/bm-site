@@ -8,10 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
 
         const filterData = collectFilterSelections();
-        console.log("Collected filter data:", filterData);
         const flatParams = convertToQueryParams(filterData);
         const queryString = new URLSearchParams(flatParams).toString();
 
+        console.log("TESTING LISTENER");
+        console.log("Collected filter data:", filterData);
         console.log("Redirecting to:", queryString);
 
         window.location.href = '/product-listings/?' + queryString;
