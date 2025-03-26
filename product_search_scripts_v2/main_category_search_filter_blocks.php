@@ -152,7 +152,7 @@ function render_category_filters_from_db($categoryId, $conn) {
 function render_sticky_search_reset_buttons() {
     ob_start();
     echo '<div id="search-button-wrapper">';
-    echo '<button type="submit" class="search-btn">Search Products</button>';
+    echo '<button type="button" class="search-btn">Search Products</button>';
     echo '<button type="button" class="reset-btn" onclick="resetFilters()">Reset Filters</button>';
     echo '</div>';
     return ob_get_clean();

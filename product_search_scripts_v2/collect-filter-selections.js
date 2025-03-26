@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+
 /**
  *  Function to collect the slected values in the filters
  * @returns {{}}
