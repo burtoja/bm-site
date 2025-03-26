@@ -53,15 +53,11 @@ function boilersa_categories_shortcode($atts) {
 
     echo '</form>';
 
-    echo '<script src="/product_search_scripts_v2/submit_button_listener.js"></script>';
     echo '<script src="/product_search_scripts_v2/product_filter_form.js"></script>';
+    echo '<script src="/product_search_scripts_v2/submit_button_listener.js"></script>';
     echo '<script src="/product_search_scripts_v2/build-api-endpoint.js"></script>';
     echo '<script src="/product_search_scripts_v2/make-api-call.js"></script>';
     echo '<script src="/product_search_scripts_v2/render-api-call-results.js"></script>';
-
-
-
-
 
     return ob_get_clean();
 }
