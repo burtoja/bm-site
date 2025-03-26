@@ -1,5 +1,5 @@
 
-
+console.log("🔥 product_filter_form.js loaded");
 /**
  * Collects the filter selections
  * @returns {{}}

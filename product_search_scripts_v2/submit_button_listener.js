@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     form?.addEventListener("submit", function (e) {
         e.preventDefault();
+        console.log("🚀 Submit fired");
 
         const filterData = collectFilterSelections();
         const flatParams = convertToQueryParams(filterData);
@@ -17,4 +18,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
         window.location.href = '/product-listings/?' + queryString;
     });
+    console.log("✅ Submit listener attached");
 });
