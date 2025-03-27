@@ -46,13 +46,13 @@ function boilersa_categories_shortcode($atts) {
 
     // Add CSS
     echo render_main_category_listing_style_block();
-    // Add JS
-    echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
-    echo '<script src="/product_search_scripts_v2/main_category_search_toggle_custom_price.js"></script>';
-    echo '<script src="/product_search_scripts_v2/main_category_search_reset_filters_button_action.js"></script>';
 
     echo '</form>';
 
+    // Add JS (be sure these are in order)
+    echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
+    echo '<script src="/product_search_scripts_v2/main_category_search_toggle_custom_price.js"></script>';
+    echo '<script src="/product_search_scripts_v2/main_category_search_reset_filters_button_action.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_submit_button_listener.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_collect_filters.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_extract_search_params.js"></script>';
