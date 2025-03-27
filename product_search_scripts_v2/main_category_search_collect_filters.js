@@ -22,7 +22,7 @@ function collectMainCategoryFilters() {
             .replace('[+]', '')
             .replace('[-]', '')
             .trim();
-
+console.log("Category Name: " + categoryName); //TESTING
         if (!categoryName) return;
 
         const categoryData = {};
