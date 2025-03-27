@@ -55,6 +55,8 @@ function boilersa_categories_shortcode($atts) {
 
     echo '<script src="/product_search_scripts_v2/main_category_search_submit_button_listener.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_collect_filters.js"></script>';
+    echo '<script src="/product_search_scripts_v2/main_category_search_build_query_string.js"></script>';
+
 
 
     return ob_get_clean();
