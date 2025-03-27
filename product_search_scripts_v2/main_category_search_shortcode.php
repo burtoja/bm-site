@@ -53,6 +53,8 @@ function boilersa_categories_shortcode($atts) {
 
     echo '</form>';
 
+    echo '<script src="/product_search_scripts_v2/main_category_search_collect_filters.js"></script>';
+
     return ob_get_clean();
 }
 add_shortcode('boilersa_categories', 'boilersa_categories_shortcode');
