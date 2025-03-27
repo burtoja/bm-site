@@ -9,6 +9,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const filterData = collectMainCategoryFilters();
         console.log("Collected filter data:", filterData);
 
+        //TEST BEGIN
+        if (typeof translatedData !== "undefined") {
+            console.log("WARNING: translatedData exists too early", translatedData);
+        }
+        //TEST END
+
         fetch("/product_search_scripts_v2/translate_filters.php", {
             method: "POST",
             headers: {
