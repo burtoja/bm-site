@@ -57,7 +57,12 @@ function boilersa_categories_shortcode($atts) {
     echo '<script src="/product_search_scripts_v2/main_category_search_collect_filters.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_extract_search_params.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_build_query_string.js"></script>';
-    echo '<script src="/product_search_scripts_v2/main_category_search_submit_button_listener.js"></script>';
+
+    //Adding timestamp to this one to force clean cache for testing.  Can return to normal later
+    //echo '<script src="/product_search_scripts_v2/main_category_search_submit_button_listener.js"></script>';
+    $ver = time(); // or use a hardcoded version like '1.2'
+    echo '<script src="/product_search_scripts_v2/main_category_search_submit_button_listener.js?v=' . $ver . '"></script>';
+
 
 
 
