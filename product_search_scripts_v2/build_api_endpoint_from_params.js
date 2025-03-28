@@ -64,5 +64,7 @@ function buildEbayApiEndpointFromParams(params) {
         queryParts.push('aspect_filter=' + aspects.join(','));
     }
 
+    console.log("Api endpoint:  " + `${baseUrl}?${queryParts.join('&')}`);  //TESTING
+
     return `${baseUrl}?${queryParts.join('&')}`;
 }
