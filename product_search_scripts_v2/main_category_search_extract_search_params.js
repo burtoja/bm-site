@@ -9,21 +9,36 @@ window.extractSearchParameters = extractSearchParameters;
 function extractSearchParameters(translatedData) {
     const params = {};
 
-    // Assume we only use the first category in the object
-    const [category, filters] = Object.entries(translatedData)[0] || [];
+    // Step 1: Find the first category with actual filters
+    let category = null;
+    let filters = null;
+
+    for (const [cat, f] of Object.entries(translatedData)) {
+        const nonEmptyKeys = Object.keys(f).filter(k => {
+            const val = f[k];
+            if (Array.isArray(val)) return val.length > 0;
+            if (typeof val === "object" && val !== null) return Object.values(val).some(v => v);
+            return val !== null && val !== "" && val !== "any"; // ignore unfiltered
+        });
+
+        if (nonEmptyKeys.length > 0) {
+            category = cat;
+            filters = f;
+            break;
+        }
+    }
 
     if (!category || !filters) return params;
 
     params.k = category;
 
     for (const [label, value] of Object.entries(filters)) {
-        console.log("Processing:", label, value); // TESTING
+        console.log("⏳ Processing:", label, value);
+
         if (Array.isArray(value) && value.length > 0) {
-            // special handling for known filter names
             if (label.toLowerCase() === 'manufacturer') {
-                params.manufacturer = value[0]; // pick first for now
+                params.manufacturer = value[0]; // just one for now
             } else {
-                // lowercase the label and use as a dynamic parameter
                 const key = label.toLowerCase().replace(/\s+/g, '_');
                 params[key] = value;
             }
@@ -34,7 +49,8 @@ function extractSearchParameters(translatedData) {
             params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
         }
     }
-    console.log("Final searchParams:", params); //TESTING
 
+    console.log("✅ Final searchParams:", params);
     return params;
 }
+
