@@ -16,6 +16,7 @@ function extractSearchParameters(translatedData) {
     params.k = category;
 
     for (const [label, value] of Object.entries(filters)) {
+        console.log("Processing:", label, value); // TESTING
         if (Array.isArray(value) && value.length > 0) {
             // special handling for known filter names
             if (label.toLowerCase() === 'manufacturer') {
@@ -32,6 +33,7 @@ function extractSearchParameters(translatedData) {
             params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
         }
     }
+    console.log("✅ Final searchParams:", params); //TESTING
 
     return params;
 }

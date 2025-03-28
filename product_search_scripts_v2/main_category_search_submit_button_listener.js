@@ -1,3 +1,6 @@
+/**
+ * Listens for and executes actions associated with the search products (submit) button.
+ */
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("product-filter-form");
 
