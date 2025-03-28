@@ -20,12 +20,12 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(translatedData => {
                 console.log("Translated filter data:", translatedData);
 
-                // ✅ USE IT HERE — translatedData is now defined
+                // translatedData is now defined
                 const searchParams = extractSearchParameters(translatedData);
                 console.log("Search parameters:", searchParams);
 
                 const queryString = buildQueryStringFromSearchParams(searchParams);
-                console.log("🔗 Final Query String:", queryString);
+                console.log("Final Query String:", queryString);
             })
             .catch(err => {
                 console.error("Translation fetch failed:", err);
