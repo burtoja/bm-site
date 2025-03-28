@@ -33,7 +33,7 @@ function extractSearchParameters(translatedData) {
             params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
         }
     }
-    console.log("✅ Final searchParams:", params); //TESTING
+    console.log("Final searchParams:", params); //TESTING
 
     return params;
 }
