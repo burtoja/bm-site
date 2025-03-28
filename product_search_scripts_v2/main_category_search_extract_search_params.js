@@ -9,16 +9,25 @@ window.extractSearchParameters = extractSearchParameters;
 function extractSearchParameters(translatedData) {
     const params = {};
 
-    // Step 1: Find the first category with actual filters
+    const defaultIgnoreValues = {
+        "Price Range": "Any",
+        "Sort Order": "High to Low"
+    };
+
+    // Step 1: Find the first category with meaningful filters
     let category = null;
     let filters = null;
 
     for (const [cat, f] of Object.entries(translatedData)) {
         const nonEmptyKeys = Object.keys(f).filter(k => {
             const val = f[k];
+
+            // Skip if this field is a known default
+            if (defaultIgnoreValues[k] && val === defaultIgnoreValues[k]) return false;
+
             if (Array.isArray(val)) return val.length > 0;
             if (typeof val === "object" && val !== null) return Object.values(val).some(v => v);
-            return val !== null && val !== "" && val !== "any"; // ignore unfiltered
+            return val !== null && val !== "";
         });
 
         if (nonEmptyKeys.length > 0) {
@@ -37,7 +46,7 @@ function extractSearchParameters(translatedData) {
 
         if (Array.isArray(value) && value.length > 0) {
             if (label.toLowerCase() === 'manufacturer') {
-                params.manufacturer = value[0]; // just one for now
+                params.manufacturer = value[0];
             } else {
                 const key = label.toLowerCase().replace(/\s+/g, '_');
                 params[key] = value;
@@ -53,4 +62,5 @@ function extractSearchParameters(translatedData) {
     console.log("✅ Final searchParams:", params);
     return params;
 }
+
 
