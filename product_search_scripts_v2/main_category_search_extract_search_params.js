@@ -5,6 +5,7 @@
  * @param translatedData
  * @returns {{}}
  */
+window.extractSearchParameters = extractSearchParameters;
 function extractSearchParameters(translatedData) {
     const params = {};
 
