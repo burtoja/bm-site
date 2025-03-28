@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 console.log("About to call extractSearchParameters()"); //TESTING
                 const searchParams = extractSearchParameters(translatedData);
-                console.log("Search parameters:", searchParams);  //TESTING
 
                 console.log("Search parameters:", searchParams);
 
