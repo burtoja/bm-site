@@ -19,24 +19,38 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: JSON.stringify({ filters: filterData })
         })
-            .then(res => res.json())
+            .then(res => {
+                console.log("Received response:", res);
+
+                if (!res.ok) {
+                    console.error("🚫 Response not OK", res.status, res.statusText);
+                    return;
+                }
+
+                return res.json();
+            })
             .then(translatedData => {
+                if (!translatedData) {
+                    console.warn("⚠️ No translated data returned");
+                    return;
+                }
+
                 console.log("Translated filter data:", translatedData);
 
-                // translatedData is now defined
-                console.log("Translated filter data:", translatedData);
-
-                console.log("About to call extractSearchParameters()"); //TESTING
+                console.log("About to call extractSearchParameters()");
                 const searchParams = extractSearchParameters(translatedData);
-
                 console.log("Search parameters:", searchParams);
 
                 const queryString = buildQueryStringFromSearchParams(searchParams);
-                console.log("Final Query String:", queryString);
+                console.log("🔗 Final Query String:", queryString);
             })
             .catch(err => {
                 console.error("Translation fetch failed:", err);
             });
+
+
+
+
     });
 
 });
