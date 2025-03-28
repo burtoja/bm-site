@@ -24,7 +24,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("Translated filter data:", translatedData);
 
                 // translatedData is now defined
+                console.log("Translated filter data:", translatedData);
+
+                console.log("About to call extractSearchParameters()"); //TESTING
                 const searchParams = extractSearchParameters(translatedData);
+                console.log("Search parameters:", searchParams);  //TESTING
+
                 console.log("Search parameters:", searchParams);
 
                 const queryString = buildQueryStringFromSearchParams(searchParams);
