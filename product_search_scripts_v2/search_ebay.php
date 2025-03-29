@@ -2,33 +2,51 @@
 /**
  * Executes ebay api call
  */
+
 header('Content-Type: application/json');
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 
 $params = $_GET;
 
-// Translate 'k' (your internal keyword) to 'q' (what eBay expects)
+// Translate 'k' to eBay's 'q'
 if (isset($params['k']) && !isset($params['q'])) {
     $params['q'] = $params['k'];
     unset($params['k']);
 }
 
-// Build query string
+// Start query params array
 $ebayParams = [];
 
-if (!empty($_GET['q'])) {
-    $ebayParams[] = 'q=' . urlencode($_GET['q']);
-}
-if (!empty($_GET['sort_order'])) {
-    $ebayParams[] = 'sort=' . ($_GET['sort_order'] === 'price_desc' ? 'price' : '-price');
-}
-if (!empty($_GET['condition'])) {
-    $ebayParams[] = 'filter=conditionIds:' . ($_GET['condition'] === 'Used' ? '3000' : '1000'); // eBay condition IDs
+// Required: q
+if (!empty($params['q'])) {
+    $ebayParams[] = 'q=' . urlencode($params['q']);
 }
 
-// Add more filters as needed (e.g., manufacturer as keyword filters, etc.)
+// Optional: sort
+if (!empty($params['Sort Order'])) {
+    $sort = strtolower($params['Sort Order']) === 'low to high' ? '-price' : 'price';
+    $ebayParams[] = 'sort=' . $sort;
+}
 
+// Optional: condition filter
+if (!empty($params['Condition']) && $params['Condition'] !== 'Any') {
+    $conditionId = $params['Condition'] === 'Used' ? '3000' : '1000'; // eBay codes
+    $ebayParams[] = 'filter=conditionIds:' . $conditionId;
+}
+
+// Optional: custom price range
+if (!empty($params['custom_price_min']) || !empty($params['custom_price_max'])) {
+    $min = $params['custom_price_min'] ?? '';
+    $max = $params['custom_price_max'] ?? '';
+    if ($min !== '' || $max !== '') {
+        $range = $min . '..' . $max;
+        $ebayParams[] = 'filter=price:[' . $range . ']';
+    }
+}
+
+// Final URL
 $url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
+
 $token = getBasicOauthToken();
 
 $curl = curl_init();
@@ -51,4 +69,3 @@ if ($err) {
 } else {
     echo $response;
 }
-
