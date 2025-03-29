@@ -11,9 +11,13 @@ function boilersa_categories_shortcode($atts) {
     $result = $conn->query($sql);
 
     ob_start();
+    echo '<div class="product-search-grid">';
+
+//// Left Column – FILTERS ////
+    echo '<div class="filters-column">';
     echo '<form id="product-filter-form" method="GET">';
 
-    // Add sticky buttons for search and reset at the top
+// Sticky Search + Reset buttons
     echo render_sticky_search_reset_buttons();
 
     echo '<div class="category-list">';
@@ -27,27 +31,30 @@ function boilersa_categories_shortcode($atts) {
             echo '<div class="toggle category-toggle" onclick="toggleVisibility(this)">[+] ' . $categoryName . '</div>';
             echo '<div class="category-filters" style="display:none;">';
 
-            // Add Condition Filter (New/Used)
             echo render_condition_filter($categoryId);
-            // Add "Price Range" as a toggleable filter
             echo render_price_range_filter($categoryId);
-            // Add "Sort Order" as a toggleable filter
             echo render_sort_order_filter($categoryId);
-            // Add filters linked to this category from DB
             echo render_category_filters_from_db($categoryId, $conn);
+
+            echo '</div></div>'; // close category-filters and category-item
         }
     } else {
         echo '<p>No categories found.</p>';
     }
 
-    echo '</div>';
+    echo '</div>'; // close category-list
+    echo '</form>';
+    echo '</div>'; // close .filters-column
+
+
+//// Right Column – RESULTS ////
+    echo '<div class="results-column">';
+    echo '<div id="search-results"><p>Search results will appear here...</p></div>';
+    echo '</div>'; // close .results-column
+
+    echo '</div>'; // close .product-search-grid
 
     $conn->close();
-
-    // Add CSS
-    echo render_main_category_listing_style_block();
-
-    echo '</form>';
 
     // Add JS (be sure these are in order)
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
