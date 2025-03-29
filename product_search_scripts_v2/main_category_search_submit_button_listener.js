@@ -12,10 +12,14 @@ function waitForFormAndAttachListener(retries = 20) {
 
             const filterData = collectMainCategoryFilters();
             console.log("Collected filter data:", filterData);
-            const flatParams = buildQueryStringFromSearchParams(filterData);
-            console.log("Flat query string:", flatParams);
-            const queryString = new URLSearchParams(flatParams);
-            const apiUrl = buildEbayApiEndpointFromParams(queryString);
+
+            const queryString = buildQueryStringFromSearchParams(filterData);
+            console.log("Built query string:", queryString);
+
+            const params = new URLSearchParams(queryString);
+            console.log("Params object:", params.toString());
+
+            const apiUrl = buildEbayApiEndpointFromParams(params);
             console.log("API endpoint:", apiUrl);
 
             const data = await fetchEbayData(apiUrl);
