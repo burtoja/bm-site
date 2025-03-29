@@ -11,7 +11,7 @@ function waitForFormAndAttachListener(retries = 20) {
             e.preventDefault();
 
             const filterData = collectMainCategoryFilters();
-            const flatParams = convertToQueryParams(filterData);
+            const flatParams = buildQueryStringFromSearchParams(filterData);
             const queryString = new URLSearchParams(flatParams);
             const apiUrl = buildEbayApiEndpointFromParams(queryString);
 
