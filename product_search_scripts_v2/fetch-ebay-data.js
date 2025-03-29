@@ -44,7 +44,7 @@ async function fetchEbayData(apiUrl) {
         }
 
         const data = await ebayRes.json();
-        console.log('✅ eBay response received:', data);
+        console.log('eBay response received:', data);
         return data;
 
     } catch (err) {
