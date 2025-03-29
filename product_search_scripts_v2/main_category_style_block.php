@@ -21,9 +21,16 @@ function render_main_category_listing_style_block() {
             .toggle:hover {
                 text-decoration: underline;
             }
-    
+            
+            .category-list {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
             .category-item {
-                margin-bottom: 10px;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 10px;
             }
     
             .category-filters {
@@ -119,14 +126,14 @@ function render_main_category_listing_style_block() {
             }
             
             .filters-column {
-              flex: 1 1 30%;
-              max-width: 30%;
-              position: sticky;
-              top: 0;
-              max-height: 100vh;
-              overflow-y: auto;
-              border-right: 1px solid #ccc;
-              padding-right: 15px;
+                flex: 1 1 30%;
+                max-width: 30%;
+                height: 100vh;               /* instead of max-height */
+                overflow-y: auto;
+                border-right: 1px solid #ccc;
+                padding-right: 15px;
+                /* REMOVE: position: sticky; */
+                /* REMOVE: top: 0; */
             }
             
             .results-column {
