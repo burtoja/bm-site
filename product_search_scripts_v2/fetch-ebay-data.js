@@ -13,7 +13,7 @@
 async function fetchEbayData(apiUrl) {
     try {
         // Fetch OAuth token from server
-        const tokenRes = await fetch('/get-ebay-token.php');
+        const tokenRes = await fetch('get-ebay-token.php');
         if (!tokenRes.ok) {
             console.error(`Token request failed with status ${tokenRes.status}`);
             return null;
