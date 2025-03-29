@@ -111,7 +111,32 @@ function render_main_category_listing_style_block() {
                 background-color: #e0e0e0;
             }
             
-
+            .product-search-grid {
+              display: flex;
+              gap: 20px;
+              align-items: flex-start;
+            }
+            
+            .filters-column {
+              width: 30%;
+              position: sticky;
+              top: 0;
+              max-height: 100vh;
+              overflow-y: auto;
+              border-right: 1px solid #ccc;
+              padding-right: 15px;
+            }
+            
+            .results-column {
+              width: 70%;
+              padding-left: 15px;
+            }
+            
+            #search-results {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+              gap: 20px;
+            }
 
         </style>
     ';
