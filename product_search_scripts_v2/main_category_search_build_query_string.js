@@ -1,28 +1,27 @@
-/**
- * Flatten a nested filter object into a flat key/value structure,
- * extracting the top-level category name as the search keyword (k).
- *
- * Example:
- * {
- *   "Pumps": {
- *     "manufacturer_2": ["Dayton"],
- *     "condition_2": "used",
- *     "custom_price": { min: "100", max: "500" }
- *   }
- * }
- * → k=Pumps&manufacturer_2=Dayton&condition_2=used&custom_price_min=100&custom_price_max=500
- */
 function buildQueryStringFromSearchParams(filterData) {
     const urlParams = new URLSearchParams();
 
-    // Step 1: Extract the first non-empty category as keyword
     for (const [categoryName, filters] of Object.entries(filterData)) {
-        const hasFilters = Object.keys(filters).length > 0;
+        const meaningfulFilters = Object.entries(filters).filter(([key, value]) => {
+            // Skip known default values
+            if (key.startsWith("condition") && value === "any") return false;
+            if (key.startsWith("price_range") && value === "any") return false;
+            if (key.startsWith("sort_order")) return false; // sort doesn't indicate intent
+            if (key.startsWith("custom_price")) {
+                return value.min || value.max; // only count if user typed price
+            }
 
-        if (hasFilters) {
-            urlParams.set('k', categoryName); // search keyword
-            // Step 2: Flatten all filters from that category
-            for (const [key, value] of Object.entries(filters)) {
+            return value && (
+                (Array.isArray(value) && value.length > 0) ||
+                (typeof value === 'string' && value.trim() !== '') ||
+                (typeof value === 'object' && value !== null)
+            );
+        });
+
+        if (meaningfulFilters.length > 0) {
+            urlParams.set('k', categoryName);
+
+            for (const [key, value] of filtersEntries(filters)) {
                 if (Array.isArray(value)) {
                     value.forEach(v => urlParams.append(key, v));
                 } else if (typeof value === 'object' && value !== null) {
@@ -35,10 +34,15 @@ function buildQueryStringFromSearchParams(filterData) {
                     urlParams.append(key, value);
                 }
             }
-            break; // Only use the first category with active filters
+
+            break; // ✅ Stop after first category with meaningful input
         }
     }
 
     console.log("🔍 Final query string:", urlParams.toString());
     return urlParams.toString();
+}
+
+function filtersEntries(filters) {
+    return Object.entries(filters);
 }
