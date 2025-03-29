@@ -5,13 +5,11 @@ function waitForFormAndAttachListener(retries = 20) {
     const form = document.getElementById("product-filter-form");
 
     if (form) {
-        console.log("Found form: attaching submit listener");
-
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
             const filterData = collectMainCategoryFilters();
-            console.log("Collected filter data:", filterData);
+            //console.log("Collected filter data:", filterData);
 
             try {
                 const translatedFilters = await fetch('/product_search_scripts_v2/translate_filters.php', {
@@ -19,7 +17,7 @@ function waitForFormAndAttachListener(retries = 20) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filters: filterData })
                 }).then(res => res.json());
-            console.log("Translated filters:", translatedFilters);
+            //console.log("Translated filters:", translatedFilters);
 
             const queryString = buildQueryStringFromSearchParams(translatedFilters);
             console.log("Built query string:", queryString);
