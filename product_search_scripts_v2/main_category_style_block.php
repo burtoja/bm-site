@@ -9,8 +9,11 @@
  * Renders the style block to style the category and filter list
  * @return false|string
  */
+
 function render_main_category_listing_style_block() {
-    return '<style>
+    return '';
+/*
+<style>
         .product-search-grid {
             display: flex;
             gap: 20px;
@@ -66,4 +69,5 @@ function render_main_category_listing_style_block() {
         }
     </style>';
 }
+*/
 
