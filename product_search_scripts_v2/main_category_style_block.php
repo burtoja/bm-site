@@ -10,6 +10,8 @@
  * @return false|string
  */
 
+
+//NOTE:  I moved all of the CSS inside the Breakdance custom CSS block
 function render_main_category_listing_style_block()
 {
     return '';
