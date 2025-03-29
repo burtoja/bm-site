@@ -28,18 +28,18 @@ function waitForFormAndAttachListener(retries = 20) {
             console.log("Params object:", params.toString());
 
             //fetch the keyword parameter
-            const keyword = params.get('k');
-            if (!keyword) {
+            const queryStringFull = params.toString();
+
+            if (!params.get('k')) {
                 console.warn("No keyword found. Skipping API call.");
                 return;
             }
 
-            const apiUrl = buildEbayApiEndpointFromParams(params);
-            console.log("API endpoint:", apiUrl);
+            const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + queryStringFull;
+            console.log("Proxy API URL:", apiUrl);
 
-            //const data = await fetchEbayData(apiUrl);
-            const data = await fetch('/product_search_scripts_v2/search_ebay.php?q=' + encodeURIComponent(keyword))
-                .then(res => res.json());
+            const data = await fetch(apiUrl).then(res => res.json());
+
             if (data) {
             renderResults(data);
             } else {
