@@ -5,8 +5,15 @@
 header('Content-Type: application/json');
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 
-$query = $_GET['q'] ?? '';
+$params = $_GET;
 
+// Translate 'k' (your internal keyword) to 'q' (what eBay expects)
+if (isset($params['k']) && !isset($params['q'])) {
+    $params['q'] = $params['k'];
+    unset($params['k']);
+}
+
+// Build query string
 $ebayParams = [];
 
 if (!empty($_GET['q'])) {
@@ -22,12 +29,6 @@ if (!empty($_GET['condition'])) {
 // Add more filters as needed (e.g., manufacturer as keyword filters, etc.)
 
 $url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
-
-if (!$query) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Missing query']);
-    exit;
-}
 
 $token = getBasicOauthToken();
 $url = "https://api.ebay.com/buy/browse/v1/item_summary/search?q=" . urlencode($query);
