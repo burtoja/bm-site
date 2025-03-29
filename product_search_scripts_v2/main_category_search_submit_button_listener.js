@@ -10,47 +10,18 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
 
         const filterData = collectMainCategoryFilters();
-        console.log("Collected filter data:", filterData);
+        const flatParams = convertToQueryParams(filterData);
+        const queryString = new URLSearchParams(flatParams);
+        const apiUrl = buildEbayApiEndpointFromParams(queryString);
 
-        fetch("/product_search_scripts_v2/translate_filters.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ filters: filterData })
-        })
-            .then(res => {
-                console.log("Received response:", res);
-
-                if (!res.ok) {
-                    console.error("🚫 Response not OK", res.status, res.statusText);
-                    return;
-                }
-
-                return res.json();
-            })
-            .then(translatedData => {
-                if (!translatedData) {
-                    console.warn("⚠️ No translated data returned");
-                    return;
-                }
-
-                console.log("Translated filter data:", translatedData);
-
-                console.log("About to call extractSearchParameters()");
-                const searchParams = extractSearchParameters(translatedData);
-                console.log("Search parameters:", searchParams);
-
-                const queryString = buildQueryStringFromSearchParams(searchParams);
-                console.log("🔗 Final Query String:", queryString);
-            })
-            .catch(err => {
-                console.error("Translation fetch failed:", err);
-            });
-
-
-
-
+        fetchEbayData(apiUrl).then(data => {
+            if (data) {
+                renderResults(data);
+            } else {
+                document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
+            }
+        });
     });
+
 
 });
