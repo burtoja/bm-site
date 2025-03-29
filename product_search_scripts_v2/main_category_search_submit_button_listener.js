@@ -27,6 +27,13 @@ function waitForFormAndAttachListener(retries = 20) {
             const params = new URLSearchParams(queryString);
             console.log("Params object:", params.toString());
 
+            //fetch the keyword parameter
+            const keyword = params.get('k');
+            if (!keyword) {
+                console.warn("No keyword found. Skipping API call.");
+                return;
+            }
+
             const apiUrl = buildEbayApiEndpointFromParams(params);
             console.log("API endpoint:", apiUrl);
 
