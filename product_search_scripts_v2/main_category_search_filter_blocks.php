@@ -39,6 +39,7 @@ function render_price_range_filter($categoryId)
     echo '<div class="filter-item">';
     echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Price Range</div>';
     echo '<div class="filter-options" style="display:none;">';
+    echo '<div class="radio-group">';
 
     // Unique radio name per category
     $priceRadioName = 'price_range_' . $categoryId;
@@ -54,6 +55,7 @@ function render_price_range_filter($categoryId)
     echo '<label class="price-input-label">$<input type="number" step="0.01" min="0" name="max_price_' . $categoryId . '" placeholder="Max" class="price-input"></label><br>';
     echo '</div>';
 
+    echo '</div>';
     echo '</div>';
     echo '</div>';
 
@@ -72,12 +74,14 @@ function render_sort_order_filter($categoryId) {
     echo '<div class="filter-item">';
             echo '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Sort Order</div>';
             echo '<div class="filter-options" style="display:none;">';
+            echo '<div class="radio-group">';
 
             $sortRadioName = 'sort_order_' . $categoryId;
 
             echo '<label><input type="radio" name="' . $sortRadioName . '" value="high_to_low" checked> High to Low</label><br>';
             echo '<label><input type="radio" name="' . $sortRadioName . '" value="low_to_high"> Low to High</label>';
 
+            echo '</div>';
             echo '</div>';
             echo '</div>';
     return ob_get_clean();
