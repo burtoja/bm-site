@@ -30,9 +30,11 @@ function waitForFormAndAttachListener(retries = 20) {
             const apiUrl = buildEbayApiEndpointFromParams(params);
             console.log("API endpoint:", apiUrl);
 
-            const data = await fetchEbayData(apiUrl);
+            //const data = await fetchEbayData(apiUrl);
+            const data = await fetch('/product_search_scripts_v2/search_ebay.php?q=' + encodeURIComponent(keyword))
+                .then(res => res.json());
             if (data) {
-                renderResults(data);
+            renderResults(data);
             } else {
                 document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
             }
@@ -52,36 +54,3 @@ function waitForFormAndAttachListener(retries = 20) {
 
 // Start waiting as soon as JS runs
 document.addEventListener("DOMContentLoaded", waitForFormAndAttachListener);
-
-
-
-
-
-// OLD LISTENER WITHOUT THE WAIT
-// document.addEventListener("DOMContentLoaded", function () {
-//     const form = document.getElementById("product-filter-form");
-//
-//     if (!form) {
-//         console.error("Could not find identifiable element: #product-filter-form");
-//         return;
-//     }
-//
-//     form.addEventListener("submit", async function (e) {
-//         e.preventDefault();
-//
-//         const filterData = collectMainCategoryFilters();
-//         const flatParams = buildQueryStringFromSearchParams(filterData);
-//         const queryString = new URLSearchParams(flatParams);
-//         const apiUrl = buildEbayApiEndpointFromParams(queryString);
-//
-//         fetchEbayData(apiUrl).then(data => {
-//             if (data) {
-//                 renderResults(data);
-//             } else {
-//                 document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
-//             }
-//         });
-//     });
-//
-//
-// });
