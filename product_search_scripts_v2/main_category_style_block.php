@@ -10,8 +10,10 @@
  * @return false|string
  */
 
-function render_main_category_listing_style_block() {
+function render_main_category_listing_style_block()
+{
     return '';
+}
 /*
 <style>
         .product-search-grid {
