@@ -23,7 +23,7 @@ function waitForFormAndAttachListener(retries = 20) {
             console.log("Built query string:", queryString);
 
             const params = new URLSearchParams(queryString);
-            console.log("Params object:", params.toString());
+            //console.log("Params object:", params.toString());
 
             //fetch the keyword parameter
             const queryStringFull = params.toString();
@@ -34,7 +34,7 @@ function waitForFormAndAttachListener(retries = 20) {
             }
 
             const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + queryStringFull;
-            console.log("Proxy API URL:", apiUrl);
+            //console.log("Proxy API URL (note: this is not what is sent--check search_ebay.php):", apiUrl);
 
             const data = await fetch(apiUrl).then(res => res.json());
 
