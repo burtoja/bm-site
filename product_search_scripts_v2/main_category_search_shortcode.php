@@ -36,7 +36,6 @@ function boilersa_categories_shortcode($atts) {
             echo render_sort_order_filter($categoryId);
             echo render_category_filters_from_db($categoryId, $conn);
 
-            //echo '</div></div>'; // close category-filters and category-item
         }
     } else {
         echo '<p>No categories found.</p>';
