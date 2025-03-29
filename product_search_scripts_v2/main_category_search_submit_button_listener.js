@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
 
         const filterData = collectMainCategoryFilters();
-        const flatParams = convertToQueryParams(filterData);
+        const flatParams = buildQueryStringFromSearchParams(filterData);
         const queryString = new URLSearchParams(flatParams);
         const apiUrl = buildEbayApiEndpointFromParams(queryString);
 
