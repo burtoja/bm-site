@@ -29,9 +29,7 @@ if (!empty($_GET['condition'])) {
 // Add more filters as needed (e.g., manufacturer as keyword filters, etc.)
 
 $url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
-
 $token = getBasicOauthToken();
-$url = "https://api.ebay.com/buy/browse/v1/item_summary/search?q=" . urlencode($query);
 
 $curl = curl_init();
 curl_setopt_array($curl, [
