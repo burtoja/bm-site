@@ -4,9 +4,12 @@
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("product-filter-form");
 
-    if (!form) return;
+    if (!form) {
+        console.error("Could not find identifiable element: #product-filter-form");
+        return;
+    }
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         const filterData = collectMainCategoryFilters();
