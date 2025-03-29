@@ -3,7 +3,7 @@
 header('Content-Type: application/json');
 
 // Include your token logic
-include_once($_SERVER["DOCUMENT_ROOT"] . "/ebay_oauth/getBasicToken.php");
+include ($_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php');
 
 $token = getBasicOauthToken();
 
