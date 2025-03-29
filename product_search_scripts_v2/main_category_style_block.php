@@ -115,10 +115,12 @@ function render_main_category_listing_style_block() {
               display: flex;
               gap: 20px;
               align-items: flex-start;
+              flex-wrap: wrap;
             }
             
             .filters-column {
-              width: 30%;
+              flex: 1 1 30%;
+              max-width: 30%;
               position: sticky;
               top: 0;
               max-height: 100vh;
@@ -128,7 +130,8 @@ function render_main_category_listing_style_block() {
             }
             
             .results-column {
-              width: 70%;
+              flex: 1 1 70%;
+              max-width: 70%;
               padding-left: 15px;
             }
             
@@ -137,6 +140,7 @@ function render_main_category_listing_style_block() {
               grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
               gap: 20px;
             }
+
 
         </style>
     ';
