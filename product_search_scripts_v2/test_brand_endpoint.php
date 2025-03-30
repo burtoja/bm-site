@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/common_search_functions.php';
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_endpoint_construction.php';
 
  echo "1";
 $token = getBasicOauthToken();
@@ -27,6 +28,10 @@ curl_setopt_array($curl, [
 $response = curl_exec($curl);
 $err = curl_error($curl);
 curl_close($curl);
+
+$recognizedBrands = extract_brands_from_response($response);
+echo "<br><strong>Extracted Brands:</strong><pre>" . print_r($recognizedBrands, true) . "</pre>";
+
 
 if ($err) {
     echo "❌ CURL ERROR: $err";
