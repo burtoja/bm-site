@@ -37,9 +37,10 @@ function waitForFormAndAttachListener(retries = 20) {
             //console.log("Proxy API URL (note: this is not what is sent--check search_ebay.php):", apiUrl);
 
             const data = await fetch(apiUrl).then(res => res.json());
-
             if (data) {
             renderResults(data);
+            //auto scroll to new results if needed
+            document.getElementById('search-results').scrollIntoView({ behavior: 'smooth' });
             } else {
                 document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
             }
