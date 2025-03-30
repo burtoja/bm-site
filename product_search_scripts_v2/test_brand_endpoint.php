@@ -4,8 +4,12 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/common_sear
  echo "1";
 $token = getBasicOauthToken();
 echo "2";
+
 $categoryId = 12576; // Business & Industrial
 $url = construct_brand_list_endpoint($categoryId);
+function construct_brand_list_endpoint($category_id) {
+    return "https://api.ebay.com/buy/browse/v1/item_summary/search?q=&category_ids={$category_id}&fieldgroups=ASPECT_REFINEMENTS";
+}
 echo "3";
 
 // Diagnostic log
