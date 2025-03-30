@@ -9,6 +9,7 @@ error_log("TESTING ERROR OUTPUT");
 
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/common_search_functions.php';
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_endpoint_construction.php';
 
 $params = $_GET;
 
@@ -32,24 +33,24 @@ if (!empty($params['Manufacturer'])) {
 $categoryId = 12576; //Business & Industrial
 $recognizedBrands = [];
 
-//if (!empty($selectedManufacturers) && $categoryId) {
-//    $token = getBasicOauthToken();
-//    $brandEndpoint = construct_brand_list_endpoint($categoryId);
-//
-//    $curl = curl_init();
-//    curl_setopt_array($curl, [
-//        CURLOPT_URL => $brandEndpoint,
-//        CURLOPT_RETURNTRANSFER => true,
-//        CURLOPT_HTTPHEADER => [
-//            "Authorization: Bearer $token",
-//            "Content-Type: application/json"
-//        ]
-//    ]);
-//    $brandResponse = curl_exec($curl);
-//    curl_close($curl);
-//
-//    $recognizedBrands = extract_brands_from_response($brandResponse);
-//}
+if (!empty($selectedManufacturers) && $categoryId) {
+    $token = getBasicOauthToken();
+    $brandEndpoint = construct_brand_list_endpoint($categoryId);
+
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $brandEndpoint,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            "Authorization: Bearer $token",
+            "Content-Type: application/json"
+        ]
+    ]);
+    $brandResponse = curl_exec($curl);
+    curl_close($curl);
+
+    $recognizedBrands = extract_brands_from_response($brandResponse);
+}
 
 // Split manufacturers into matched vs unmatched
 $matchedBrands = [];
