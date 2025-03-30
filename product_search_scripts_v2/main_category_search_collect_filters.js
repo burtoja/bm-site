@@ -63,5 +63,9 @@ function collectMainCategoryFilters() {
     // Always include the category name in the data structure
     data[categoryName] = categoryData;
 
+    console.log("Selected category block:", categoryEl);
+    console.log("Category name:", categoryName);
+    console.log("Collected filters:", categoryData);
+
     return data;
 }
