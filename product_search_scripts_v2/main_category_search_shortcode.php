@@ -28,7 +28,8 @@ function boilersa_categories_shortcode($atts) {
             $categoryName = htmlspecialchars($cat['name']);
 
             echo '<div class="category-item">';
-            echo '<div class="toggle category-toggle" onclick="toggleVisibility(this)">[+] ' . $categoryName . '</div>';
+            echo '<div class="toggle category-toggle" onclick="selectCategory(this)">[+] ' . $categoryName . '</div>';
+            //echo '<div class="toggle category-toggle" onclick="toggleVisibility(this)">[+] ' . $categoryName . '</div>';
             echo '<div class="category-filters" style="display:none;">';
 
             echo render_condition_filter($categoryId);
@@ -59,6 +60,8 @@ function boilersa_categories_shortcode($atts) {
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_visibility.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_toggle_custom_price.js"></script>';
     echo '<script src="/product_search_scripts_v2/main_category_search_reset_filters_button_action.js"></script>';
+    echo '<script src="/product_search_scripts_v2/main_category_search_select_category.js"></script>';
+
 
 
 
