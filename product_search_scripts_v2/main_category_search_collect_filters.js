@@ -19,9 +19,9 @@ function collectMainCategoryFilters() {
         console.warn("No category selected.");
         return data;
     }
-    console.log("1");
 
     const categoryEl = selectedCategoryEl.closest('.category-item');
+    console.log("TEST: " + categoryEl);
 
     // Extract category name
     const categoryName = selectedCategoryEl.textContent
@@ -33,7 +33,6 @@ function collectMainCategoryFilters() {
         console.warn("Error extracting category name.");
         return data;
     }
-    console.log("2");
 
     const categoryData = {};
 
