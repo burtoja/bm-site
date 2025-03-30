@@ -115,22 +115,20 @@ curl_setopt_array($curl, [
 
 $response = curl_exec($curl);
 $err = curl_error($curl);
+curl_close($curl);
+
 if ($err) {
     http_response_code(500);
     echo json_encode(["error" => "cURL error: $err"]);
     exit;
 }
 
-curl_close($curl);
-
-if ($err) {
+if ($response === false || empty($response)) {
     http_response_code(500);
-    echo json_encode(["error" => "cURL error: $err"]);
-} else {
-    if ($response === false || empty($response)) {
-        http_response_code(500);
-        echo json_encode(["error" => "Empty or invalid response from eBay."]);
-        exit;
-    }
-    echo $response;
+    echo json_encode(["error" => "Empty or invalid response from eBay."]);
+    exit;
 }
+
+// Finally output the eBay response
+echo $response;
+
