@@ -1,7 +1,7 @@
 function selectCategory(clickedToggle) {
     // Remove 'selected' class and collapse filters from all other categories
     document.querySelectorAll('.category-toggle').forEach(toggle => {
-        toggle.classList.remove('selected');
+        toggle.parentElement.classList.remove("selected");
         toggle.textContent = toggle.textContent.replace('[-]', '[+]');
         toggle.nextElementSibling.style.display = 'none';
 
@@ -14,7 +14,7 @@ function selectCategory(clickedToggle) {
     });
 
     // Mark the clicked toggle as selected
-    clickedToggle.classList.add('selected');
+    clickedToggle.parentElement.classList.add("selected");
 
     // Expand its filters
     const filtersEl = clickedToggle.nextElementSibling;

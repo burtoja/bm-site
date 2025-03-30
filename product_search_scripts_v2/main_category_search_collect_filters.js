@@ -13,7 +13,8 @@ function collectMainCategoryFilters() {
     const data = {};
 
     // Find only the selected category
-    const selectedCategoryEl = document.querySelector('.category-item .category-toggle.selected');
+    const selectedCategoryEl = document.querySelector('.category-item.selected');
+    //const selectedCategoryEl = document.querySelector('.category-item .category-toggle.selected');
 
     if (!selectedCategoryEl) {
         console.warn("No category selected.");
@@ -27,7 +28,7 @@ function collectMainCategoryFilters() {
         .replace('[+]', '')
         .replace('[-]', '')
         .trim();
-    console.log("TEST: " + categoryName);
+    console.log("Category Name: " + categoryName);
 
     if (!categoryName) {
         console.warn("Error extracting category name.");
