@@ -39,24 +39,24 @@ if (!empty($params['Manufacturer'])) {
 $categoryId = 12576; //Business & Industrial
 $recognizedBrands = [];
 
-if (!empty($selectedManufacturers) && $categoryId) {
-    $token = getBasicOauthToken();
-    $brandEndpoint = construct_brand_list_endpoint($categoryId);
-
-    $curl = curl_init();
-    curl_setopt_array($curl, [
-        CURLOPT_URL => $brandEndpoint,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => [
-            "Authorization: Bearer $token",
-            "Content-Type: application/json"
-        ]
-    ]);
-    $brandResponse = curl_exec($curl);
-    curl_close($curl);
-
-    $recognizedBrands = extract_brands_from_response($brandResponse);
-}
+//if (!empty($selectedManufacturers) && $categoryId) {
+//    $token = getBasicOauthToken();
+//    $brandEndpoint = construct_brand_list_endpoint($categoryId);
+//
+//    $curl = curl_init();
+//    curl_setopt_array($curl, [
+//        CURLOPT_URL => $brandEndpoint,
+//        CURLOPT_RETURNTRANSFER => true,
+//        CURLOPT_HTTPHEADER => [
+//            "Authorization: Bearer $token",
+//            "Content-Type: application/json"
+//        ]
+//    ]);
+//    $brandResponse = curl_exec($curl);
+//    curl_close($curl);
+//
+//    $recognizedBrands = extract_brands_from_response($brandResponse);
+//}
 
 // Split manufacturers into matched vs unmatched
 $matchedBrands = [];
