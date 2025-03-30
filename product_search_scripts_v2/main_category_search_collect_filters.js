@@ -28,7 +28,10 @@ function collectMainCategoryFilters() {
         .replace('[-]', '')
         .trim();
 
-    if (!categoryName) return data;
+    if (!categoryName) {
+        console.warn("Error extracting category name.");
+        return data;
+    }
 
     const categoryData = {};
 
