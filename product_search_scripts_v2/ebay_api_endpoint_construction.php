@@ -29,25 +29,37 @@ function construct_brand_list_endpoint($category_id) {
 function extract_brands_from_response($json_response) {
     $brands = [];
 
-    if (is_string($json_response)) {
-        $response = json_decode($json_response, true);
-    } elseif ($json_response instanceof stdClass) {
-        $response = json_decode(json_encode($json_response), true);
-    } else {
-        return $brands; // Return empty array if format is unknown
+    if (empty($json_response)) {
+        error_log("Brand response is empty");
+        return $brands;
     }
 
-    if (isset($response['refinement']['aspectDistributions'])) {
-        foreach ($response['refinement']['aspectDistributions'] as $aspect) {
-            if ($aspect['localizedAspectName'] === 'Brand') {
-                foreach ($aspect['aspectValueDistributions'] as $brandData) {
+    // Decode JSON safely
+    $response = json_decode($json_response, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log("JSON decode error: " . json_last_error_msg());
+        return $brands;
+    }
+
+    if (!isset($response['refinement']['aspectDistributions'])) {
+        error_log("No aspectDistributions found in brand response.");
+        return $brands;
+    }
+
+    foreach ($response['refinement']['aspectDistributions'] as $aspect) {
+        if (isset($aspect['localizedAspectName']) && $aspect['localizedAspectName'] === 'Brand') {
+            foreach ($aspect['aspectValueDistributions'] as $brandData) {
+                if (isset($brandData['localizedAspectValue'])) {
                     $brands[] = $brandData['localizedAspectValue'];
                 }
             }
         }
     }
+
     return $brands;
 }
+
 
 /**
  * Constructs the search endpoint based on whether the brand exists in the category
