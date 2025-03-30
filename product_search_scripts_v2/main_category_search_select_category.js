@@ -1,20 +1,34 @@
 function selectCategory(clickedToggle) {
-    // Remove 'selected' class and collapse filters from all other categories
-    document.querySelectorAll('.category-toggle').forEach(toggle => {
-        toggle.parentElement.classList.remove("selected");
-        toggle.textContent = toggle.textContent.replace('[-]', '[+]');
-        toggle.nextElementSibling.style.display = 'none';
+    // Remove "selected" from all category-item blocks
+    document.querySelectorAll(".category-item").forEach(categoryItem => {
+        categoryItem.classList.remove("selected");
 
-        // Uncheck all inputs inside other categories
-        const filtersBox = toggle.nextElementSibling;
-        filtersBox.querySelectorAll('input').forEach(input => {
-            if (input.type === 'checkbox' || input.type === 'radio') input.checked = false;
-            if (input.type === 'text') input.value = '';
-        });
+        const toggle = categoryItem.querySelector(".category-toggle");
+        if (toggle) toggle.textContent = toggle.textContent.replace("[-]", "[+]");
+
+        const filtersBox = categoryItem.querySelector(".category-filters");
+        if (filtersBox) {
+            filtersBox.style.display = "none";
+            filtersBox.querySelectorAll("input").forEach(input => {
+                if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+                if (input.type === "text") input.value = "";
+            });
+        }
     });
 
-    // Mark the clicked toggle as selected
-    clickedToggle.parentElement.classList.add("selected");
+// ✅ Apply `.selected` to the entire category-item div
+    const categoryItem = clickedToggle.closest(".category-item");
+    if (categoryItem) {
+        categoryItem.classList.add("selected");
+
+        const filtersEl = categoryItem.querySelector(".category-filters");
+        if (filtersEl) {
+            filtersEl.style.display = "block";
+        }
+
+        clickedToggle.textContent = clickedToggle.textContent.replace("[+]", "[-]");
+    }
+
 
     // Expand its filters
     const filtersEl = clickedToggle.nextElementSibling;
