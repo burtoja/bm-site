@@ -128,6 +128,8 @@ if ($response === false || empty($response)) {
     echo json_encode(["error" => "Empty or invalid response from eBay."]);
     exit;
 }
+error_log("Final eBay URL: $url");
+error_log("Raw response: " . substr($response, 0, 500));
 
 // Finally output the eBay response
 echo $response;
