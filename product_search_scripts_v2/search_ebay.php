@@ -132,6 +132,8 @@ if ($response === false || empty($response)) {
 }
 error_log("Final eBay URL: $url");
 error_log("Raw response: " . substr($response, 0, 500));
+file_put_contents(__DIR__ . '/debug_last_url.txt', $url);
+file_put_contents(__DIR__ . '/debug_last_response.json', $response);
 
 // Finally output the eBay response
 echo $response;
