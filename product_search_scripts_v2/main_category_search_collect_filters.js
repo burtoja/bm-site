@@ -21,13 +21,13 @@ function collectMainCategoryFilters() {
     }
 
     const categoryEl = selectedCategoryEl.closest('.category-item');
-    console.log("TEST: " + categoryEl);
 
     // Extract category name
     const categoryName = selectedCategoryEl.textContent
         .replace('[+]', '')
         .replace('[-]', '')
         .trim();
+    console.log("TEST: " + categoryName);
 
     if (!categoryName) {
         console.warn("Error extracting category name.");
