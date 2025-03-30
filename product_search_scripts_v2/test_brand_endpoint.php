@@ -40,3 +40,5 @@ if ($err) {
 } else {
     echo "✅ Raw response preview:<br><pre>" . htmlspecialchars(substr($response, 0, 2000)) . "</pre>";
 }
+
+file_put_contents(__DIR__ . '/brand_debug.txt', $response);
