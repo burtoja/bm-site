@@ -28,9 +28,9 @@ curl_setopt_array($curl, [
 $response = curl_exec($curl);
 $err = curl_error($curl);
 curl_close($curl);
-
-$recognizedBrands = extract_brands_from_response($response);
-echo "<br><strong>Extracted Brands:</strong><pre>" . print_r($recognizedBrands, true) . "</pre>";
+//
+//$recognizedBrands = extract_brands_from_response($response);
+//echo "<br><strong>Extracted Brands:</strong><pre>" . print_r($recognizedBrands, true) . "</pre>";
 
 
 if ($err) {
