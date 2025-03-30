@@ -3,7 +3,12 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/common_search_functions.php';
 
 $token = getBasicOauthToken();
-$url = construct_brand_list_endpoint(12576); // Business & Industrial
+$categoryId = 12576; // Business & Industrial
+$url = construct_brand_list_endpoint($categoryId);
+
+// Diagnostic log
+echo "<strong>Endpoint URL:</strong> $url<br>";
+echo "<strong>Token (start):</strong> " . substr($token, 0, 30) . "...<br><br>";
 
 $curl = curl_init();
 curl_setopt_array($curl, [
@@ -24,7 +29,5 @@ if ($err) {
 } elseif (!$response) {
     echo "❌ Empty response.";
 } else {
-    echo "✅ Response:<br>";
-    echo "<pre>" . htmlspecialchars(substr($response, 0, 2000)) . "</pre>";
+    echo "✅ Raw response preview:<br><pre>" . htmlspecialchars(substr($response, 0, 2000)) . "</pre>";
 }
-?>
