@@ -1,93 +1,40 @@
 <?php
 /**
- * Executes eBay API call through a server-side proxy to avoid CORS
+ * Executes ebay api call
  */
-header('Content-Type: application/json');
 
+header('Content-Type: application/json');
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
-require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/common_search_functions.php';
 
 $params = $_GET;
 
-// Translate internal 'k' keyword to eBay's 'q'
+// Translate 'k' to eBay's 'q'
 if (isset($params['k']) && !isset($params['q'])) {
     $params['q'] = $params['k'];
     unset($params['k']);
 }
 
-// Extract selected manufacturers
-$selectedManufacturers = [];
-if (!empty($params['Manufacturer'])) {
-    if (is_array($params['Manufacturer'])) {
-        $selectedManufacturers = $params['Manufacturer'];
-    } else {
-        $selectedManufacturers = explode(',', $params['Manufacturer']);
-    }
-}
-
-// Get category ID (required for brand matching)
-$categoryId = 12576; //Business & Industrial
-//$categoryId = $params['category_id'] ?? null;
-$recognizedBrands = [];
-
-if (!empty($selectedManufacturers) && $categoryId) {
-    $token = getBasicOauthToken();
-    $brandEndpoint = construct_brand_list_endpoint($categoryId);
-
-    $curl = curl_init();
-    curl_setopt_array($curl, [
-        CURLOPT_URL => $brandEndpoint,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => [
-            "Authorization: Bearer $token",
-            "Content-Type: application/json"
-        ]
-    ]);
-    $brandResponse = curl_exec($curl);
-    curl_close($curl);
-
-    $recognizedBrands = extract_brands_from_response($brandResponse);
-}
-
-// Split manufacturers into matched vs unmatched
-$matchedBrands = [];
-$unmatchedBrands = [];
-
-foreach ($selectedManufacturers as $manu) {
-    if (in_array($manu, $recognizedBrands)) {
-        $matchedBrands[] = $manu;
-    } else {
-        $unmatchedBrands[] = $manu;
-    }
-}
-
-// Build final eBay search parameters
+// Start query params array
 $ebayParams = [];
 
-// q keyword
+// Required: q
 if (!empty($params['q'])) {
-    $ebayParams[] = 'q=' . urlencode(trim($params['q'] . ' ' . implode(' ', $unmatchedBrands)));
+    $ebayParams[] = 'q=' . urlencode($params['q']);
 }
 
-// aspect_filter
-if (!empty($matchedBrands)) {
-    $escapedBrands = array_map('urlencode', $matchedBrands);
-    $ebayParams[] = 'aspect_filter=Brand:{' . implode(',', $escapedBrands) . '}';
-}
-
-// sort order
+// Optional: sort
 if (!empty($params['Sort Order'])) {
     $sort = strtolower($params['Sort Order']) === 'low to high' ? '-price' : 'price';
     $ebayParams[] = 'sort=' . $sort;
 }
 
-// condition
+// Optional: condition filter
 if (!empty($params['Condition']) && $params['Condition'] !== 'Any') {
-    $conditionId = $params['Condition'] === 'Used' ? '3000' : '1000';
+    $conditionId = $params['Condition'] === 'Used' ? '3000' : '1000'; // eBay codes
     $ebayParams[] = 'filter=conditionIds:' . $conditionId;
 }
 
-// price range
+// Optional: custom price range
 if (!empty($params['custom_price_min']) || !empty($params['custom_price_max'])) {
     $min = $params['custom_price_min'] ?? '';
     $max = $params['custom_price_max'] ?? '';
@@ -97,11 +44,10 @@ if (!empty($params['custom_price_min']) || !empty($params['custom_price_max'])) 
     }
 }
 
-// final URL
+// Final URL
 $url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
 
-// send the request
-$token = $token ?? getBasicOauthToken(); // reuse if already fetched
+$token = getBasicOauthToken();
 
 $curl = curl_init();
 curl_setopt_array($curl, [
