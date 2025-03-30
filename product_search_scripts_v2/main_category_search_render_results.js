@@ -17,7 +17,9 @@ function renderResults(data) {
         const html = `
             <div class="result-card">
                 <a href="${item.itemWebUrl}" target="_blank">
-                    <img src="${item.image?.imageUrl || ''}" alt="${item.title}" style="width:100%; height:auto;">
+                    <div class="result-image">
+                        <img src="${item.image?.imageUrl || ''}" alt="${item.title}" style="width:100%; height:auto;">
+                    </div>
                     <h5>${item.title}</h5>
                     <p><strong>$${item.price.value}</strong></p>
                 </a>
