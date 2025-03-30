@@ -12,46 +12,53 @@
 function collectMainCategoryFilters() {
     const data = {};
 
-    // Loop over each product category block on the page
-    document.querySelectorAll('.category-item').forEach(categoryEl => {
-        // Get the category name from the toggle text (e.g., "Pumps")
-        const categoryToggle = categoryEl.querySelector('.category-toggle');
-        if (!categoryToggle) return;
+    // Find only the selected category
+    const selectedCategoryEl = document.querySelector('.category-item .category-toggle.selected');
 
-        const categoryName = categoryToggle.textContent
-            .replace('[+]', '')
-            .replace('[-]', '')
-            .trim();
-        if (!categoryName) return;
+    if (!selectedCategoryEl) {
+        console.warn("No category selected.");
+        return data;
+    }
 
-        const categoryData = {};
+    const categoryEl = selectedCategoryEl.closest('.category-item');
 
-        // Collect all checked checkboxes under this category
-        categoryEl.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-            const name = cb.name.replace(/\[\]$/, ''); // Normalize name (remove trailing [])
-            if (!categoryData[name]) categoryData[name] = [];
-            categoryData[name].push(cb.value);
-        });
+    // Extract category name
+    const categoryName = selectedCategoryEl.textContent
+        .replace('[+]', '')
+        .replace('[-]', '')
+        .trim();
 
-        // Collect selected radio buttons under this category
-        categoryEl.querySelectorAll('input[type="radio"]:checked').forEach(rb => {
-            categoryData[rb.name] = rb.value;
-        });
+    if (!categoryName) return data;
 
-        // Collect custom price inputs if provided
-        const minPriceInput = categoryEl.querySelector('input[name^="min_price_"]');
-        const maxPriceInput = categoryEl.querySelector('input[name^="max_price_"]');
+    const categoryData = {};
 
-        if ((minPriceInput && minPriceInput.value) || (maxPriceInput && maxPriceInput.value)) {
-            categoryData['custom_price'] = {
-                min: minPriceInput?.value || null,
-                max: maxPriceInput?.value || null
-            };
-        }
-
-        // Add this category's selected filters to the final data object
-        data[categoryName] = categoryData;
+    // Collect all checked checkboxes
+    categoryEl.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        const name = cb.name.replace(/\[\]$/, '');
+        if (!categoryData[name]) categoryData[name] = [];
+        categoryData[name].push(cb.value);
     });
+
+    // Collect selected radio buttons
+    categoryEl.querySelectorAll('input[type="radio"]:checked').forEach(rb => {
+        categoryData[rb.name] = rb.value;
+    });
+
+    // Collect custom price inputs if provided
+    const minPriceInput = categoryEl.querySelector('input[name^="min_price_"]');
+    const maxPriceInput = categoryEl.querySelector('input[name^="max_price_"]');
+
+    if ((minPriceInput && minPriceInput.value) || (maxPriceInput && maxPriceInput.value)) {
+        categoryData['custom_price'] = {
+            min: minPriceInput?.value || null,
+            max: maxPriceInput?.value || null
+        };
+    }
+
+    // Always include the category name in the data structure
+    data[categoryName] = categoryData;
 
     return data;
 }
+
+
