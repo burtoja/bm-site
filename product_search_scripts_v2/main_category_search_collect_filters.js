@@ -60,5 +60,3 @@ function collectMainCategoryFilters() {
 
     return data;
 }
-
-
