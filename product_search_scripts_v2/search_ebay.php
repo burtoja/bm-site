@@ -98,6 +98,7 @@ if (!empty($params['custom_price_min']) || !empty($params['custom_price_max'])) 
 
 // final URL
 $url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
+error_log("eBay API URL: " . $url);
 
 // send the request
 $token = $token ?? getBasicOauthToken(); // reuse if already fetched
@@ -114,11 +115,22 @@ curl_setopt_array($curl, [
 
 $response = curl_exec($curl);
 $err = curl_error($curl);
+if ($err) {
+    http_response_code(500);
+    echo json_encode(["error" => "cURL error: $err"]);
+    exit;
+}
+
 curl_close($curl);
 
 if ($err) {
     http_response_code(500);
     echo json_encode(["error" => "cURL error: $err"]);
 } else {
+    if ($response === false || empty($response)) {
+        http_response_code(500);
+        echo json_encode(["error" => "Empty or invalid response from eBay."]);
+        exit;
+    }
     echo $response;
 }
