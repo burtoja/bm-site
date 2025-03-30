@@ -2,6 +2,14 @@
 /**
  * Executes eBay API call through a server-side proxy to avoid CORS
  */
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+echo "Checkpoint reached."; exit;
+
+
+
 header('Content-Type: application/json');
 
 error_log("TESTING ERROR OUTPUT");
@@ -130,6 +138,8 @@ if ($response === false || empty($response)) {
     echo json_encode(["error" => "Empty or invalid response from eBay."]);
     exit;
 }
+
+//Debugging - output
 error_log("Final eBay URL: $url");
 error_log("Raw response: " . substr($response, 0, 500));
 file_put_contents(__DIR__ . '/debug_last_url.txt', $url);
