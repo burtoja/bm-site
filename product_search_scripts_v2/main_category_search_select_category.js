@@ -1,7 +1,7 @@
 //<div class="toggle category-toggle selected" onclick="selectCategory(this)">[-] Bearings</div>
 
 function selectCategory(clickedToggle) {
-    // Remove "selected" from all category-item blocks
+    // Remove "selected" from all category-item blocks and reset toggles
     document.querySelectorAll(".category-item").forEach(categoryItem => {
         categoryItem.classList.remove("selected");
 
@@ -20,11 +20,10 @@ function selectCategory(clickedToggle) {
         }
     });
 
-// ✅ Apply `.selected` to the entire category-item div
+    // ✅ Apply "selected" to the clicked category block
     const categoryItem = clickedToggle.closest(".category-item");
     if (categoryItem) {
-        //categoryItem.classList.add("selected");
-        categoryItem.closest('.category-item')?.classList.add("selected");
+        categoryItem.classList.add("selected");
 
         const filtersEl = categoryItem.querySelector(".category-filters");
         if (filtersEl) {
@@ -33,13 +32,4 @@ function selectCategory(clickedToggle) {
 
         clickedToggle.textContent = clickedToggle.textContent.replace("[+]", "[-]");
     }
-
-
-    // Expand its filters
-    const filtersEl = clickedToggle.nextElementSibling;
-    filtersEl.style.display = 'block';
-    clickedToggle.textContent = clickedToggle.textContent.replace('[+]', '[-]');
-
-    // Ensure this category is "active" for the search
 }
-
