@@ -3,13 +3,6 @@
  * Executes eBay API call through a server-side proxy to avoid CORS
  */
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-echo "Checkpoint reached."; exit;
-
-
-
 header('Content-Type: application/json');
 
 error_log("TESTING ERROR OUTPUT");
