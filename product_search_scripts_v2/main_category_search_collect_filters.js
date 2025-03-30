@@ -13,7 +13,7 @@ function collectMainCategoryFilters() {
     const data = {};
 
     // Find only the selected category
-    const selectedCategoryEl = document.querySelector('.category-item.selected');
+    const selectedCategoryEl = document.querySelector('.category-toggle.selected');
     //const selectedCategoryEl = document.querySelector('.category-item .category-toggle.selected');
 
     if (!selectedCategoryEl) {
@@ -21,7 +21,7 @@ function collectMainCategoryFilters() {
         return data;
     }
 
-    const categoryEl = selectedCategoryEl.closest('.category-item');
+    const categoryEl = selectedCategoryEl.closest('.category-toggle');
 
     // Extract category name
     const categoryName = selectedCategoryEl.textContent
