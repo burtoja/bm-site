@@ -38,7 +38,7 @@ function buildQueryStringFromSearchParams(filterData) {
             );
         });
 
-        // ✅ EVEN if no filters, use the category name for keyword
+        // EVEN if no filters, use the category name for keyword
         urlParams.set('k', categoryName);
 
         if (hasMeaningfulFilters) {
@@ -56,10 +56,10 @@ function buildQueryStringFromSearchParams(filterData) {
                 }
             }
         } else {
-            console.warn("⚠️ No meaningful filters found — using only category.");
+            console.warn("No meaningful filters found — using only category.");
         }
 
-        break; // ✅ Only use the first selected category
+        break; // Only use the first selected category
     }
 
     console.log("🔧 Built query string:", urlParams.toString());
