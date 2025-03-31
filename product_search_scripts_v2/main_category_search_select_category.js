@@ -4,33 +4,27 @@ function selectCategory(clickedToggle) {
     const isAlreadySelected = clickedToggle.classList.contains('selected');
     const isExpanded = filtersBox?.style.display === 'block';
 
-    // First, collapse and unselect all other categories
+    // Collapse all other categories
     document.querySelectorAll('.category-item').forEach(otherItem => {
         const toggle = otherItem.querySelector('.category-toggle');
         const filters = otherItem.querySelector('.category-filters');
 
-        toggle?.classList.remove('selected');
-        otherItem.classList.remove('selected');
-        if (filters) {
-            filters.style.display = 'none';
-        }
-
-        if (toggle) {
-            toggle.textContent = toggle.textContent.replace('[-]', '[+]');
+        if (otherItem !== categoryItem) {
+            toggle?.classList.remove('selected');
+            otherItem.classList.remove('selected');
+            if (filters) filters.style.display = 'none';
+            if (toggle) toggle.textContent = toggle.textContent.replace('[-]', '[+]');
         }
     });
 
-    // If it was already selected and expanded → collapse only
+    // If same category is open, toggle to collapse
     if (isAlreadySelected && isExpanded) {
         filtersBox.style.display = 'none';
         clickedToggle.textContent = clickedToggle.textContent.replace('[-]', '[+]');
-        // ✅ Keep it selected
-        clickedToggle.classList.add('selected');
-        categoryItem.classList.add('selected');
         return;
     }
 
-    // Otherwise → expand and highlight this category
+    // Expand and re-select the clicked category
     clickedToggle.classList.add('selected');
     categoryItem.classList.add('selected');
 
@@ -40,3 +34,7 @@ function selectCategory(clickedToggle) {
 
     clickedToggle.textContent = clickedToggle.textContent.replace('[+]', '[-]');
 }
+
+// Expose globally
+window.selectCategory = selectCategory;
+console.log("Msg: selectCategory.js loaded");
