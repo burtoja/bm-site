@@ -13,7 +13,9 @@ function collectMainCategoryFilters() {
     const data = {};
 
     // Find only the selected category
-    const selectedCategoryEl = document.querySelector('.category-toggle.selected');
+    const selectedToggle = document.querySelector('.category-toggle.selected');
+    const selectedCategoryEl = selectedToggle?.closest('.category-item');
+    //const selectedCategoryEl = document.querySelector('.category-item.selected');
     //const selectedCategoryEl = document.querySelector('.category-item .category-toggle.selected');
 
     if (!selectedCategoryEl) {
@@ -21,7 +23,7 @@ function collectMainCategoryFilters() {
         return data;
     }
 
-    const categoryEl = selectedCategoryEl.closest('.category-toggle');
+    const categoryEl = selectedCategoryEl.closest('.category-item');
 
     // Extract category name
     const categoryName = selectedCategoryEl.textContent
