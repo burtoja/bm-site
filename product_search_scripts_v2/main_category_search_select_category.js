@@ -4,37 +4,32 @@ function selectCategory(clickedToggle) {
     const isAlreadySelected = clickedToggle.classList.contains('selected');
     const isExpanded = filtersBox?.style.display === 'block';
 
-    // Collapse all other categories
-    document.querySelectorAll('.category-item').forEach(otherItem => {
-        const toggle = otherItem.querySelector('.category-toggle');
-        const filters = otherItem.querySelector('.category-filters');
-
-        if (otherItem !== categoryItem) {
-            toggle?.classList.remove('selected');
-            otherItem.classList.remove('selected');
-            if (filters) filters.style.display = 'none';
-            if (toggle) toggle.textContent = toggle.textContent.replace('[-]', '[+]');
-        }
-    });
-
-    // If same category is open, toggle to collapse
+    // If the same category is clicked and it's expanded → collapse it
     if (isAlreadySelected && isExpanded) {
         filtersBox.style.display = 'none';
         clickedToggle.textContent = clickedToggle.textContent.replace('[-]', '[+]');
+        clickedToggle.classList.remove('selected');
         return;
     }
 
-    // Expand and re-select the clicked category
-    clickedToggle.classList.add('selected');
+    // Collapse all other categories and remove selection
+    document.querySelectorAll('.category-item').forEach(otherItem => {
+        const otherToggle = otherItem.querySelector('.category-toggle');
+        const otherFilters = otherItem.querySelector('.category-filters');
+
+        otherItem.classList.remove('selected');
+        if (otherToggle) otherToggle.classList.remove('selected');
+        if (otherToggle) otherToggle.textContent = otherToggle.textContent.replace('[-]', '[+]');
+        if (otherFilters) otherFilters.style.display = 'none';
+    });
+
+    // Mark this category as selected
     categoryItem.classList.add('selected');
-
-    if (filtersBox) {
-        filtersBox.style.display = 'block';
-    }
-
+    clickedToggle.classList.add('selected');
+    if (filtersBox) filtersBox.style.display = 'block';
     clickedToggle.textContent = clickedToggle.textContent.replace('[+]', '[-]');
 }
 
-// Expose globally
+// Make globally available for inline onclick
 window.selectCategory = selectCategory;
 console.log("Msg: selectCategory.js loaded");
