@@ -12,49 +12,38 @@
 function collectMainCategoryFilters() {
     const data = {};
 
-    // Find only the selected category
-    /*const selectedToggle = document.querySelector('.category-toggle.selected');
-    const selectedCategoryEl = selectedToggle?.closest('.category-item');*/
-    const selectedCategoryEl = document.querySelector('.category-toggle.selected');
-    //const selectedCategoryEl = document.querySelector('.category-item .category-toggle.selected');
+    // Look for the selected category-toggle, then its parent .category-item
+    const selectedToggle = document.querySelector('.category-toggle.selected');
+    const selectedCategoryEl = selectedToggle?.closest('.category-item');
 
     if (!selectedCategoryEl) {
-        console.warn("No category selected.");
+        console.warn("⚠️ No selected category found.");
         return data;
     }
 
-    const categoryEl = selectedCategoryEl.closest('.category-toggle');
-
-    // Extract category name
-    const categoryName = selectedCategoryEl.textContent
-        .replace('[+]', '')
-        .replace('[-]', '')
-        .trim();
-    console.log("Category Name: " + categoryName);
-
+    const categoryName = selectedToggle.textContent.replace('[+]', '').replace('[-]', '').trim();
     if (!categoryName) {
-        console.warn("Error extracting category name.");
+        console.warn("⚠️ No category name found in toggle.");
         return data;
     }
 
     const categoryData = {};
 
-    // Collect all checked checkboxes
-    categoryEl.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+    // Collect checkboxes
+    selectedCategoryEl.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
         const name = cb.name.replace(/\[\]$/, '');
         if (!categoryData[name]) categoryData[name] = [];
         categoryData[name].push(cb.value);
     });
 
-    // Collect selected radio buttons
-    categoryEl.querySelectorAll('input[type="radio"]:checked').forEach(rb => {
+    // Collect radio buttons
+    selectedCategoryEl.querySelectorAll('input[type="radio"]:checked').forEach(rb => {
         categoryData[rb.name] = rb.value;
     });
 
-    // Collect custom price inputs if provided
-    const minPriceInput = categoryEl.querySelector('input[name^="min_price_"]');
-    const maxPriceInput = categoryEl.querySelector('input[name^="max_price_"]');
-
+    // Custom price inputs
+    const minPriceInput = selectedCategoryEl.querySelector('input[name^="min_price_"]');
+    const maxPriceInput = selectedCategoryEl.querySelector('input[name^="max_price_"]');
     if ((minPriceInput && minPriceInput.value) || (maxPriceInput && maxPriceInput.value)) {
         categoryData['custom_price'] = {
             min: minPriceInput?.value || null,
@@ -62,12 +51,9 @@ function collectMainCategoryFilters() {
         };
     }
 
-    // Always include the category name in the data structure
+    // Always include this category, even if no subfilters are selected
     data[categoryName] = categoryData;
-
-    console.log("Selected category block:", categoryEl);
-    console.log("Category name:", categoryName);
-    console.log("Collected filters:", categoryData);
 
     return data;
 }
+
