@@ -11,67 +11,57 @@
  * @returns {string} Query string (e.g., k=Pumps&Manufacturer=Dayton&Manufacturer=GE)
  */
 
+/**
+ * Converts structured category filter data into a URL query string.
+ *
+ * @param {Object} filterData - The structured filter data with category names and values
+ * @returns {String} URL query string
+ */
 function buildQueryStringFromSearchParams(filterData) {
     const urlParams = new URLSearchParams();
 
-    let selectedCategoryName = null;
-    let selectedFilters = {};
-
-    // STEP 1: Find first category with meaningful filters (ignoring default-only filters)
     for (const [categoryName, filters] of Object.entries(filterData)) {
-        const hasMeaningfulFilter = Object.entries(filters).some(([key, value]) => {
-            return isMeaningfulFilter(key, value);
+        const hasMeaningfulFilters = Object.entries(filters).some(([key, value]) => {
+            // Skip known default values
+            if (key.startsWith("condition") && value === "any") return false;
+            if (key.startsWith("price_range") && value === "any") return false;
+            if (key.startsWith("sort_order")) return false;
+
+            if (key.startsWith("custom_price")) {
+                return value.min || value.max;
+            }
+
+            return value && (
+                (Array.isArray(value) && value.length > 0) ||
+                (typeof value === 'string' && value.trim() !== '') ||
+                (typeof value === 'object' && value !== null)
+            );
         });
 
-        if (hasMeaningfulFilter) {
-            selectedCategoryName = categoryName;
-            selectedFilters = filters;
-            break;
-        }
-    }
+        // ✅ EVEN if no filters, use the category name for keyword
+        urlParams.set('k', categoryName);
 
-    if (!selectedCategoryName) {
-        console.warn("⚠️ No meaningful filters found — using no category.");
-        return urlParams.toString(); // Empty or fallback string
-    }
-
-    // STEP 2: Set the keyword
-    urlParams.set('k', selectedCategoryName);
-
-    // STEP 3: Add filters (including default values now that we have the right category)
-    for (const [key, value] of Object.entries(selectedFilters)) {
-        if (Array.isArray(value)) {
-            value.forEach(v => urlParams.append(key, v));
-        } else if (typeof value === 'object' && value !== null) {
-            for (const [subKey, subValue] of Object.entries(value)) {
-                if (subValue) {
-                    urlParams.append(`${key}_${subKey}`, subValue);
+        if (hasMeaningfulFilters) {
+            for (const [key, value] of Object.entries(filters)) {
+                if (Array.isArray(value)) {
+                    value.forEach(v => urlParams.append(key, v));
+                } else if (typeof value === 'object' && value !== null) {
+                    for (const [subKey, subValue] of Object.entries(value)) {
+                        if (subValue) {
+                            urlParams.append(`${key}_${subKey}`, subValue);
+                        }
+                    }
+                } else {
+                    urlParams.append(key, value);
                 }
             }
         } else {
-            urlParams.append(key, value);
+            console.warn("⚠️ No meaningful filters found — using only category.");
         }
+
+        break; // ✅ Only use the first selected category
     }
 
-    console.log("🔍 Final query string:", urlParams.toString());
+    console.log("🔧 Built query string:", urlParams.toString());
     return urlParams.toString();
-}
-
-
-// ✅ Helper: What counts as a meaningful user selection
-function isMeaningfulFilter(key, value) {
-    const isDefault = (
-        (key.toLowerCase().includes("condition") && value === "Any") ||
-        (key.toLowerCase().includes("price range") && value === "Any") ||
-        (key.toLowerCase().includes("sort order")) ||
-        (key.toLowerCase().includes("custom price") && !value.min && !value.max)
-    );
-
-    const isEmpty = (
-        value === null ||
-        value === "" ||
-        (Array.isArray(value) && value.length === 0)
-    );
-
-    return !isDefault && !isEmpty;
 }
