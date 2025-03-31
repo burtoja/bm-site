@@ -13,9 +13,9 @@ function collectMainCategoryFilters() {
     const data = {};
 
     // Find only the selected category
-    const selectedToggle = document.querySelector('.category-toggle.selected');
-    const selectedCategoryEl = selectedToggle?.closest('.category-item');
-    //const selectedCategoryEl = document.querySelector('.category-item.selected');
+    /*const selectedToggle = document.querySelector('.category-toggle.selected');
+    const selectedCategoryEl = selectedToggle?.closest('.category-item');*/
+    const selectedCategoryEl = document.querySelector('.category-toggle.selected');
     //const selectedCategoryEl = document.querySelector('.category-item .category-toggle.selected');
 
     if (!selectedCategoryEl) {
