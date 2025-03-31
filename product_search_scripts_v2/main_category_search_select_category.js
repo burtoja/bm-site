@@ -19,7 +19,7 @@ function selectCategory(clickedToggle) {
         }
     });
 
-    // Add .selected to the clicked category-toggle
+    // ✅ Add .selected to the clicked category-toggle
     clickedToggle.classList.add('selected');
 
     const categoryItem = clickedToggle.closest('.category-item');
@@ -35,11 +35,12 @@ function selectCategory(clickedToggle) {
     }
 }
 
-// ✅ Wait for DOM and register globally
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("MSG: selectCategory.js loaded");
-    window.selectCategory = selectCategory;
-});
+// ✅ Immediately expose the function globally
+window.selectCategory = selectCategory;
+
+// ✅ Optional: log when the file loads
+console.log("✅ selectCategory.js loaded");
+
 
 
 
