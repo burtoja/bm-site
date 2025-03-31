@@ -23,7 +23,7 @@ function collectMainCategoryFilters() {
         return data;
     }
 
-    const categoryEl = selectedCategoryEl.closest('.category-item');
+    const categoryEl = selectedCategoryEl.closest('.category-toggle');
 
     // Extract category name
     const categoryName = selectedCategoryEl.textContent
