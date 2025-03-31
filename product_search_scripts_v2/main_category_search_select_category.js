@@ -1,3 +1,7 @@
+/**
+ *
+ * @param clickedToggle
+ */
 function selectCategory(clickedToggle) {
     const categoryItem = clickedToggle.closest('.category-item');
     const filtersBox = categoryItem.querySelector('.category-filters');
