@@ -102,7 +102,6 @@ if (!empty($params['custom_price_min']) || !empty($params['custom_price_max'])) 
 // final URL
 $url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
 error_log("eBay API URL: " . $url);
-echo "<script>alert('Endpoint: " . addslashes($url) . "');</script>"; //TESTING
 
 // send the request
 $token = $token ?? getBasicOauthToken(); // reuse if already fetched
