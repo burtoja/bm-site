@@ -55,6 +55,7 @@ function extractSearchParameters(translatedData) {
     params.k = category;
 
     // Step 3: Process each filter under the selected category
+    // Step 3: Process each filter under the selected category
     for (const [label, value] of Object.entries(filters)) {
         if (Array.isArray(value) && value.length > 0) {
             // Special handling for Manufacturer
@@ -72,8 +73,13 @@ function extractSearchParameters(translatedData) {
         } else if (label === 'Sort Order') {
             // Convert sort order text to internal API sort code
             params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
+        } else if (label === 'Condition' && value !== 'Any') {
+            params.condition = value;
+        } else if (label === 'Price Range' && value !== 'Any') {
+            params.price_range = value;
         }
     }
+
 
     return params;
 }
