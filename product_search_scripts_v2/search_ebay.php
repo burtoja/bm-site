@@ -41,15 +41,17 @@ if (!empty($type)) {
 $skipKeys = ['k', 'q', 'condition', 'manufacturer', 'sort_select', 'custom_price_min', 'custom_price_max'];
 
 foreach ($params as $key => $value) {
-    if (in_array($key, $skipKeys)) continue;
+    if (in_array(strtolower($key), $skipKeys)) continue;
 
-    if (is_array($value)) {
-        foreach ($value as $v) {
-            $filters[] = "$key:{" . addslashes($v) . "}";
-        }
-    } else {
-        if (!empty($value)) {
-            $filters[] = "$key:{" . addslashes($value) . "}";
+    if (!is_array($value)) {
+        $value = [$value];
+    }
+
+    foreach ($value as $v) {
+        if (trim($v) !== '') {
+            // Normalize key name for eBay filter (spaces to underscores, lowercase)
+            $normalizedKey = strtolower(str_replace(' ', '_', $key));
+            $filters[] = "{$normalizedKey}:{" . addslashes($v) . "}";
         }
     }
 }
@@ -92,6 +94,7 @@ curl_close($curl);
 if ($debug) {
     echo json_encode([
         'debug_final_url' => $finalUrl,
+        'filters_used' => $filters,
         'raw_response' => json_decode($response, true),
         'error' => $err
     ]);
