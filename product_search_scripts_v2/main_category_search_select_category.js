@@ -7,19 +7,23 @@ function selectCategory(clickedToggle) {
     const filtersBox = categoryItem.querySelector('.category-filters');
     const isAlreadySelected = clickedToggle.classList.contains('selected');
     const isExpanded = filtersBox?.style.display === 'block';
-
+    console.log("Function called: selectCategory");
     // If the same category is clicked and it's expanded → collapse it
     if (isAlreadySelected && isExpanded) {
+        console.log("Category clicked which was already selected");
         filtersBox.style.display = 'none';
         clickedToggle.textContent = clickedToggle.textContent.replace('[-]', '[+]');
         clickedToggle.classList.remove('selected');
         return;
     }
+    else {console.log("This category was no already selected");}
+
 
     // Collapse all other categories and remove selection
     document.querySelectorAll('.category-item').forEach(otherItem => {
         const otherToggle = otherItem.querySelector('.category-toggle');
         const otherFilters = otherItem.querySelector('.category-filters');
+        console.log("Collapsing all other categories)");
 
         otherItem.classList.remove('selected');
         if (otherToggle) otherToggle.classList.remove('selected');
