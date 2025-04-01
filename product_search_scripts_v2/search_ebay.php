@@ -139,5 +139,11 @@ file_put_contents(__DIR__ . '/debug_last_url.txt', $url);
 file_put_contents(__DIR__ . '/debug_last_response.json', $response);
 
 // Finally output the eBay response
-echo $response;
+//echo $response;   REMOVED FOR TESTING
+echo json_encode([
+    'debug_url' => $url,
+    'raw_response' => json_decode($response, true)
+]);
+exit;
+
 

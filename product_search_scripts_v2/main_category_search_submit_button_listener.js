@@ -42,6 +42,10 @@ function waitForFormAndAttachListener(retries = 20) {
             console.log("Proxy API URL (note: this is not what is sent--check search_ebay.php):", apiUrl);
 
             const data = await fetch(apiUrl).then(res => res.json());
+
+            console.log("🔗 Proxy API URL:", data.debug_url); //TESTING
+            console.log("🧾 Raw eBay response:", data.raw_response); //TESTING
+
             if (data) {
             renderResults(data);
             //auto scroll to new results if needed
