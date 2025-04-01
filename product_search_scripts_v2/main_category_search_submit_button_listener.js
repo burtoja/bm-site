@@ -9,7 +9,12 @@ function waitForFormAndAttachListener(retries = 20) {
             e.preventDefault();
 
             const filterData = collectMainCategoryFilters();
-            //console.log("Collected filter data:", filterData);
+
+            // Sent alert if not categories selected
+            if (!filterData || Object.keys(filterData).length === 0) {
+                alert("⚠️ Please select a product category before searching.");
+                return;
+            }
 
             try {
                 const translatedFilters = await fetch('/product_search_scripts_v2/translate_filters.php', {
