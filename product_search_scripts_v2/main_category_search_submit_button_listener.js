@@ -55,6 +55,14 @@ function waitForFormAndAttachListener(retries = 20) {
             }
         });
 
+        // TESTING OUTPUT
+        const data = await fetch('/product_search_scripts_v2/search_ebay.php?' + queryString)
+            .then(res => res.json());
+
+        console.log("🔗 Proxy API URL:", data.debug_url);  // ✅ Show eBay endpoint
+        console.log("🧾 Raw eBay response:", data.raw_response); // ✅ Show API response
+        // END
+
     } else if (retries > 0) {
         console.log("Waiting for #product-filter-form...");
         setTimeout(() => waitForFormAndAttachListener(retries - 1), 100);
