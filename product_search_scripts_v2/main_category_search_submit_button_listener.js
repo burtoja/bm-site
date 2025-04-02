@@ -53,8 +53,8 @@ function waitForFormAndAttachListener(retries = 20) {
 
             const data = await fetch(apiUrl).then(res => res.json());
 
-            console.log("🔗 Proxy API URL:", data.debug_url); //TESTING
-            console.log("🧾 Raw eBay response:", data.raw_response); //TESTING
+            //console.log("🔗 Proxy API URL:", data.debug_url); //TESTING
+            //console.log("🧾 Raw eBay response:", data.raw_response); //TESTING
 
             if (data) {
             renderResults(data);

@@ -8,7 +8,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_endpoint_construction.php';
 
 // Debug flag (set to true while testing)
-$debug = true;
+$debug = false;
 
 // Extract query params
 $params = $_GET;
