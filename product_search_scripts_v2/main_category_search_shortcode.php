@@ -9,7 +9,7 @@ function boilersa_categories_shortcode($atts) {
     // Get all categories
     $sql = "SELECT id, name FROM categories ORDER BY name ASC";
     $result = $conn->query($sql);
-
+    error_log("Error Log Active (shortcode)");
     ob_start();
     echo '<div class="product-search-grid">';
 
