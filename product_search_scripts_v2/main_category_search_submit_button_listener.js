@@ -38,8 +38,18 @@ function waitForFormAndAttachListener(retries = 20) {
                 return;
             }
 
-            const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + queryStringFull;
-            console.log("Proxy API URL (note: this is not what is sent--check search_ebay.php):", apiUrl);
+            //const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + queryStringFull;
+            //console.log("Proxy API URL (note: this is not what is sent--check search_ebay.php):", apiUrl);
+
+            // Convert 'k' to 'q' in query string for eBay compatibility
+            const urlParams = new URLSearchParams(queryString);
+            if (urlParams.has('k')) {
+                urlParams.set('q', urlParams.get('k'));
+                urlParams.delete('k');
+            }
+
+            const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + urlParams.toString();
+            console.log("🔗 Proxy API URL:", apiUrl);
 
             const data = await fetch(apiUrl).then(res => res.json());
 
