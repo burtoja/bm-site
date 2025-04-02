@@ -1,84 +1,101 @@
 <?php
+/**
+ * Executes eBay API call through a server-side proxy to avoid CORS
+ */
 header('Content-Type: application/json');
+
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_endpoint_construction.php';
 
-// Debug flag (set to true while testing)
-$debug = true;
+// Debug mode (toggle manually or based on param)
+$debug = isset($_GET['debug']) && $_GET['debug'] === '1';
 
+// Extract query params
 $params = $_GET;
 
-// STEP 1: Extract keyword and other known filters
-$keyword     = isset($params['k']) ? $params['k'] : '';
-$condition   = isset($params['condition']) ? $params['condition'] : ''; // "Used" or "New"
-$manufacturer = isset($params['manufacturer']) ? $params['manufacturer'] : '';
-$type        = isset($params['type']) ? $params['type'] : '';
-$sort        = isset($params['sort_select']) && $params['sort_select'] === 'price_asc' ? '-price' : 'price';
-$minPrice    = isset($params['custom_price_min']) ? $params['custom_price_min'] : '';
-$maxPrice    = isset($params['custom_price_max']) ? $params['custom_price_max'] : '';
+// Translate internal 'k' to eBay's 'q'
+if (isset($params['k']) && !isset($params['q'])) {
+    $params['q'] = $params['k'];
+    unset($params['k']);
+}
 
+// Build the base query string
+$ebayParams = [];
+
+// Base keyword search
+if (!empty($params['q'])) {
+    $ebayParams[] = 'q=' . urlencode($params['q']);
+}
+
+// Add aspect filter for manufacturer brand matching (already handled upstream)
+if (!empty($params['aspect_filter'])) {
+    $ebayParams[] = 'aspect_filter=' . urlencode($params['aspect_filter']);
+}
+
+// Add sort
+if (!empty($params['sort_select'])) {
+    $sort = ($params['sort_select'] === 'price_asc') ? '-price' : 'price';
+    $ebayParams[] = 'sort=' . $sort;
+}
+
+// Filters we'll skip from building dynamic filters
+$skipKeys = ['q', 'sort_select', 'condition', 'custom_price_min', 'custom_price_max', 'aspect_filter'];
+
+// Start building eBay filters
 $filters = [];
 
-// STEP 2: Add condition filter (if present)
-if ($condition === 'Used') {
-    $filters[] = 'conditionIds:3000';
-} elseif ($condition === 'New') {
-    $filters[] = 'conditionIds:1000';
-}
-
-// STEP 3: Add price range
-if ($minPrice !== '' || $maxPrice !== '') {
-    $range = ($minPrice !== '' ? $minPrice : '') . '..' . ($maxPrice !== '' ? $maxPrice : '');
-    $filters[] = 'price:[' . $range . ']';
-}
-
-// STEP 4: Add type filter (if provided)
-if (!empty($type)) {
-    $filters[] = 'type:{"' . addslashes($type) . '"}';
-}
-
-// STEP 5: Add additional filters dynamically (skip known ones)
-$skipKeys = ['k', 'q', 'condition', 'manufacturer', 'sort_select', 'custom_price_min', 'custom_price_max'];
-
+// General filters from query string (Manufacturer, Configuration, Type, etc.)
 foreach ($params as $key => $value) {
-    if (in_array(strtolower($key), $skipKeys)) continue;
+    if (in_array($key, $skipKeys)) continue;
 
-    if (!is_array($value)) {
-        $value = [$value];
-    }
-
-    foreach ($value as $v) {
+    $values = is_array($value) ? $value : [$value];
+    foreach ($values as $v) {
         if (trim($v) !== '') {
-            // Normalize key name for eBay filter (spaces to underscores, lowercase)
             $normalizedKey = strtolower(str_replace(' ', '_', $key));
             $filters[] = "{$normalizedKey}:{" . addslashes($v) . "}";
         }
     }
 }
 
-// STEP 6: Build the final eBay API endpoint
-$ebayBase = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
-
-$q = trim($keyword . ' ' . $manufacturer); // Both contribute to q
-$queryParts = [
-    'q=' . urlencode($q),
-    'limit=50',
-    'offset=0',
-    'sort=' . $sort
-];
-
-if (!empty($filters)) {
-    $queryParts[] = 'filter=' . urlencode(implode(',', $filters));
+// Condition
+if (!empty($params['Condition']) && $params['Condition'] !== 'Any') {
+    $conditionId = ($params['Condition'] === 'Used') ? '3000' : '1000';
+    $filters[] = "conditionIds:$conditionId";
 }
 
-$finalUrl = $ebayBase . '?' . implode('&', $queryParts);
+// Price Range
+$min = $params['custom_price_min'] ?? '';
+$max = $params['custom_price_max'] ?? '';
+if ($min !== '' || $max !== '') {
+    $range = $min . '..' . $max;
+    $filters[] = "price:[$range]";
+}
 
-// STEP 7: Add token and send the request
+// Combine filters into one `filter` param
+if (!empty($filters)) {
+    $ebayParams[] = 'filter=' . urlencode(implode(',', $filters));
+}
+
+// Final API URL
+$url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
+
+// Optional debug output for browser (only while testing)
+if ($debug) {
+    echo json_encode([
+        'final_url' => $url,
+        'raw_params' => $params,
+        'parsed_filters' => $filters
+    ]);
+    exit;
+}
+
+// Retrieve OAuth token
 $token = getBasicOauthToken();
 
+// cURL request to eBay
 $curl = curl_init();
 curl_setopt_array($curl, [
-    CURLOPT_URL => $finalUrl,
+    CURLOPT_URL => $url,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         "Authorization: Bearer $token",
@@ -90,22 +107,17 @@ $response = curl_exec($curl);
 $err = curl_error($curl);
 curl_close($curl);
 
-// Debug mode
-if ($debug) {
-    echo json_encode([
-        'debug_final_url' => $finalUrl,
-        'filters_used' => $filters,
-        'raw_response' => json_decode($response, true),
-        'error' => $err
-    ]);
-    exit;
-}
-
-// Standard output
+// Handle response
 if ($err) {
     http_response_code(500);
     echo json_encode(["error" => "cURL error: $err"]);
-} else {
-    echo $response;
+    exit;
 }
-?>
+
+if (!$response || empty($response)) {
+    http_response_code(500);
+    echo json_encode(["error" => "Empty response from eBay"]);
+    exit;
+}
+
+echo $response;
