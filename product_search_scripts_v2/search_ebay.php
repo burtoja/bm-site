@@ -9,7 +9,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_en
 
 // Debug flag (set to true while testing)
 $debug = false;
-error_log("Error Log Active (search_ebay.php", 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
+error_log("Error Log Active (search_ebay.php)", 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
 
 // Extract query params
 $params = $_GET;
@@ -79,6 +79,7 @@ if (!empty($filters)) {
 
 // Final API URL
 $url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
+error_log("final URL for API call:" . $url, 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
 
 // Optional debug output for browser (only while testing)
 if ($debug) {
