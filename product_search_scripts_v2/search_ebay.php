@@ -7,8 +7,8 @@ header('Content-Type: application/json');
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_endpoint_construction.php';
 
-// Debug mode (toggle manually or based on param)
-$debug = isset($_GET['debug']) && $_GET['debug'] === '1';
+// Debug flag (set to true while testing)
+$debug = true;
 
 // Extract query params
 $params = $_GET;
