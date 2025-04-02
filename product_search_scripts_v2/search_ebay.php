@@ -2,7 +2,6 @@
 /**
  * Executes eBay API call through a server-side proxy to avoid CORS
  */
-error_log("Error Log Active (search_ebay.php");
 header('Content-Type: application/json');
 
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
@@ -10,7 +9,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_en
 
 // Debug flag (set to true while testing)
 $debug = false;
-
+error_log("Error Log Active (search_ebay.php");
 
 // Extract query params
 $params = $_GET;
