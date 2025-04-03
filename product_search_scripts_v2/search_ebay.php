@@ -76,10 +76,12 @@ if ($min !== '' || $max !== '') {
 if (!empty($filters)) {
     $ebayParams[] = 'filter=' . urlencode(implode(',', $filters));
 }
+error_log("\r\rimploded ebayParams:\r" . implode('&', $ebayParams), 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
+
 
 // Final API URL
 $url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
-error_log("\r\rFinal URL for API call:\r" . $url, 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
+error_log("\rFinal URL for API call:\r" . $url, 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
 
 // Optional debug output for browser (only while testing)
 if ($debug) {
