@@ -37,6 +37,7 @@ function construct_full_ebay_endpoint($params, $categoryId, $token) {
 
     $q .= ' ' . implode(' ', $unmatchedBrands);
     $endpoint = 'https://api.ebay.com/buy/browse/v1/item_summary/search?q=' . urlencode(trim($q));
+    file_put_contents(__DIR__ . '/debug_ab.txt', "ENDPOINT (2): " . $endpoint);
 
     $filters = [];
 

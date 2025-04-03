@@ -14,7 +14,7 @@ $token = getBasicOauthToken();
 
 try {
     $endpoint = construct_full_ebay_endpoint($params, $categoryId, $token);
-    file_put_contents(__DIR__ . '/debug_ab.txt', "ENDPOINT: " . $endpoint);
+    file_put_contents(__DIR__ . '/debug_ab.txt', "ENDPOINT (1): " . $endpoint);
 
     $curl = curl_init();
     curl_setopt_array($curl, [
