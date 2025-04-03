@@ -1,87 +1,81 @@
 <?php
-include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search_functions.php');
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/translate_filter_helpers.php';
 
-/**
- * Gets the eBay OAuth token
- *
- * @return  token
- **/
-//function get_ebay_oauth_token() {
-//    include ($_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php');
-//    return getBasicOauthToken();
-//}
+function construct_full_ebay_endpoint($params, $categoryId, $token) {
+    $recognizedBrands = [];
 
-/**
- * Constructs the initial endpoint to fetch available brands in a category
- *
- * @return string API endpoint (url)
- **/
-function construct_brand_list_endpoint($category_id) {
-    return "https://api.ebay.com/buy/browse/v1/item_summary/search?q=&category_ids={$category_id}&fieldgroups=ASPECT_REFINEMENTS";
-}
+    // Build aspect endpoint to retrieve brand list
+    $brandUrl = construct_brand_list_endpoint($categoryId);
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $brandUrl,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            "Authorization: Bearer $token",
+            "Content-Type: application/json"
+        ]
+    ]);
+    $brandResponse = curl_exec($curl);
+    curl_close($curl);
 
-/**
- * Extracts brand list from the API response (accepts JSON string or stdClass object)
- *
- * @param mixed $json_response The API response data (JSON string or stdClass)
- * @return array List of available brands
- **/
-function extract_brands_from_response($json_response) {
-    $brands = [];
+    $recognizedBrands = extract_brands_from_response($brandResponse);
 
-    if (is_string($json_response)) {
-        $response = json_decode($json_response, true);
-    } elseif ($json_response instanceof stdClass) {
-        $response = json_decode(json_encode($json_response), true);
-    } else {
-        return $brands; // Return empty array if format is unknown
-    }
+    $q = isset($params['k']) ? $params['k'] : '';
+    $unmatchedBrands = [];
+    $matchedBrands = [];
 
-    if (isset($response['refinement']['aspectDistributions'])) {
-        foreach ($response['refinement']['aspectDistributions'] as $aspect) {
-            if ($aspect['localizedAspectName'] === 'Brand') {
-                foreach ($aspect['aspectValueDistributions'] as $brandData) {
-                    $brands[] = $brandData['localizedAspectValue'];
-                }
+    if (!empty($params['Manufacturer'])) {
+        $manufacturers = is_array($params['Manufacturer']) ? $params['Manufacturer'] : [$params['Manufacturer']];
+        foreach ($manufacturers as $manu) {
+            if (in_array($manu, $recognizedBrands)) {
+                $matchedBrands[] = $manu;
+            } else {
+                $unmatchedBrands[] = $manu;
             }
         }
     }
-    return $brands;
-}
 
-/**
- * Constructs the search endpoint based on whether the brand exists in the category
- *
- * @return string API endpoint (url)
- **/
-function construct_search_endpoint($search_keyword_phrase, $category_id, $manufacturer, $condition, $brand_list) {
-    error_log("KEYWORD PHRASE = " . $search_keyword_phrase);
-    $manufacturer = urlencode($manufacturer);
-    $api_endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?q={$search_keyword_phrase}";
+    $q .= ' ' . implode(' ', $unmatchedBrands);
+    $endpoint = 'https://api.ebay.com/buy/browse/v1/item_summary/search?q=' . urlencode(trim($q));
 
-    // Add category ID
-    $api_endpoint .= "&category_ids={$category_id}";
+    $filters = [];
 
-    // Add filters for condition
-    if (!empty($condition)) {
-        $api_endpoint .= "&filter=" . urlencode("conditions:{" . $condition . "}");
+    // Aspect filter
+    if (!empty($matchedBrands)) {
+        $escapedBrands = array_map('urlencode', $matchedBrands);
+        $filters[] = 'aspect_filter=Brand:{' . implode(',', $escapedBrands) . '}';
     }
 
-    // Determine if the manufacturer exists in the available brands
-    if (in_array($manufacturer, $brand_list)) {
-        $api_endpoint .= "&aspect_filter=" . urlencode("categoryId:{$category_id},Brand:{" . $manufacturer . "}");
-    } else {
-        // Fallback to adding the manufacturer to the search query
-        $api_endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?q={$search_keyword_phrase}+{$manufacturer}&category_ids={$category_id}";
-        if (!empty($condition)) {
-            $api_endpoint .= "&filter=" . urlencode("conditions:{" . $condition . "}");
+    // Condition
+    if (!empty($params['Condition']) && $params['Condition'] !== 'Any') {
+        $condId = $params['Condition'] === 'Used' ? '3000' : '1000';
+        $filters[] = 'filter=conditionIds:' . $condId;
+    }
+
+    // Price range
+    if (!empty($params['min_price']) || !empty($params['max_price'])) {
+        $min = $params['min_price'] ?? '';
+        $max = $params['max_price'] ?? '';
+        if ($min !== '' || $max !== '') {
+            $range = $min . '..' . $max;
+            $filters[] = 'filter=price:[' . $range . ']';
         }
     }
 
-    // Add sorting and pagination
-    $api_endpoint .= "&limit=50&offset=0&sort=-price";
-    error_log("API ENDPOINT = " . $api_endpoint);
-    return $api_endpoint;
+    // Sort order
+    $sort = 'price';
+    if (!empty($params['sort_select'])) {
+        $sort = ($params['sort_select'] === 'price_asc') ? 'price' : '-price';
+    }
+
+    // Pagination (default to 0)
+    $offset = isset($params['offset']) ? (int)$params['offset'] : 0;
+
+    // Combine everything
+    $endpoint .= '&category_ids=' . $categoryId;
+    $endpoint .= '&' . implode('&', $filters);
+    $endpoint .= '&sort=' . $sort . '&limit=50&offset=' . $offset;
+
+    return $endpoint;
 }
 ?>
-
