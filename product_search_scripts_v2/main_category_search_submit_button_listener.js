@@ -22,45 +22,41 @@ function waitForFormAndAttachListener(retries = 20) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filters: filterData })
                 }).then(res => res.json());
-            console.log("Translated filters:", translatedFilters);
+                console.log("Translated filters:", translatedFilters);
 
-            const queryString = buildQueryStringFromSearchParams(translatedFilters);
-            console.log("Built query string:", queryString);
+                const queryString = buildQueryStringFromSearchParams(translatedFilters);
+                console.log("Built query string:", queryString);
 
-            const params = new URLSearchParams(queryString);
-            //console.log("Params object:", params.toString());
+                const params = new URLSearchParams(queryString);
 
-            //fetch the keyword parameter
-            const queryStringFull = params.toString();
+                //fetch the keyword parameter
+                const queryStringFull = params.toString();
 
-            if (!params.get('k')) {
-                console.warn("No keyword found. Skipping API call.");
-                return;
-            }
+                if (!params.get('k')) {
+                    console.warn("No keyword found. Skipping API call.");
+                    return;
+                }
 
-            //const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + queryStringFull;
-            //console.log("Proxy API URL (note: this is not what is sent--check search_ebay.php):", apiUrl);
+                // Convert 'k' to 'q' in query string for eBay compatibility
+                const urlParams = new URLSearchParams(queryString);
+                if (urlParams.has('k')) {
+                    urlParams.set('q', urlParams.get('k'));
+                    urlParams.delete('k');
+                }
 
-            // Convert 'k' to 'q' in query string for eBay compatibility
-            const urlParams = new URLSearchParams(queryString);
-            if (urlParams.has('k')) {
-                urlParams.set('q', urlParams.get('k'));
-                urlParams.delete('k');
-            }
+                const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + urlParams.toString();
+                console.log("Proxy API URL:", apiUrl);
 
-            const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + urlParams.toString();
-            console.log("🔗 Proxy API URL:", apiUrl);
+                const data = await fetch(apiUrl).then(res => res.json());
 
-            const data = await fetch(apiUrl).then(res => res.json());
-
-            if (data) {
-                console.log("search_ebay file returned something");
-                renderResults(data);
-                //auto scroll to new results if needed
-                document.getElementById('search-results').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
-            }
+                if (data) {
+                    console.log("search_ebay file returned something");
+                    renderResults(data);
+                    //auto scroll to new results if needed
+                    document.getElementById('search-results').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
+                }
             } catch (err) {
                 console.error("Error translating filters or building endpoint:", err);
                 document.getElementById('search-results').innerHTML = '<p>Error processing search.</p>';

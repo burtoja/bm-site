@@ -37,6 +37,8 @@ try {
         http_response_code(500);
         echo json_encode(["error" => "Empty response from eBay"]);
     } else {
+        error_log("TESTING: About to echo the response.");
+        error_log("TESTING: Response length: " . strlen($response));
         echo $response;
     }
 
