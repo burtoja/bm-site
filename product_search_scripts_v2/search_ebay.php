@@ -1,127 +1,118 @@
 <?php
 /**
  * Executes eBay API call through a server-side proxy to avoid CORS
+ *
+ * Example of properly formatted endpoint:
+ * https://api.ebay.com/buy/browse/v1/item_summary/search?q=Bearings+Ajanta&category_ids=12576&aspect_filter=Brand:{Ajanta}&filter=conditionIds:1000,price:[100..500]&sort=price&limit=50&offset=0
+ *
  */
 header('Content-Type: application/json');
-
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_endpoint_construction.php';
 
-// Debug flag (set to true while testing)
-$debug = false;
-error_log("Error Log Active (search_ebay.php)", 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
+// Hardcoded category ID for now
+$categoryId = 12576;
 
-// Extract query params
+// Get parameters from URL
 $params = $_GET;
 
-// Translate internal 'k' to eBay's 'q'
+// Translate 'k' to 'q' if needed
 if (isset($params['k']) && !isset($params['q'])) {
     $params['q'] = $params['k'];
     unset($params['k']);
 }
 
-// Build the base query string
-$ebayParams = [];
+$keyword = isset($params['q']) ? trim($params['q']) : '';
+$manufacturerRaw = $params['Manufacturer'] ?? '';
+$manufacturers = is_array($manufacturerRaw) ? $manufacturerRaw : explode(',', $manufacturerRaw);
 
-// Base keyword search
-if (!empty($params['q'])) {
-    $ebayParams[] = 'q=' . urlencode($params['q']);
-}
+// Get token and brand list
+$token = getBasicOauthToken();
+$brandEndpoint = construct_brand_list_endpoint($categoryId);
+$brandResponse = fetch_ebay_api($brandEndpoint, $token);
+$recognizedBrands = extract_brands_from_response($brandResponse);
 
-// Add aspect filter for manufacturer brand matching (already handled upstream)
-if (!empty($params['aspect_filter'])) {
-    $ebayParams[] = 'aspect_filter=' . urlencode($params['aspect_filter']);
-}
-
-// Add sort
-if (!empty($params['sort_select'])) {
-    $sort = ($params['sort_select'] === 'price_asc') ? '-price' : 'price';
-    $ebayParams[] = 'sort=' . $sort;
-}
-
-// Filters we'll skip from building dynamic filters
-$skipKeys = ['q', 'sort_select', 'condition', 'custom_price_min', 'custom_price_max', 'aspect_filter'];
-
-// Start building eBay filters
-$filters = [];
-
-// General filters from query string (Manufacturer, Configuration, Type, etc.)
-foreach ($params as $key => $value) {
-    if (in_array($key, $skipKeys)) continue;
-
-    $values = is_array($value) ? $value : [$value];
-    foreach ($values as $v) {
-        if (trim($v) !== '') {
-            $normalizedKey = strtolower(str_replace(' ', '_', $key));
-            $filters[] = "{$normalizedKey}:{" . addslashes($v) . "}";
-        }
+// Divide into matched/unmatched brands
+$matchedBrands = [];
+$unmatchedBrands = [];
+foreach ($manufacturers as $manu) {
+    if (in_array($manu, $recognizedBrands)) {
+        $matchedBrands[] = $manu;
+    } else {
+        $unmatchedBrands[] = $manu;
     }
+}
+
+// Start building endpoint
+$endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?";
+$query = $keyword;
+if (!empty($unmatchedBrands)) {
+    $query .= ' ' . implode(' ', $unmatchedBrands);
+}
+$endpoint .= "q=" . urlencode(trim($query));
+
+// Add category
+$endpoint .= "&category_ids=$categoryId";
+
+// Add aspect filter for brands
+if (!empty($matchedBrands)) {
+    $escaped = array_map('urlencode', $matchedBrands);
+    $endpoint .= "&aspect_filter=" . urlencode("categoryId:$categoryId,Brand:{" . implode(',', $escaped) . "}");
 }
 
 // Condition
 if (!empty($params['Condition']) && $params['Condition'] !== 'Any') {
-    $conditionId = ($params['Condition'] === 'Used') ? '3000' : '1000';
-    $filters[] = "conditionIds:$conditionId";
+    $condId = $params['Condition'] === 'Used' ? '3000' : '1000';
+    $endpoint .= "&filter=conditionIds:$condId";
 }
 
-// Price Range
-$min = $params['custom_price_min'] ?? '';
-$max = $params['custom_price_max'] ?? '';
-if ($min !== '' || $max !== '') {
-    $range = $min . '..' . $max;
-    $filters[] = "price:[$range]";
+// Custom price range
+if (!empty($params['custom_price_min']) || !empty($params['custom_price_max'])) {
+    $min = $params['custom_price_min'] ?? '';
+    $max = $params['custom_price_max'] ?? '';
+    if ($min !== '' || $max !== '') {
+        $range = $min . '..' . $max;
+        $endpoint .= "&filter=price:[" . $range . "]";
+    }
 }
 
-// Combine filters into one `filter` param
-if (!empty($filters)) {
-    $ebayParams[] = 'filter=' . urlencode(implode(',', $filters));
-}
-error_log("\r\rimploded ebayParams:\r" . implode('&', $ebayParams), 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
-
-
-// Final API URL
-$url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?' . implode('&', $ebayParams);
-error_log("\rFinal URL for API call:\r" . $url, 3, $_SERVER["DOCUMENT_ROOT"] ."/my_temp_log.txt");
-
-// Optional debug output for browser (only while testing)
-if ($debug) {
-    echo json_encode([
-        'final_url' => $url,
-        'raw_params' => $params,
-        'parsed_filters' => $filters
-    ]);
-    exit;
+// Sorting
+if (!empty($params['Sort Order'])) {
+    $sortOrder = strtolower($params['Sort Order']) === 'low to high' ? '-price' : 'price';
+    $endpoint .= "&sort=" . $sortOrder;
 }
 
-// Retrieve OAuth token
-$token = getBasicOauthToken();
+// Paging
+$endpoint .= "&limit=50&offset=0";
 
-// cURL request to eBay
-$curl = curl_init();
-curl_setopt_array($curl, [
-    CURLOPT_URL => $url,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_HTTPHEADER => [
-        "Authorization: Bearer $token",
-        "Content-Type: application/json"
-    ]
-]);
+// Debug: Write URL and brand list
+file_put_contents(__DIR__ . '/debug_last_url.txt', $endpoint);
+file_put_contents(__DIR__ . '/debug_brands.txt', print_r($recognizedBrands, true));
 
-$response = curl_exec($curl);
-$err = curl_error($curl);
-curl_close($curl);
-
-// Handle response
-if ($err) {
+// Final API Call
+$response = fetch_ebay_api($endpoint, $token);
+if (!$response) {
     http_response_code(500);
-    echo json_encode(["error" => "cURL error: $err"]);
-    exit;
-}
-
-if (!$response || empty($response)) {
-    http_response_code(500);
-    echo json_encode(["error" => "Empty response from eBay"]);
+    echo json_encode(["error" => "Failed to retrieve eBay data."]);
     exit;
 }
 
 echo $response;
+
+/**
+ * Helper function to call eBay API with headers
+ */
+function fetch_ebay_api($url, $token) {
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            "Authorization: Bearer $token",
+            "Content-Type: application/json"
+        ]
+    ]);
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
