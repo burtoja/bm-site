@@ -22,11 +22,20 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/ebay_api_en
 $categoryId = 12576; // Hardcoded category: Business & Industrial
 $params = $_GET; // Incoming search filters from frontend
 
-// Validate incoming params
-if (empty($params['k'])) {
-    echo json_encode(["error" => "Missing required keyword 'k'."]);
+// Check if 'q' is set — NOT 'k'
+if (!isset($_GET['q']) || empty($_GET['q'])) {
+    echo json_encode(["error" => "Missing required keyword 'q'."]);
     exit;
 }
+
+$q = $_GET['q'];
+
+// Collect other incoming params
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'price';
+$condition = isset($_GET['condition']) ? $_GET['condition'] : '';
+$minPrice = isset($_GET['min_price']) ? $_GET['min_price'] : '';
+$maxPrice = isset($_GET['max_price']) ? $_GET['max_price'] : '';
+$aspectFilter = isset($_GET['aspect_filter']) ? $_GET['aspect_filter'] : '';
 
 // Get OAuth token for eBay
 $token = getBasicOauthToken();
