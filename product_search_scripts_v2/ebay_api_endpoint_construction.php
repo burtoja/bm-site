@@ -115,5 +115,6 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
 
     //$finalUrl = $endpoint . '?' . implode('&', $queryStringParts);
     $finalUrl = $endpoint . '?' . http_build_query($queryStringParts);
+    error_log("FINAL URL: " . $finalUrl);
     return $finalUrl;
 }
