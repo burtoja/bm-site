@@ -44,25 +44,18 @@ function extract_brands_from_response($response) {
  *
  * @param array $params Flat array of filters (k, manufacturer, condition, min_price, etc)
  * @param array $recognizedBrands List of brands available in the category
- * @param int|string $categoryId
+ * @param int $categoryId
  * @return string
  */
-function construct_final_ebay_endpoint(array $params, array $recognizedBrands, $categoryId) {
-    $endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search";
+function construct_final_ebay_endpoint(array $params, array $recognizedBrands, int $categoryId) {
     $query = [];
 
     // Always set the base keyword (k becomes q)
     $q = $params['k'] ?? '';
-//    if (!empty($q)) {
-//        $query['q'] = $q;
-//    }
     if (empty($q)) {
         error_log("Missing required keyword 'q'.");
         return null;
     }
-
-    // Always set category ID
-    $query['category_ids'] = $categoryId;
 
     // Handle condition filter
     if (!empty($params['condition'])) {
@@ -102,8 +95,10 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, $
     $query['offset'] = 0;
 
     // Final assembly
+    $endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?q=" . urlencode($q);
+    $endpoint .= "&category_ids=$categoryId";
     $queryStringParts = [];
-    $queryStringParts[] = 'q=' . urlencode($q) . '&';
+    $queryStringParts[] = urlencode($q) . '&';
     foreach ($query as $key => $value) {
         if (is_array($value)) {
             foreach ($value as $v) {
