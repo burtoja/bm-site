@@ -51,11 +51,14 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     $query = [];
 
     // Always set the base keyword (k becomes q)
-    $q = $params['k'] ?? '';
+    $q = isset($params['q']) ? trim($params['q']) : '';
+    unset($params['q']);
     if (empty($q)) {
         error_log("Missing required keyword 'q'.");
         return null;
     }
+
+
 
     // Handle condition filter
     if (!empty($params['condition'])) {
@@ -73,6 +76,8 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
         $max = $params['max_price'] ?? '';
         $query['filter'][] = "price:[{$min}..{$max}]";
     }
+
+    //$brandList = get_available_brands_in_category($categoryId);
 
     // Handle manufacturer / brand logic
     if (!empty($params['manufacturer'])) {
@@ -98,7 +103,6 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     $endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?q=" . urlencode($q);
     $endpoint .= "&category_ids=$categoryId";
     $queryStringParts = [];
-    $queryStringParts[] = urlencode($q) . '&';
     foreach ($query as $key => $value) {
         if (is_array($value)) {
             foreach ($value as $v) {
