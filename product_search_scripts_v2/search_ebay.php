@@ -64,6 +64,7 @@ if (!$err && $brandResponse) {
 
 // Build final search URL
 $searchEndpoint = construct_final_ebay_endpoint($params, $recognizedBrands, $categoryId);
+error_log("ENDPOINT (in search_ebay): " . $searchEndpoint);
 
 // Fetch eBay search results
 $curl = curl_init();
