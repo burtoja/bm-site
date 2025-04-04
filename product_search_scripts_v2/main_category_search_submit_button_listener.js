@@ -10,9 +10,9 @@ function waitForFormAndAttachListener(retries = 20) {
 
             const filterData = collectMainCategoryFilters();
 
-            // Sent alert if not categories selected
+            // Send alert if no categories selected
             if (!filterData || Object.keys(filterData).length === 0) {
-                alert("⚠️ Please select a product category before searching.");
+                alert("\u26a0\ufe0f Please select a product category before searching.");
                 return;
             }
 
@@ -24,35 +24,31 @@ function waitForFormAndAttachListener(retries = 20) {
                 }).then(res => res.json());
                 console.log("Translated filters:", translatedFilters);
 
+                // Build query string
                 const queryString = buildQueryStringFromSearchParams(translatedFilters);
                 console.log("Built query string:", queryString);
 
+                // Parse it into URLSearchParams
                 const params = new URLSearchParams(queryString);
 
-                //fetch the keyword parameter
-                const queryStringFull = params.toString();
-
-                if (!params.get('k')) {
-                    console.warn("No keyword found. Skipping API call.");
-                    return;
+                // If 'k' exists, replace it with 'q'
+                if (params.has('k')) {
+                    params.set('q', params.get('k'));
+                    params.delete('k');
                 }
 
-                // Convert 'k' to 'q' in query string for eBay compatibility
-                const urlParams = new URLSearchParams(queryString);
-                if (urlParams.has('k')) {
-                    urlParams.set('q', urlParams.get('k'));
-                    urlParams.delete('k');
-                }
-
-                const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + urlParams.toString();
+                // Make the final API URL
+                const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + params.toString();
                 console.log("Proxy API URL:", apiUrl);
 
+                // Fetch data
                 const data = await fetch(apiUrl).then(res => res.json());
 
                 if (data) {
-                    console.log("search_ebay file returned something");
+                    console.log("\u2705 search_ebay.php returned data");
                     renderResults(data);
-                    //auto scroll to new results if needed
+
+                    // Auto scroll to new results if needed
                     document.getElementById('search-results').scrollIntoView({ behavior: 'smooth' });
                 } else {
                     document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
