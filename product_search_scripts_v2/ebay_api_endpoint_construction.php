@@ -53,8 +53,12 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, $
 
     // Always set the base keyword (k becomes q)
     $q = $params['k'] ?? '';
-    if (!empty($q)) {
-        $query['q'] = $q;
+//    if (!empty($q)) {
+//        $query['q'] = $q;
+//    }
+    if (empty($q)) {
+        error_log("Missing required keyword 'q'.");
+        return null;
     }
 
     // Always set category ID
@@ -83,7 +87,7 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, $
         if (in_array($manufacturer, $recognizedBrands)) {
             $query['aspect_filter'] = "Brand:{{$manufacturer}}";
         } else {
-            $query['q'] .= ' ' . $manufacturer;
+            $q .= ' ' . $manufacturer;
         }
     }
 
@@ -99,6 +103,7 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, $
 
     // Final assembly
     $queryStringParts = [];
+    $queryStringParts[] = 'q=' . urlencode($q);
     foreach ($query as $key => $value) {
         if (is_array($value)) {
             foreach ($value as $v) {
