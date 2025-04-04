@@ -103,7 +103,7 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, $
 
     // Final assembly
     $queryStringParts = [];
-    $queryStringParts[] = 'q=' . urlencode($q);
+    $queryStringParts[] = 'q=' . urlencode($q) . '&';
     foreach ($query as $key => $value) {
         if (is_array($value)) {
             foreach ($value as $v) {
