@@ -9,6 +9,7 @@ function waitForFormAndAttachListener(retries = 20) {
             e.preventDefault();
 
             const filterData = collectMainCategoryFilters();
+            console.log("Collected filters:", filterData);
 
             // Send alert if no categories selected
             if (!filterData || Object.keys(filterData).length === 0) {
