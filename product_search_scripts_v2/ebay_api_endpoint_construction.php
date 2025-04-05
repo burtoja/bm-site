@@ -78,9 +78,9 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     if (!empty($params['condition'])) {
         $cond = strtolower($params['condition']);
         if ($cond === 'used') {
-            $filters[] = 'conditionIds:3000';
+            $filters[] = 'conditionIds:{3000}';
         } elseif ($cond === 'new') {
-            $filters[] = 'conditionIds:1000';
+            $filters[] = 'conditionIds:{1000}';
         }
     }
 
