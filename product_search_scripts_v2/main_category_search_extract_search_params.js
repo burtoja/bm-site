@@ -59,7 +59,7 @@ function extractSearchParameters(translatedData) {
         if (Array.isArray(value) && value.length > 0) {
             // Special handling for Manufacturer
             if (label.toLowerCase() === 'manufacturer') {
-                params.manufacturer = value[0]; // Use only the first manufacturer for now
+                params.manufacturer = value[0]; // Use only the first manufacturer
             } else {
                 // Convert label to lowercase snake_case and assign values
                 const key = label.toLowerCase().replace(/\s+/g, '_');
@@ -72,7 +72,7 @@ function extractSearchParameters(translatedData) {
         } else if (label === 'Sort Order') {
             // Convert sort order text to internal API sort code
             params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
-        } else if (label === 'Condition' && value !== 'Any') {
+        } else if (name === 'Condition' && value !== 'Any') {
             params.condition = value;
         } else if (label === 'Price Range' && value !== 'Any') {
             params.price_range = value;
