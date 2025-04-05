@@ -84,8 +84,13 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
         }
     }
 
-    // Handle price range filter
-    if (!empty($params['min_price']) || !empty($params['max_price'])) {
+    // Handle price range filter --> price_range == Any  OR price_range == Under_100  OR min/max
+    if (!empty($params['price_range']) && $params['price_range'] !== 'Any') {
+        if ($params['price_range'] === 'Under 100') {
+            $filters[] = "price:[..100]";
+        }
+    } elseif (!empty($params['min_price']) || !empty($params['max_price'])) {
+        // Handle custom price inputs
         $min = $params['min_price'] ?? '';
         $max = $params['max_price'] ?? '';
         $filters[] = "price:[{$min}..{$max}]";
