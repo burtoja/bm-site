@@ -59,16 +59,16 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     }
 
     //Hide un-needed buttons
-    if (currentPage > 1) {
-        // Show First and Prev buttons
-        addButton('First', 1);
-        addButton('Prev', currentPage - 1);
-    }
-
-    if (currentPage < totalPages) {
-        // Show Next and Last buttons
-        addButton('Next', currentPage + 1);
-        addButton('Last', totalPages);
-    }
+    // if (currentPage > 1) {
+    //     // Show First and Prev buttons
+    //     addButton('First', 1);
+    //     addButton('Prev', currentPage - 1);
+    // }
+    //
+    // if (currentPage < totalPages) {
+    //     // Show Next and Last buttons
+    //     addButton('Next', currentPage + 1);
+    //     addButton('Last', totalPages);
+    // }
 
 }
