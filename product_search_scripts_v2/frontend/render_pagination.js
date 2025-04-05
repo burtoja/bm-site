@@ -45,6 +45,7 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     paginationEl.appendChild(createPageButton('Next', currentPage + 1, currentPage === totalPages));
     paginationEl.appendChild(createPageButton('Last', totalPages, currentPage === totalPages));
 
+    //Highlight current page
     if (i === currentPage) {
         const activePage = document.createElement('span');
         activePage.className = 'pagination-active';
@@ -55,6 +56,19 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
         pageButton.textContent = i;
         pageButton.dataset.page = i;
         pagination.appendChild(pageButton);
+    }
+
+    //Hide un-needed buttons
+    if (currentPage > 1) {
+        // Show First and Prev buttons
+        addButton('First', 1);
+        addButton('Prev', currentPage - 1);
+    }
+
+    if (currentPage < totalPages) {
+        // Show Next and Last buttons
+        addButton('Next', currentPage + 1);
+        addButton('Last', totalPages);
     }
 
 }
