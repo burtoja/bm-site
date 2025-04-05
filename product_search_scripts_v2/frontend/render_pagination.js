@@ -44,4 +44,17 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     // Next + Last
     paginationEl.appendChild(createPageButton('Next', currentPage + 1, currentPage === totalPages));
     paginationEl.appendChild(createPageButton('Last', totalPages, currentPage === totalPages));
+
+    if (i === currentPage) {
+        const activePage = document.createElement('span');
+        activePage.className = 'pagination-active';
+        activePage.textContent = i;
+        pagination.appendChild(activePage);
+    } else {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.dataset.page = i;
+        pagination.appendChild(pageButton);
+    }
+
 }
