@@ -1,6 +1,6 @@
 <?php
 /**
- * ebay_api_endpoint_construction.php
+ * build_ebay_endpoint.php
  * Cleaned up helper to build eBay Browse API search endpoints properly.
  */
 
