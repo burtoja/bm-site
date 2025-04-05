@@ -13,7 +13,7 @@ async function runSearchWithOffset(newOffset) {
         }
 
         const filterData = collectMainCategoryFilters();
-        const translatedFilters = await fetch('/product_search_scripts_v2/translate_filters.php', {
+        const translatedFilters = await fetch('/product_search_scripts_v2/backend/translate_filters.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ filters: filterData })
@@ -36,7 +36,7 @@ async function runSearchWithOffset(newOffset) {
             urlParams.delete('k');
         }
 
-        const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + urlParams.toString();
+        const apiUrl = '/product_search_scripts_v2/backend/search_ebay.php?' + urlParams.toString();
         console.log("Proxy API URL (paginated):", apiUrl);
 
         const data = await fetch(apiUrl).then(res => res.json());
