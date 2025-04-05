@@ -48,6 +48,9 @@ async function runSearchWithOffset(newOffset) {
             document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
         }
 
+        // Re-render pagination controls
+        renderPagination(data);
+
     } catch (err) {
         console.error("Error during paginated search:", err);
     }
