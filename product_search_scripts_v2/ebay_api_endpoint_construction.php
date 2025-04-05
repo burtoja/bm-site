@@ -57,6 +57,12 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     }
     $query['q'] = $params['q'];
 
+    // If misc_filters exist, append them
+    if (!empty($params['misc_filters']) && is_array($params['misc_filters'])) {
+        $miscKeywords = array_map('trim', $params['misc_filters']);
+        $query['q'] .= ' ' . implode(' ', $miscKeywords);
+    }
+
     // Always add category
     $query['category_ids'] = $categoryId;
 
