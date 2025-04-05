@@ -30,6 +30,12 @@ function waitForFormAndAttachListener(retries = 20) {
 
                 // Parse it into URLSearchParams
                 const params = new URLSearchParams(queryString);
+                // Normalize param names: lowercase and replace spaces with underscores
+                const normalizedParams = new URLSearchParams();
+                for (const [key, value] of params.entries()) {
+                    const newKey = key.toLowerCase().replace(/\s+/g, '_');
+                    normalizedParams.append(newKey, value);
+                }
 
                 // If 'k' exists, replace it with 'q'
                 if (params.has('k')) {
@@ -38,7 +44,7 @@ function waitForFormAndAttachListener(retries = 20) {
                 }
 
                 // Make the final API URL
-                const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + params.toString();
+                const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + normalizedParams.toString();
                 console.log("Proxy API URL:", apiUrl);
 
                 // Fetch data
