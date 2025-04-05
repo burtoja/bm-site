@@ -58,7 +58,7 @@ function boilersa_categories_shortcode($atts) {
     // Add JS (be sure these are in order)
     echo '<script src="/product_search_scripts_v2/frontend/toggle_filter_visibility.js"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/toggle_custom_price.js"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/main_category_search_reset_filters_button_action.js"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/reset_button_action.js"></script>';
 
     //Adding timestamp to this one to force clean cache for testing.
     $ver = time(); // or use a hardcoded version like '1.2'
