@@ -1,6 +1,6 @@
 <?php
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/db_connection.php');
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/filter_blocks.php');
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/filter_blocks.php');
 
 function boilersa_categories_shortcode($atts) {
     $conn = get_db_connection();
@@ -62,16 +62,14 @@ function boilersa_categories_shortcode($atts) {
 
     //Adding timestamp to this one to force clean cache for testing.
     $ver = time(); // or use a hardcoded version like '1.2'
-    echo '<script src="/product_search_scripts_v2/select_category.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/collect_filters.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/extract_search_params.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/build_query.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/build_api_endpoint_from_params.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/fetch-ebay-data.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/submit_button_listener.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/render_results.js?v=' . $ver . '"></script>';
-
-
+    echo '<script src="/product_search_scripts_v2/frontend/select_category.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/collect_filters.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/extract_search_params.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/build_query.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/build_api_endpoint_from_params.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/fetch-ebay-data.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/submit_button_listener.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/render_results.js?v=' . $ver . '"></script>';
 
     return ob_get_clean();
 }
