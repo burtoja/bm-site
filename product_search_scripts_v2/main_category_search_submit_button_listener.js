@@ -22,7 +22,7 @@ function waitForFormAndAttachListener(retries = 20) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filters: filterData })
                 }).then(res => res.json());
-                //console.log("Translated filters:", translatedFilters);
+                console.log("Translated filters:", translatedFilters);
 
                 // Build query string
                 const queryString = buildQueryStringFromSearchParams(translatedFilters);
