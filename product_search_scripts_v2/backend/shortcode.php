@@ -49,6 +49,7 @@ function boilersa_categories_shortcode($atts) {
 //// Right Column – RESULTS ////
     echo '<div class="results-column">';
     echo '<div id="search-results"><p>Search results will appear here...</p></div>';
+    echo '<div id="pagination"></div>';
     echo '</div>'; // close .results-column
 
     echo '</div>'; // close .product-search-grid

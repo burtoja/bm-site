@@ -29,4 +29,7 @@ function renderResults(data) {
         `;
         container.innerHTML += html;
     });
+    // Display pagination bar
+    renderPagination(data.total, data.offset, data.limit);
+
 }
