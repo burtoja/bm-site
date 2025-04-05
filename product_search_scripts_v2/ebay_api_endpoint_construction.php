@@ -99,7 +99,7 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     if (!empty($params['sort_select'])) {
         $query['sort'] = ($params['sort_select'] === 'price_asc') ? '-price' : 'price';
     } else {
-        $query['sort'] = 'price'; // default
+        $query['sort'] = '-price'; // default
     }
 
     // Default result limit and offset
