@@ -121,7 +121,8 @@ function extractSearchParameters(translatedData) {
         params.misc_filters = miscFilters;
     }
 
-    console.log("\ud83c\udf10 Extracted search parameters:", params); // <-- Debug helper!
+    console.log("Misc Filters collected:", miscFilters);
+    console.log("Final extracted search params:", params);
 
     return params;
 }
