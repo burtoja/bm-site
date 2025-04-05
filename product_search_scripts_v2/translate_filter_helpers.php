@@ -53,6 +53,9 @@ function translate_filter_ids_to_names($inputData, $conn) {
             elseif (strpos($key, 'sort_order') !== false) {
                 $translated[$category]['Sort Order'] = $value === 'high_to_low' ? 'High to Low' : 'Low to High';
             }
+            elseif (strpos($key, 'condition') !== false) {
+                $translated[$category]['Condition'] = $value === 'new' ? 'New' : 'Used';
+            }
         }
     }
 
