@@ -89,7 +89,7 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
         if ($params['price_range'] === 'Under_100') {
             $filters[] = "price%3A%5B..100%5D" . ",priceCurrency:USD";   // price:[..100] (colon and brackets encoded)
         }
-    } elseif (!empty($params['min_price']) || !empty($params['max_price'])) {
+    } elseif (!empty($params['custom_price_range_min']) || !empty($params['custom_price_range_max'])) {
         // Handle custom price inputs
         $min = $params['custom_price_range_min'] ?? '';
         $max = $params['custom_price_range_max'] ?? '';
