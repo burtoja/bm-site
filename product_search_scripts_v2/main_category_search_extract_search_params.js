@@ -55,29 +55,43 @@ function extractSearchParameters(translatedData) {
     params.k = category;
 
     // Step 3: Process each filter under the selected category
-    for (const [label, value] of Object.entries(filters)) {
+    for (const [rawName, value] of Object.entries(filters)) {
+        // Normalize the field name
+        let name = rawName;
+
+        if (rawName.startsWith('condition_')) {
+            name = 'Condition';
+        } else if (rawName.startsWith('price_range_')) {
+            name = 'Price Range';
+        } else if (rawName.startsWith('sort_order_')) {
+            name = 'Sort Order';
+        } else if (rawName.startsWith('min_price_') || rawName.startsWith('max_price_')) {
+            name = 'Custom Price Range';
+        } else if (rawName.startsWith('manufacturer')) {
+            name = 'Manufacturer';
+        }
+        // You can add more mappings here if needed
+
+        // Now your original logic works properly:
         if (Array.isArray(value) && value.length > 0) {
-            // Special handling for Manufacturer
-            if (label.toLowerCase() === 'manufacturer') {
-                params.manufacturer = value[0]; // Use only the first manufacturer
+            if (name.toLowerCase() === 'manufacturer') {
+                params.manufacturer = value[0]; // First manufacturer
             } else {
-                // Convert label to lowercase snake_case and assign values
-                const key = label.toLowerCase().replace(/\s+/g, '_');
+                const key = name.toLowerCase().replace(/\s+/g, '_');
                 params[key] = value;
             }
-        } else if (typeof value === 'object' && value !== null && label === 'Custom Price Range') {
-            // Add custom price range values if present
+        } else if (typeof value === 'object' && value !== null && name === 'Custom Price Range') {
             if (value.min) params.min_price = value.min;
             if (value.max) params.max_price = value.max;
-        } else if (label === 'Sort Order') {
-            // Convert sort order text to internal API sort code
+        } else if (name === 'Sort Order') {
             params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
         } else if (name === 'Condition' && value !== 'Any') {
             params.condition = value;
-        } else if (label === 'Price Range' && value !== 'Any') {
+        } else if (name === 'Price Range' && value !== 'Any') {
             params.price_range = value;
         }
     }
+
 
 
     return params;
