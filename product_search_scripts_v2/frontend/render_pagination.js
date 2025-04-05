@@ -46,17 +46,17 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     paginationEl.appendChild(createPageButton('Last', totalPages, currentPage === totalPages));
 
     //Highlight current page
-    if (i === currentPage) {
-        const activePage = document.createElement('span');
-        activePage.className = 'pagination-active';
-        activePage.textContent = i;
-        pagination.appendChild(activePage);
-    } else {
-        const pageButton = document.createElement('button');
-        pageButton.textContent = i;
-        pageButton.dataset.page = i;
-        pagination.appendChild(pageButton);
-    }
+    // if (i === currentPage) {
+    //     const activePage = document.createElement('span');
+    //     activePage.className = 'pagination-active';
+    //     activePage.textContent = i;
+    //     pagination.appendChild(activePage);
+    // } else {
+    //     const pageButton = document.createElement('button');
+    //     pageButton.textContent = i;
+    //     pageButton.dataset.page = i;
+    //     pagination.appendChild(pageButton);
+    // }
 
     //Hide un-needed buttons
     // if (currentPage > 1) {
