@@ -3,7 +3,7 @@
 header('Content-Type: application/json');
 
 include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/db_connection.php');
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/translate_filter_helpers.php');
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/filter_helpers.php');
 
 $conn = get_db_connection();
 
