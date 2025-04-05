@@ -12,7 +12,7 @@ include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/common_search
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/ebay_api_call_functions.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/pagination_functions.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/get_filter_values_from_url.php');
-include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/build_ebay_endpoint.php');
+include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/ebay_api_endpoint_construction.php');
 
 /**
  * Renders the html to build the page
