@@ -50,9 +50,9 @@ function extractSearchParameters(translatedData) {
         }
     }
 
-    // If no filters were selected, return an empty object
-    if (!category || !filters) {
-        console.log("Error:  No category or no filters were elected")
+    // If no category selected at all, return empty object
+    if (!category) {
+        console.log("No category selected.");
         return params;
     }
 
