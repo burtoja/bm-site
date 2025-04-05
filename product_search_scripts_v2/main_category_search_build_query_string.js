@@ -18,7 +18,7 @@
  * @returns {String} URL query string
  */
 function buildQueryStringFromSearchParams(filterData) {
-    console.groupCollapsed("***Building query string from filters...");
+    console.groupCollapsed("***Building query string from filters (build_query_string)...");
     console.log("Incoming translated filterData:", filterData);
 
     const params = extractSearchParameters(filterData);
@@ -34,21 +34,19 @@ function buildQueryStringFromSearchParams(filterData) {
 
     urlParams.set('k', params.k);
 
+    // If we have misc_filters collected, append them into k
+    if (params.misc_filters && Array.isArray(params.misc_filters)) {
+        const miscText = params.misc_filters.map(term => term.trim()).join(' ');
+        const updatedKeyword = params.k + ' ' + miscText;
+        urlParams.set('k', updatedKeyword);
+    }
+
     if (params.manufacturer) urlParams.append('manufacturer', params.manufacturer);
     if (params.condition) urlParams.append('condition', params.condition);
     if (params.price_range) urlParams.append('price_range', params.price_range);
     if (params.min_price) urlParams.append('min_price', params.min_price);
     if (params.max_price) urlParams.append('max_price', params.max_price);
     if (params.sort_select) urlParams.append('sort_select', params.sort_select);
-
-    // If we have misc_filters collected, add them individually
-    if (params.misc_filters && Array.isArray(params.misc_filters)) {
-        params.misc_filters.forEach(term => {
-            if (term && term.trim()) {
-                urlParams.append('misc', term.trim());
-            }
-        });
-    }
 
     console.log("Final Built Query String:", urlParams.toString());
     console.groupEnd();
