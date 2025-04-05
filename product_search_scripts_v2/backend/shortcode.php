@@ -69,7 +69,7 @@ function boilersa_categories_shortcode($atts) {
     echo '<script src="/product_search_scripts_v2/build_api_endpoint_from_params.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/fetch-ebay-data.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/submit_button_listener.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/main_category_search_render_results.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/render_results.js?v=' . $ver . '"></script>';
 
 
 
