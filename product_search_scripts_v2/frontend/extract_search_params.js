@@ -36,8 +36,6 @@ function extractSearchParameters(translatedData) {
         return params;
     }
 
-    console.log("Selected Category: " + category);
-
     // Step 2: Add the selected category as the "k" (keyword) parameter
     params.k = category;
 
