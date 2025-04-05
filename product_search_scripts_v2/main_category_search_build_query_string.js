@@ -18,50 +18,30 @@
  * @returns {String} URL query string
  */
 function buildQueryStringFromSearchParams(filterData) {
+    const params = extractSearchParameters(filterData);
     const urlParams = new URLSearchParams();
 
-    for (const [categoryName, filters] of Object.entries(filterData)) {
-        const hasMeaningfulFilters = Object.entries(filters).some(([key, value]) => {
-            // Skip known default values
-            if (key.startsWith("condition") && value === "any") return false;
-            if (key.startsWith("price_range") && value === "any") return false;
-            if (key.startsWith("sort_order")) return false;
-
-            if (key.startsWith("custom_price")) {
-                return value.min || value.max;
-            }
-
-            return value && (
-                (Array.isArray(value) && value.length > 0) ||
-                (typeof value === 'string' && value.trim() !== '') ||
-                (typeof value === 'object' && value !== null)
-            );
-        });
-
-        // EVEN if no filters, use the category name for keyword
-        urlParams.set('k', categoryName);
-
-        if (hasMeaningfulFilters) {
-            for (const [key, value] of Object.entries(filters)) {
-                if (Array.isArray(value)) {
-                    value.forEach(v => urlParams.append(key, v));
-                } else if (typeof value === 'object' && value !== null) {
-                    for (const [subKey, subValue] of Object.entries(value)) {
-                        if (subValue) {
-                            urlParams.append(`${key}_${subKey}`, subValue);
-                        }
-                    }
-                } else {
-                    urlParams.append(key, value);
-                }
-            }
-        } else {
-            console.warn("No meaningful filters found — using only category.");
-        }
-
-        break; // Only use the first selected category
+    if (!params.k) {
+        console.warn("No category selected or no keyword (k) found");
+        return '';
     }
 
-    console.log("🔧 Built query string:", urlParams.toString());
+    urlParams.set('k', params.k);
+
+    if (params.manufacturer) urlParams.append('manufacturer', params.manufacturer);
+    if (params.condition) urlParams.append('condition', params.condition);
+    if (params.price_range) urlParams.append('price_range', params.price_range);
+    if (params.min_price) urlParams.append('min_price', params.min_price);
+    if (params.max_price) urlParams.append('max_price', params.max_price);
+    if (params.sort_select) urlParams.append('sort_select', params.sort_select);
+
+    // 🛠️ NEW: If we have misc_filters collected, add them individually
+    if (params.misc_filters && Array.isArray(params.misc_filters)) {
+        params.misc_filters.forEach(term => {
+            urlParams.append('misc', term);
+        });
+    }
+
+    console.log("🔧 Final Built Query String:", urlParams.toString());
     return urlParams.toString();
 }

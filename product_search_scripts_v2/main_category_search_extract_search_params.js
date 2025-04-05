@@ -50,7 +50,6 @@ function extractSearchParameters(translatedData) {
         }
     }
 
-    console.log("TEST");
     // If no filters were selected, return an empty object
     if (!category || !filters) return params;
 
