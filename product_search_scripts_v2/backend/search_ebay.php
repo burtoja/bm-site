@@ -17,7 +17,7 @@
 header('Content-Type: application/json');
 
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
-require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/build_ebay_endpoint.php';
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/build_ebay_endpoint.php';
 
 $categoryId = 12576; // Hardcoded category: Business & Industrial
 $params = $_GET; // Incoming search filters from frontend
