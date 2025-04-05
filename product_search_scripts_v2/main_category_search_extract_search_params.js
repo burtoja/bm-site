@@ -61,6 +61,7 @@ function extractSearchParameters(translatedData) {
 
         if (rawName.startsWith('condition_')) {
             name = 'Condition';
+            console.log("FOUND IT");
         } else if (rawName.startsWith('price_range_')) {
             name = 'Price Range';
         } else if (rawName.startsWith('sort_order_')) {
@@ -70,9 +71,7 @@ function extractSearchParameters(translatedData) {
         } else if (rawName.startsWith('manufacturer')) {
             name = 'Manufacturer';
         }
-        // You can add more mappings here if needed
 
-        // Now your original logic works properly:
         if (Array.isArray(value) && value.length > 0) {
             if (name.toLowerCase() === 'manufacturer') {
                 params.manufacturer = value[0]; // First manufacturer
