@@ -60,37 +60,49 @@ function extractSearchParameters(translatedData) {
     const knownFields = ['manufacturer', 'price_range', 'condition', 'sort_order', 'custom_price_range'];
 
     for (const [rawName, value] of Object.entries(filters)) {
+        let normalizedName = rawName;
+
         // Normalize the field name
-        let name = rawName;
+        if (rawName.startsWith('condition_')) {
+            normalizedName = 'condition';
+        } else if (rawName.startsWith('price_range_')) {
+            normalizedName = 'price_range';
+        } else if (rawName.startsWith('sort_order_')) {
+            normalizedName = 'sort_order';
+        } else if (rawName.startsWith('manufacturer')) {
+            normalizedName = 'manufacturer';
+        } else if (rawName.startsWith('min_price_') || rawName.startsWith('max_price_')) {
+            normalizedName = 'custom_price_range';
+        }
 
-        if (knownFields.includes(name)) {
-            if (rawName.startsWith('condition_')) {
-                name = 'Condition';
-            } else if (rawName.startsWith('price_range_')) {
-                name = 'Price Range';
-            } else if (rawName.startsWith('sort_order_')) {
-                name = 'Sort Order';
-            } else if (rawName.startsWith('min_price_') || rawName.startsWith('max_price_')) {
-                name = 'Custom Price Range';
-            } else if (rawName.startsWith('manufacturer')) {
-                name = 'Manufacturer';
-            }
-
+        // if (knownFields.includes(name)) {
+        //     if (rawName.startsWith('condition_')) {
+        //         name = 'Condition';
+        //     } else if (rawName.startsWith('price_range_')) {
+        //         name = 'Price Range';
+        //     } else if (rawName.startsWith('sort_order_')) {
+        //         name = 'Sort Order';
+        //     } else if (rawName.startsWith('min_price_') || rawName.startsWith('max_price_')) {
+        //         name = 'Custom Price Range';
+        //     } else if (rawName.startsWith('manufacturer')) {
+        //         name = 'Manufacturer';
+        //     }
+        if (knownFields.includes(normalizedName)) {
             if (Array.isArray(value) && value.length > 0) {
-                if (name.toLowerCase() === 'manufacturer') {
-                    params.manufacturer = value[0]; // First manufacturer
+                if (normalizedName === 'manufacturer') {
+                    params.manufacturer = value[0];
                 } else {
-                    const key = name.toLowerCase().replace(/\s+/g, '_');
+                    const key = normalizedName;
                     params[key] = value;
                 }
-            } else if (typeof value === 'object' && value !== null && name === 'Custom Price Range') {
+            } else if (typeof value === 'object' && value !== null && normalizedName === 'custom_price_range') {
                 if (value.min) params.min_price = value.min;
                 if (value.max) params.max_price = value.max;
-            } else if (name === 'Sort Order') {
+            } else if (normalizedName === 'sort_order') {
                 params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
-            } else if (name === 'Condition' && value !== 'Any') {
+            } else if (normalizedName === 'condition' && value !== 'Any') {
                 params.condition = value;
-            } else if (name === 'Price Range' && value !== 'Any') {
+            } else if (normalizedName === 'price_range' && value !== 'Any') {
                 params.price_range = value;
             }
         } else {
@@ -102,6 +114,7 @@ function extractSearchParameters(translatedData) {
             }
         }
     }
+
     console.log("Misc Filters: " + miscFilters);
     // Attach misc filters to param array
     if (miscFilters.length > 0) {
