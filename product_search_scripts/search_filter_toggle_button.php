@@ -1,6 +1,6 @@
 <?php
 
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/search/collapsible_filter_box.php');
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/collapsible_filter_box.php');
 
 /**
  * Function to display the toggle button for the top of page search filter

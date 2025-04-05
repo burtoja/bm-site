@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/filter_helpers.php';
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/filter_helpers.php';
 
 function construct_full_ebay_endpoint($params, $categoryId, $token) {
     $recognizedBrands = [];
