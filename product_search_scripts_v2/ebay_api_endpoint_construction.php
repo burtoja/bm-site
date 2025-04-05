@@ -96,6 +96,7 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
         $filters[] = "price%3A%5B{$min}..{$max}%5D" . ",priceCurrency:USD";   // (colon and brackets encoded)
     }
 
+    //Add filters to the query array
     if (!empty($filters)) {
         $query['filter'] = implode(',', $filters);
     }
