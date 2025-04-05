@@ -38,9 +38,9 @@ function waitForFormAndAttachListener(retries = 20) {
                 }
 
                 // If 'k' exists, replace it with 'q'
-                if (params.has('k')) {
-                    params.set('q', params.get('k'));
-                    params.delete('k');
+                if (normalizedParams.has('k')) {
+                    normalizedParams.set('q', params.get('k'));
+                    normalizedParams.delete('k');
                 }
 
                 // Make the final API URL
