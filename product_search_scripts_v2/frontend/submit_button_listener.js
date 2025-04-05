@@ -23,7 +23,7 @@ function waitForFormAndAttachListener(retries = 20) {
             }
 
             try {
-                const translatedFilters = await fetch('/product_search_scripts_v2/translate_filters.php', {
+                const translatedFilters = await fetch('/product_search_scripts_v2/backend/translate_filters.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filters: filterData })
@@ -50,7 +50,7 @@ function waitForFormAndAttachListener(retries = 20) {
                 }
 
                 // Make the final API URL
-                const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + normalizedParams.toString();
+                const apiUrl = '/product_search_scripts_v2/backend/search_ebay.php?' + normalizedParams.toString();
                 console.log("✅ Sending API Request To:", apiUrl);
 
                 // Fetch data
