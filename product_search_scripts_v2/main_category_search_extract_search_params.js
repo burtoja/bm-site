@@ -110,6 +110,7 @@ function extractSearchParameters(translatedData) {
     }
 
     console.log("Misc Filters: " + miscFilters);
+
     // Attach misc filters to param array
     if (miscFilters.length > 0) {
         params.misc_filters = miscFilters;
