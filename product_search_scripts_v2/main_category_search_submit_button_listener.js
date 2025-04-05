@@ -8,12 +8,17 @@ function waitForFormAndAttachListener(retries = 20) {
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
+            console.group("🔎 SEARCH DEBUGGER");
+            console.log("✅ Search button clicked.");
+
             const filterData = collectMainCategoryFilters();
-            console.log("Collected filters:", filterData);
+            console.log("🛒 Collected Filters:", filterData);
 
             // Send alert if no categories selected
             if (!filterData || Object.keys(filterData).length === 0) {
                 alert("\u26a0\ufe0f Please select a product category before searching.");
+                console.warn("⚠️ No filters collected. Search canceled.");
+                console.groupEnd();
                 return;
             }
 
@@ -23,11 +28,11 @@ function waitForFormAndAttachListener(retries = 20) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filters: filterData })
                 }).then(res => res.json());
-                console.log("Translated filters:", translatedFilters);
+                console.log("📥 Received Translated Filters:", translatedFilters);
 
                 // Build query string
                 const queryString = buildQueryStringFromSearchParams(translatedFilters);
-                //console.log("Built query string:", queryString);
+                console.log("🔗 Final Query String:", queryString);
 
                 // Parse it into URLSearchParams
                 const params = new URLSearchParams(queryString);
@@ -46,10 +51,11 @@ function waitForFormAndAttachListener(retries = 20) {
 
                 // Make the final API URL
                 const apiUrl = '/product_search_scripts_v2/search_ebay.php?' + normalizedParams.toString();
-                console.log("Proxy API URL:", apiUrl);
+                console.log("🚀 Sending API Request To:", apiUrl);
 
                 // Fetch data
                 const data = await fetch(apiUrl).then(res => res.json());
+                console.log("📬 API Response:", data);
 
                 if (data) {
                     console.log("\u2705 search_ebay.php returned data");
@@ -64,6 +70,7 @@ function waitForFormAndAttachListener(retries = 20) {
                 console.error("Error translating filters or building endpoint:", err);
                 document.getElementById('search-results').innerHTML = '<p>Error processing search.</p>';
             }
+            console.groupEnd();
         });
 
     } else if (retries > 0) {
