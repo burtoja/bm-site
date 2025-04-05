@@ -51,7 +51,7 @@ function extractSearchParameters(translatedData) {
     }
 
     // If no filters were selected, return an empty object
-    if (!category || !filters) return params;
+    if (!category && !filters) return params;
 
     // Step 2: Add the selected category as the "k" (keyword) parameter
     params.k = category;
