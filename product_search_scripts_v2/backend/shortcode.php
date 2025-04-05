@@ -1,5 +1,5 @@
 <?php
-include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/db_connection.php');
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/db_connection.php');
 include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/filter_blocks.php');
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/main_category_style_block.php');
 
