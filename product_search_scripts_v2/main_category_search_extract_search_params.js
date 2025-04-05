@@ -10,6 +10,7 @@
  * @returns {Object} params - Cleaned and flattened search parameters
  */
 function extractSearchParameters(translatedData) {
+    console.log("📥 Incoming translatedData:", translatedData);
     const params = {};
     const miscFilters = [];
 
