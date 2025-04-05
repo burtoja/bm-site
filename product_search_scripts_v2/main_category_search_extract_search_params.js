@@ -72,7 +72,7 @@ function extractSearchParameters(translatedData) {
         } else if (label === 'Sort Order') {
             // Convert sort order text to internal API sort code
             params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
-        } else if (label === 'condition' && value !== 'Any') {
+        } else if (label === 'Condition' && value !== 'Any') {
             params.condition = value;
         } else if (label === 'Price Range' && value !== 'Any') {
             params.price_range = value;

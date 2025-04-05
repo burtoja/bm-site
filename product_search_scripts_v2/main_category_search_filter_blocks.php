@@ -16,8 +16,8 @@ function render_condition_filter($categoryId) {
     $snippet .= '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Condition</div>';
     $snippet .= '<div class="filter-options" style="display:none;">';
     $snippet .= '<ul>';
-    $snippet .= '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="new"> New</label></li>';
-    $snippet .= '<li><label><input type="checkbox" name="condition_' . $categoryId . '[]" value="used"> Used</label></li>';
+    $snippet .= '<li><label><input type="radio" name="condition_' . $categoryId . '" value="new"> New</label></li>';
+    $snippet .= '<li><label><input type="radio" name="condition_' . $categoryId . '" value="used"> Used</label></li>';
     $snippet .= '</ul>';
     $snippet .= '</div>';
     $snippet .= '</div>';
