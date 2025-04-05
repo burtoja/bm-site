@@ -121,6 +121,7 @@ function extractSearchParameters(translatedData) {
         params.misc_filters = miscFilters;
     }
 
+    console.log("Misc and Param filters completed!!!");
     console.log("Misc Filters collected:", miscFilters);
     console.log("Final extracted search params:", params);
 
