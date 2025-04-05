@@ -71,6 +71,8 @@ function boilersa_categories_shortcode($atts) {
     echo '<script src="/product_search_scripts_v2/frontend/fetch-ebay-data.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/submit_button_listener.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/render_results.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/render_pagination.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/run_search_with_offset.js?v=' . $ver . '"></script>';
 
     return ob_get_clean();
 }
