@@ -10,7 +10,7 @@
  * @returns {Object} params - Cleaned and flattened search parameters
  */
 function extractSearchParameters(translatedData) {
-    console.log("📥 Incoming translatedData:", translatedData);
+    console.log("Incoming translatedData:", translatedData);
     const params = {};
     const miscFilters = [];
 
@@ -25,29 +25,9 @@ function extractSearchParameters(translatedData) {
 
     // Step 1: Find the first category with meaningful (non-default) filter selections
     for (const [cat, f] of Object.entries(translatedData)) {
-        const hasMeaningfulFilters = Object.keys(f).some(k => {
-            const val = f[k];
-
-            // Skip if the value is a known default (e.g., "Any", "High to Low")
-            if (defaultIgnoreValues[k] && val === defaultIgnoreValues[k]) return false;
-
-            // Allow arrays with selections (e.g., manufacturers, voltages)
-            if (Array.isArray(val)) return val.length > 0;
-
-            // Allow custom price ranges with values
-            if (typeof val === "object" && val !== null) {
-                return Object.values(val).some(v => v);
-            }
-
-            // Skip empty strings or nulls
-            return val !== null && val !== "";
-        });
-
-        if (hasMeaningfulFilters) {
-            category = cat;
-            filters = f;
-            break;
-        }
+        category = cat;
+        filters = f;
+        break; // Take the first category provided in the translatedData which has one category
     }
 
     // If no category selected at all, return empty object
