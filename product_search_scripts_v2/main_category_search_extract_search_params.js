@@ -75,18 +75,6 @@ function extractSearchParameters(translatedData) {
             normalizedName = 'custom_price_range';
         }
 
-        // if (knownFields.includes(name)) {
-        //     if (rawName.startsWith('condition_')) {
-        //         name = 'Condition';
-        //     } else if (rawName.startsWith('price_range_')) {
-        //         name = 'Price Range';
-        //     } else if (rawName.startsWith('sort_order_')) {
-        //         name = 'Sort Order';
-        //     } else if (rawName.startsWith('min_price_') || rawName.startsWith('max_price_')) {
-        //         name = 'Custom Price Range';
-        //     } else if (rawName.startsWith('manufacturer')) {
-        //         name = 'Manufacturer';
-        //     }
         if (knownFields.includes(normalizedName)) {
             if (Array.isArray(value) && value.length > 0) {
                 if (normalizedName === 'manufacturer') {
