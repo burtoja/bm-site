@@ -48,73 +48,67 @@ function extract_brands_from_response($response) {
  * @return string
  */
 function construct_final_ebay_endpoint(array $params, array $recognizedBrands, int $categoryId) {
+    $api_base = "https://api.ebay.com/buy/browse/v1/item_summary/search?";
     $query = [];
 
-    // Always set the base keyword (k becomes q)
-    $q = isset($params['q']) ? trim($params['q']) : '';
-    unset($params['q']);
-    if (empty($q)) {
-        error_log("Missing required keyword 'q'.");
-        return null;
+    // Always set the base keyword (k becomes q in another place)
+    if (!isset($params['q'])) {
+        throw new Exception("Missing required keyword 'q'.");
     }
+    $query['q'] = $params['q'];
 
-
-
-    // Handle condition filter
-    if (!empty($params['condition'])) {
-        $cond = strtolower($params['condition']);
-        if ($cond === 'used') {
-            $query['filter'][] = 'conditionIds:3000';
-        } elseif ($cond === 'new') {
-            $query['filter'][] = 'conditionIds:1000';
-        }
-    }
-
-    // Handle price range
-    if (!empty($params['min_price']) || !empty($params['max_price'])) {
-        $min = $params['min_price'] ?? '';
-        $max = $params['max_price'] ?? '';
-        $query['filter'][] = "price:[{$min}..{$max}]";
-    }
-
-    //$brandList = get_available_brands_in_category($categoryId);
+    // Always add category
+    $query['category_ids'] = $categoryId;
 
     // Handle manufacturer / brand logic
+    //$brandList = get_available_brands_in_category($categoryId);
     if (!empty($params['manufacturer'])) {
         $manufacturer = trim($params['manufacturer']);
         if (in_array($manufacturer, $recognizedBrands)) {
             $query['aspect_filter'] = "Brand:{{$manufacturer}}";
         } else {
-            $q .= ' ' . $manufacturer;
+            $query['q'] .= ' ' . $manufacturer;
         }
     }
 
-    // Handle sort order
-    if (!empty($params['sort_select'])) {
-        $sort = strtolower($params['sort_select']) === 'price_asc' ? 'price' : '-price';
-        $query['sort'] = $sort;
+    // Handle filters separately
+    $filters = [];
+
+    // Handle condition filter
+    if (!empty($params['condition'])) {
+        $cond = strtolower($params['condition']);
+        if ($cond === 'Used') {
+            $filters[] = 'conditionIds:3000';
+        } elseif ($cond === 'New') {
+            $filters[] = 'conditionIds:1000';
+        }
     }
 
-    // Default limit and offset
+    // Handle price range filter
+    if (!empty($params['min_price']) || !empty($params['max_price'])) {
+        $min = $params['min_price'] ?? '';
+        $max = $params['max_price'] ?? '';
+        $filters[] = "price:[{$min}..{$max}]";
+    }
+
+    if (!empty($filters)) {
+        $query['filter'] = implode(',', $filters);
+    }
+
+    // Sorting
+    if (!empty($params['sort_select'])) {
+        $query['sort'] = ($params['sort_select'] === 'price_asc') ? '-price' : 'price';
+    } else {
+        $query['sort'] = 'price'; // default
+    }
+
+    // Default result limit and offset
     $query['limit'] = 50;
     $query['offset'] = 0;
 
-    // Final assembly
-    $endpoint = "https://api.ebay.com/buy/browse/v1/item_summary/search?q=" . urlencode($q);
-    $endpoint .= "&category_ids=$categoryId";
-    $queryStringParts = [];
-    foreach ($query as $key => $value) {
-        if (is_array($value)) {
-            foreach ($value as $v) {
-                $queryStringParts[] = urlencode($key) . '=' . urlencode($v);
-            }
-        } else {
-            $queryStringParts[] = urlencode($key) . '=' . urlencode($value);
-        }
-    }
+    // Build final query
+    $final_url = $api_base . http_build_query($query);
+    error_log("Final constructed endpoint: " . $final_url);
 
-    //$finalUrl = $endpoint . '?' . implode('&', $queryStringParts);
-    $finalUrl = $endpoint . '&' . http_build_query($queryStringParts, '', '&', PHP_QUERY_RFC3986);
-    error_log("FINAL URL: " . $finalUrl);
-    return $finalUrl;
+    return $final_url;
 }
