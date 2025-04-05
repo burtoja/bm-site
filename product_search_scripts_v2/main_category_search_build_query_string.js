@@ -18,11 +18,17 @@
  * @returns {String} URL query string
  */
 function buildQueryStringFromSearchParams(filterData) {
+    console.groupCollapsed("***Building query string from filters...");
+    console.log("Incoming translated filterData:", filterData);
+
     const params = extractSearchParameters(filterData);
+    console.log("Normalized search params:", params);
+
     const urlParams = new URLSearchParams();
 
     if (!params.k) {
         console.warn("No category selected or no keyword (k) found");
+        console.groupEnd();
         return '';
     }
 
@@ -35,13 +41,18 @@ function buildQueryStringFromSearchParams(filterData) {
     if (params.max_price) urlParams.append('max_price', params.max_price);
     if (params.sort_select) urlParams.append('sort_select', params.sort_select);
 
-    // 🛠️ NEW: If we have misc_filters collected, add them individually
+    // If we have misc_filters collected, add them individually
     if (params.misc_filters && Array.isArray(params.misc_filters)) {
         params.misc_filters.forEach(term => {
-            urlParams.append('misc', term);
+            if (term && term.trim()) {
+                urlParams.append('misc', term.trim());
+            }
         });
     }
 
-    console.log("🔧 Final Built Query String:", urlParams.toString());
+    console.log("Final Built Query String:", urlParams.toString());
+    console.groupEnd();
     return urlParams.toString();
 }
+// Expose it globally
+window.buildQueryStringFromSearchParams = buildQueryStringFromSearchParams;
