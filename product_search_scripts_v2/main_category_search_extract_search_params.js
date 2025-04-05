@@ -61,7 +61,6 @@ function extractSearchParameters(translatedData) {
 
         if (rawName.startsWith('condition_')) {
             name = 'Condition';
-            console.log("FOUND IT");
         } else if (rawName.startsWith('price_range_')) {
             name = 'Price Range';
         } else if (rawName.startsWith('sort_order_')) {
@@ -91,7 +90,7 @@ function extractSearchParameters(translatedData) {
         }
     }
 
-
+    console.log("\ud83c\udf10 Extracted search parameters:", params); // <-- Debug helper!
 
     return params;
 }
