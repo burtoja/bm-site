@@ -91,8 +91,8 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
         }
     } elseif (!empty($params['min_price']) || !empty($params['max_price'])) {
         // Handle custom price inputs
-        $min = $params['min_price'] ?? '';
-        $max = $params['max_price'] ?? '';
+        $min = $params['custom_price_range_min'] ?? '';
+        $max = $params['custom_price_range_max'] ?? '';
         $filters[] = "price%3A%5B{$min}..{$max}%5D" . ",priceCurrency:USD";   // (colon and brackets encoded)
     }
 
