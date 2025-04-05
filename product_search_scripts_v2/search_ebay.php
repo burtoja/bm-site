@@ -95,5 +95,5 @@ if (!$response) {
 echo $response;
 
 // (Optional debug: write raw ebay api url and response)
-file_put_contents(__DIR__ . '/debug_search_endpoint.txt', $searchEndpoint);
+file_put_contents(__DIR__ . '/debug_search_endpoint.txt', "EP:" . $searchEndpoint);
 //file_put_contents(__DIR__ . '/debug_response.json', $response);
