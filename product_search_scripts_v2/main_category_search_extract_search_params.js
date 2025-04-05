@@ -94,11 +94,17 @@ function extractSearchParameters(translatedData) {
                 params.price_range = value;
             }
         } else {
-            // Collect misc filters
+            // Collect misc filters, but skip unwanted defaults
             if (Array.isArray(value)) {
-                miscFilters.push(...value);
-            } else if (typeof value === 'string' && value.trim()) {
-                miscFilters.push(value);
+                value.forEach(function(v) {
+                    if (v !== null && v !== undefined && v.trim() !== '' && v !== 'Any' && v !== 'High to Low') {
+                        miscFilters.push(v.trim());
+                    }
+                });
+            } else if (typeof value === 'string') {
+                if (value.trim() !== '' && value !== 'Any' && value !== 'High to Low') {
+                    miscFilters.push(value.trim());
+                }
             }
         }
     }
