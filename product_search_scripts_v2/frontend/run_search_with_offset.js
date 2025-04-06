@@ -49,7 +49,10 @@ async function runSearchWithOffset(newOffset) {
         }
 
         // Re-render pagination controls
-        renderPagination(data);
+        const totalResults = data.total || 0;
+        const currentOffset = data.offset || 0;
+        const totalPages = Math.ceil(totalResults / 50); // 50 is our limit per page
+        renderPagination(totalResults, currentOffset,50);
 
     } catch (err) {
         console.error("Error during paginated search:", err);
