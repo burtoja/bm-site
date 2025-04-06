@@ -14,9 +14,11 @@ function renderResults(data) {
     }
 
     items.forEach(item => {
+        const itemUrl = item.itemWebUrl;
+        const affiliateUrl = itemUrl + (itemUrl.includes('?') ? '&' : '?') + 'campid=5339086474';
         const html = `
             <div class="result-card">
-                <a href="${item.itemWebUrl}" target="_blank">
+                <a href="${affiliateUrl}" target="_blank">
                     <div class="result-image">
                         <img src="${item.image?.imageUrl || ''}" alt="${item.title}">
                     </div>
