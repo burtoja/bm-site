@@ -33,13 +33,14 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     paginationEl.appendChild(createPageButton('First', 1, currentPage === 1));
     paginationEl.appendChild(createPageButton('Prev', currentPage - 1, currentPage === 1));
 
+    // TODO: add page numbers for current and surrounding pages
     // Pages around current
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, currentPage + 2);
-
-    for (let p = startPage; p <= endPage; p++) {
-        paginationEl.appendChild(createPageButton(p, p, false, p === currentPage));
-    }
+    // const startPage = Math.max(1, currentPage - 2);
+    // const endPage = Math.min(totalPages, currentPage + 2);
+    //
+    // for (let p = startPage; p <= endPage; p++) {
+    //     paginationEl.appendChild(createPageButton(p, p, false, p === currentPage));
+    // }
 
     // Next + Last
     paginationEl.appendChild(createPageButton('Next', currentPage + 1, currentPage === totalPages));
@@ -59,16 +60,16 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     // }
 
     //Hide un-needed buttons
-    // if (currentPage > 1) {
-    //     // Show First and Prev buttons
-    //     addButton('First', 1);
-    //     addButton('Prev', currentPage - 1);
-    // }
-    //
-    // if (currentPage < totalPages) {
-    //     // Show Next and Last buttons
-    //     addButton('Next', currentPage + 1);
-    //     addButton('Last', totalPages);
-    // }
+    if (currentPage > 1) {
+        // Show First and Prev buttons
+        addButton('First', 1);
+        addButton('Prev', currentPage - 1);
+    }
+
+    if (currentPage < totalPages) {
+        // Show Next and Last buttons
+        addButton('Next', currentPage + 1);
+        addButton('Last', totalPages);
+    }
 
 }
