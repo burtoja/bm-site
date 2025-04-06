@@ -29,20 +29,21 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
         return btn;
     };
 
+
     //Hide un-needed buttons
     if (currentPage > 1) {
         // Show First and Prev buttons
-        paginationEl.appendChild(createPageButton('First', 1, currentPage === 1));
-        paginationEl.appendChild(createPageButton('Prev', currentPage - 1, currentPage === 1));
+        paginationEl.appendChild(createPageButton('First Page', 1, currentPage === 1));
+        paginationEl.appendChild(createPageButton('Previous Page', currentPage - 1, currentPage === 1));
     }
 
     if (currentPage < totalPages) {
         // Show Next and Last buttons
-        paginationEl.appendChild(createPageButton('Next', currentPage + 1, currentPage === totalPages));
-        paginationEl.appendChild(createPageButton('Last', totalPages, currentPage === totalPages));
+        paginationEl.appendChild(createPageButton('Next Page', currentPage + 1, currentPage === totalPages));
+        paginationEl.appendChild(createPageButton('Last Page', totalPages, currentPage === totalPages));
     }
 
-    // First + Prev
+    // Add First + Prev buttons
 
 
     // TODO: add page numbers for current and surrounding pages
@@ -54,7 +55,7 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     //     paginationEl.appendChild(createPageButton(p, p, false, p === currentPage));
     // }
 
-    // Next + Last
+    //  Add Next + Last buttons
 
 
     //Highlight current page
