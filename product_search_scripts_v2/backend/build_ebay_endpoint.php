@@ -116,7 +116,11 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
 
     // Default result limit and offset
     $query['limit'] = 50;
-    $query['offset'] = 0;
+
+
+    // Grab offset or set it to zero if none is present
+    //$query['offset'] = 0;
+    $query['offset']  = isset($params['offset']) ? (int)$params['offset'] : 0;
 
     // Build final query
     $final_url = $api_base . http_build_query($query);
