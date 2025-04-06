@@ -31,7 +31,7 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
 
 
     //Display total number of pages and current page
-    document.getElementById('pagination').innerHTML = '<p>' + totalPages  + '</p>';
+    document.getElementById('pagination').innerHTML = '<p>Page ' + currentPage + ' of ' + totalPages  + '</p>';
 
     //Hide un-needed buttons
     if (currentPage > 1) {
