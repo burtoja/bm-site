@@ -30,6 +30,9 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     };
 
 
+    //Display total number of pages and current page
+    document.getElementById('pagination').innerHTML = '<p>' + totalPages  + '</p>';
+
     //Hide un-needed buttons
     if (currentPage > 1) {
         // Show First and Prev buttons
