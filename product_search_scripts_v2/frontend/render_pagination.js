@@ -20,7 +20,10 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
         const btn = document.createElement('button');
         btn.textContent = label;
         btn.classList.add('pagination-btn');
-        if (disabled) btn.disabled = true;
+        if (disabled) {
+            btn.disabled = true;
+            btn.classList.add('disabled-button');
+        }
         if (isActive) btn.classList.add('active-page');
         btn.addEventListener('click', () => {
             const newOffset = (page - 1) * limit;
@@ -34,16 +37,21 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
     document.getElementById('pagination').innerHTML = '<p>Page ' + currentPage + ' of ' + totalPages  + '</p>';
 
     //Hide un-needed buttons
-    if (currentPage > 1) {
-        // Show First and Prev buttons
-        paginationEl.appendChild(createPageButton('First Page', 1, currentPage === 1));
-        paginationEl.appendChild(createPageButton('Previous Page', currentPage - 1, currentPage === 1));
-    }
-
-    if (currentPage < totalPages) {
-        // Show Next and Last buttons
-        paginationEl.appendChild(createPageButton('Next Page', currentPage + 1, currentPage === totalPages));
-        paginationEl.appendChild(createPageButton('Last Page', totalPages, currentPage === totalPages));
+    if (currentPage === 1) {
+        paginationEl.appendChild(createPageButton('First Page', 1, true, currentPage === 1));
+        paginationEl.appendChild(createPageButton('Previous Page', currentPage - 1, true, currentPage === 1));
+        paginationEl.appendChild(createPageButton('Next Page', currentPage + 1, false, currentPage === totalPages));
+        paginationEl.appendChild(createPageButton('Last Page', totalPages, false, currentPage === totalPages));
+    } else if (currentPage === totalPages) {
+        paginationEl.appendChild(createPageButton('First Page', 1, false, currentPage === 1));
+        paginationEl.appendChild(createPageButton('Previous Page', currentPage - 1, false, currentPage === 1));
+        paginationEl.appendChild(createPageButton('Next Page', currentPage + 1, true, currentPage === totalPages));
+        paginationEl.appendChild(createPageButton('Last Page', totalPages, true, currentPage === totalPages));
+    } else {
+        paginationEl.appendChild(createPageButton('First Page', 1, false, currentPage === 1));
+        paginationEl.appendChild(createPageButton('Previous Page', currentPage - 1, false, currentPage === 1));
+        paginationEl.appendChild(createPageButton('Next Page', currentPage + 1, false, currentPage === totalPages));
+        paginationEl.appendChild(createPageButton('Last Page', totalPages, false, currentPage === totalPages));
     }
 
     // Add First + Prev buttons
