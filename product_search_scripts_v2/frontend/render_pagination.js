@@ -26,7 +26,10 @@ function renderPagination(totalResults, currentOffset, limit = 50) {
         }
         if (isActive) btn.classList.add('active-page');
         btn.addEventListener('click', () => {
-            const newOffset = (page - 1) * limit;
+            let newOffset = (page - 1) * limit;
+            if (newOffset >= totalResults) {
+                newOffset = Math.floor((totalResults - 1) / limit) * limit;
+            }
             runSearchWithOffset(newOffset);
         });
         return btn;
