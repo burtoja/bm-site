@@ -11,13 +11,30 @@
  * @return bool
  */
 function render_condition_filter($categoryId) {
+    // Read the 'condition' parameter from the URL
+    if (isset($_GET['condition'])) {
+        $condition_param = strtolower($_GET['condition']);
+    } else {
+        $condition_param = '';
+    }
+
+    // Determine if new/used needs to be selected
+    $new_is_checked = '';
+    $used_is_checked = '';
+    if ($condition_param === 'new') {
+        $new_is_checked = ' checked';
+    } else if ($condition_param === 'used') {
+        $used_is_checked = ' checked';
+    }
+
+
     $snippet = '';
     $snippet .= '<div class="filter-item">';
     $snippet .= '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] Condition</div>';
     $snippet .= '<div class="filter-options" style="display:none;">';
     $snippet .= '<ul>';
-    $snippet .= '<li><label><input type="radio" name="condition_' . $categoryId . '" value="new"> New</label></li>';
-    $snippet .= '<li><label><input type="radio" name="condition_' . $categoryId . '" value="used"> Used</label></li>';
+    $snippet .= '<li><label><input type="radio" name="condition_' . $categoryId . '" value="new"' . $new_is_checked . '> New</label></li>';
+    $snippet .= '<li><label><input type="radio" name="condition_' . $categoryId . '" value="used"' . $used_is_checked  . '> Used</label></li>';
     $snippet .= '</ul>';
     $snippet .= '</div>';
     $snippet .= '</div>';
