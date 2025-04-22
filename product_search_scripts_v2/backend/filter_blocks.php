@@ -186,7 +186,7 @@ function render_sticky_search_reset_buttons() {
  * @return string
  */
 function render_filters_by_subcategory($subcategoryId) {
-    require_once 'db_connection.php';
+    require_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
 
     $html = '';
 
