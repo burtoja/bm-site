@@ -180,43 +180,26 @@ function render_sticky_search_reset_buttons() {
 }
 
 /**
- * Renders all filters for a given subcategory using subcategory_filters table.
+ * Renders all filters and options from a subcategory (data must be pre-loaded).
  *
- * @param int $subcategoryId
- * @return string
+ * @param array $filtersWithOptions - Array of filters and their options.
+ * @return string - HTML filter blocks.
  */
-function render_filters_by_subcategory($subcategoryId) {
-    require_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
-
+function render_filters_by_subcategory($filtersWithOptions) {
     $html = '';
 
-    // Get filters for the subcategory
-    $sql = "SELECT f.id, f.name 
-            FROM filters f
-            JOIN subcategory_filters sf ON f.id = sf.filter_id
-            WHERE sf.subcategory_id = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$subcategoryId]);
-    $filters = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($filters as $filter) {
-        $filterId = $filter['id'];
-        $filterName = htmlspecialchars($filter['name']);
+    foreach ($filtersWithOptions as $filter) {
+        $filterId = $filter['filter_id'];
+        $filterName = htmlspecialchars($filter['filter_name']);
         $paramName = 'filter_' . $filterId;
-
-        // Get filter options
-        $optSql = "SELECT id, value FROM filter_options WHERE filter_id = ? ORDER BY sort_order ASC";
-        $optStmt = $pdo->prepare($optSql);
-        $optStmt->execute([$filterId]);
-        $options = $optStmt->fetchAll(PDO::FETCH_ASSOC);
 
         $html .= '<div class="filter-item">';
         $html .= '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] ' . $filterName . '</div>';
         $html .= '<div class="filter-options" style="display:none;">';
         $html .= '<ul>';
 
-        foreach ($options as $option) {
-            $optionId = $option['id'];
+        foreach ($filter['options'] as $option) {
+            $optionId = $option['option_id'];
             $optionValue = htmlspecialchars($option['value']);
             $html .= '<li><label><input type="checkbox" name="' . $paramName . '[]" value="' . $optionId . '"> ' . $optionValue . '</label></li>';
         }
