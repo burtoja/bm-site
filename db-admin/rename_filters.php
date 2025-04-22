@@ -1,5 +1,5 @@
 <?php
-require_once 'product_search_scripts_v2/backend/db_connection.php';
+require_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
 
 $conn = get_db_connection();
 
