@@ -178,3 +178,54 @@ function render_sticky_search_reset_buttons() {
     echo '</div>';
     return ob_get_clean();
 }
+
+/**
+ * Renders all filters for a given subcategory using subcategory_filters table.
+ *
+ * @param int $subcategoryId
+ * @return string
+ */
+function render_filters_by_subcategory($subcategoryId) {
+    require_once 'db_connection.php';
+
+    $html = '';
+
+    // Get filters for the subcategory
+    $sql = "SELECT f.id, f.name 
+            FROM filters f
+            JOIN subcategory_filters sf ON f.id = sf.filter_id
+            WHERE sf.subcategory_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$subcategoryId]);
+    $filters = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($filters as $filter) {
+        $filterId = $filter['id'];
+        $filterName = htmlspecialchars($filter['name']);
+        $paramName = 'filter_' . $filterId;
+
+        // Get filter options
+        $optSql = "SELECT id, value FROM filter_options WHERE filter_id = ? ORDER BY sort_order ASC";
+        $optStmt = $pdo->prepare($optSql);
+        $optStmt->execute([$filterId]);
+        $options = $optStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $html .= '<div class="filter-item">';
+        $html .= '<div class="toggle filter-toggle" onclick="toggleVisibility(this)">[+] ' . $filterName . '</div>';
+        $html .= '<div class="filter-options" style="display:none;">';
+        $html .= '<ul>';
+
+        foreach ($options as $option) {
+            $optionId = $option['id'];
+            $optionValue = htmlspecialchars($option['value']);
+            $html .= '<li><label><input type="checkbox" name="' . $paramName . '[]" value="' . $optionId . '"> ' . $optionValue . '</label></li>';
+        }
+
+        $html .= '</ul>';
+        $html .= '</div>';
+        $html .= '</div>';
+    }
+
+    return $html;
+}
+
