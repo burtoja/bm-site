@@ -11,45 +11,59 @@ if (!isset($_GET['subcategory_id'])) {
 
 $subcategoryId = intval($_GET['subcategory_id']);
 
-try {
-    $pdo = getPDO();
+$conn = get_db_connection();
 
-    // Fetch filters for this subcategory
-    $stmt = $pdo->prepare("
-        SELECT f.id AS filter_id, f.name AS filter_name
-        FROM filters f
-        JOIN subcategory_filters sf ON f.id = sf.filter_id
-        WHERE sf.subcategory_id = ?
-        ORDER BY f.name
-    ");
-    $stmt->execute([$subcategoryId]);
-    $filters = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Prepare filter list query
+$filterSql = "
+    SELECT f.id AS filter_id, f.name AS filter_name
+    FROM filters f
+    JOIN subcategory_filters sf ON f.id = sf.filter_id
+    WHERE sf.subcategory_id = ?
+    ORDER BY f.name
+";
 
-    $result = [];
+$filterStmt = $conn->prepare($filterSql);
+$filterStmt->bind_param("i", $subcategoryId);
+$filterStmt->execute();
+$filterResult = $filterStmt->get_result();
 
-    foreach ($filters as $filter) {
-        $filterId = $filter['filter_id'];
+$filters = [];
+while ($row = $filterResult->fetch_assoc()) {
+    $filters[] = $row;
+}
 
-        // Fetch options for this filter
-        $optStmt = $pdo->prepare("
-            SELECT id AS option_id, value
-            FROM filter_options
-            WHERE filter_id = ?
-            ORDER BY sort_order ASC
-        ");
-        $optStmt->execute([$filterId]);
-        $options = $optStmt->fetchAll(PDO::FETCH_ASSOC);
+$result = [];
 
-        $result[] = [
-            'filter_id' => $filterId,
-            'filter_name' => $filter['filter_name'],
-            'options' => $options
-        ];
+foreach ($filters as $filter) {
+    $filterId = $filter['filter_id'];
+
+    $optionSql = "
+        SELECT id AS option_id, value
+        FROM filter_options
+        WHERE filter_id = ?
+        ORDER BY sort_order ASC
+    ";
+
+    $optStmt = $conn->prepare($optionSql);
+    $optStmt->bind_param("i", $filterId);
+    $optStmt->execute();
+    $optionResult = $optStmt->get_result();
+
+    $options = [];
+    while ($optRow = $optionResult->fetch_assoc()) {
+        $options[] = $optRow;
     }
 
-    echo json_encode(['filters' => $result]);
-} catch (Exception $e) {
-    echo json_encode(['error' => $e->getMessage()]);
-}
-?>
+    $result[] = [
+        'filter_id' => $filterId,
+        'filter_name' => $filter['filter_name'],
+        'options' => $options
+    ];
 
+    $optStmt->close();
+}
+
+$filterStmt->close();
+$conn->close();
+
+echo json_encode(['filters' => $result]);
