@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin: Rename Filters</title>
+    <style>
+        .category, .filter, .option { margin: 10px 0; }
+        .filters, .options { margin-left: 20px; display: none; }
+        .editable-input { width: 300px; }
+    </style>
+</head>
+
+<body>
+<h1>Rename Filters and Values</h1>
+<div id="admin-panel"></div>
+<button onclick="submitUpdates()">Submit Changes</button>
+
+<script>
+    async function fetchData() {
+        const response = await fetch('get_filters_by_category.php');
+        const data = await response.json();
+        renderUI(data);
+    }
+
+    function renderUI(data) {
+        const panel = document.getElementById('admin-panel');
+        data.forEach(cat => {
+            const catDiv = document.createElement('div');
+            catDiv.classList.add('category');
+            catDiv.innerHTML = `<strong onclick="this.nextElementSibling.style.display =
+          this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">${cat.name}</strong>`;
+
+            const filtersDiv = document.createElement('div');
+            filtersDiv.classList.add('filters');
+
+            cat.filters.forEach(filter => {
+                const filterDiv = document.createElement('div');
+                filterDiv.classList.add('filter');
+                filterDiv.innerHTML = `
+            <input type="text" class="editable-input" data-id="${filter.id}" data-type="filter" value="${filter.name}">
+            <input type="checkbox" data-check-for="filter-${filter.id}">
+            <div class="options">
+              ${filter.options.map(opt => `
+                <div class="option">
+                  <input type="text" class="editable-input" data-id="${opt.id}" data-type="option" value="${opt.value}">
+                  <input type="checkbox" data-check-for="option-${opt.id}">
+                </div>
+              `).join('')}
+            </div>`;
+                filtersDiv.appendChild(filterDiv);
+            });
+
+            catDiv.appendChild(filtersDiv);
+            panel.appendChild(catDiv);
+        });
+    }
+
+    async function submitUpdates() {
+        const changes = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            const input = cb.previousElementSibling;
+            changes.push({
+                id: input.dataset.id,
+                type: input.dataset.type,
+                new_value: input.value
+            });
+        });
+
+        const response = await fetch('rename_filters.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ updates: changes })
+        });
+
+        const result = await response.json();
+        alert(result.message || "Update complete.");
+    }
+
+    fetchData();
+</script>
+</body>
+</html>
