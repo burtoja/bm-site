@@ -40,7 +40,7 @@
                 filterDiv.innerHTML = `
             <input type="text" class="editable-input" data-id="${filter.id}" data-type="filter" value="${filter.name}">
             <input type="checkbox" data-check-for="filter-${filter.id}">
-            <div class="options">
+            <div class="options" style="display: block;">
               ${filter.options.map(opt => `
                 <div class="option">
                   <input type="text" class="editable-input" data-id="${opt.id}" data-type="option" value="${opt.value}">
