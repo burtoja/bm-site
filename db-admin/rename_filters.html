@@ -17,8 +17,8 @@
 <script>
     async function fetchData() {
         const response = await fetch('get_filters_by_category.php');
-        //const data = await response.json();
-        const data = {}; //TESTING
+        const data = await response.json();
+        //const data = {}; //TESTING
         renderUI(data);
     }
 
