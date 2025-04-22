@@ -11,7 +11,7 @@
 
 <body>
 <h1>Rename Filters and Values</h1>
-<div id="admin-panel">TEST</div>
+<div id="admin-panel">Admin Panel Begins Here:<br><br></div>
 <button onclick="submitUpdates()">Submit Changes</button>
 
 <script>
@@ -23,6 +23,7 @@
 
     function renderUI(data) {
         const panel = document.getElementById('admin-panel');
+        panel.innerHTML = '<p>TESTING</p>';
         data.forEach(cat => {
             const catDiv = document.createElement('div');
             catDiv.classList.add('category');
