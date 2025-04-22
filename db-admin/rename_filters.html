@@ -30,6 +30,7 @@
           this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">${cat.name}</strong>`;
 
             const filtersDiv = document.createElement('div');
+            filtersDiv.innerText = 'TEST';
             filtersDiv.classList.add('filters');
 
             cat.filters.forEach(filter => {
