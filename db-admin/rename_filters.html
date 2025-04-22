@@ -11,7 +11,7 @@
 
 <body>
 <h1>Rename Filters and Values</h1>
-<div id="admin-panel"></div>
+<div id="admin-panel">TEST</div>
 <button onclick="submitUpdates()">Submit Changes</button>
 
 <script>
@@ -30,7 +30,6 @@
           this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">${cat.name}</strong>`;
 
             const filtersDiv = document.createElement('div');
-            filtersDiv.innerText = 'TEST';
             filtersDiv.classList.add('filters');
 
             cat.filters.forEach(filter => {
