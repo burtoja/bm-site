@@ -15,13 +15,14 @@ include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/get_filter_va
 include_once ($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts/ebay_api_endpoint_construction.php'); //??
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/build_ebay_endpoint.php';
 
-
+error_log("THIS IS THE FAKE search_ebay.php");
 /**
  * Renders the html to build the page
  * 
  * @return false|string
  **/
 function render_results_page($response_decoded, $params) {
+    error_log("THIS IS THE FAKE2 search_ebay.php");
     ob_start();
     error_log(print_r($params, true)); //TESTING
     $total_results = isset($response_decoded->total) ? (int)$response_decoded->total : 0;
