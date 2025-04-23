@@ -17,6 +17,7 @@ function get_search_parameters() {
     $params['max_price'] = isset($_GET['max_price']) ? trim($_GET['max_price']) : '';
     $params['sort_select'] = isset($_GET['sort_select']) ? $_GET['sort_select'] : 'price_desc';
     $params['pg'] = isset($_GET['pg']) ? (int)$_GET['pg'] : 1;
+    $params['subcategory_id'] = isset($_GET['subcategory_id']) ? (int)$_GET['subcategory_id'] : null;
     return $params;
 }
 
@@ -55,6 +56,7 @@ function get_aspect_filter_map_from_option_ids($optionIds) {
     }
 
     $stmt->close();
+    $conn->close();
     return $aspectMap;
 }
 
