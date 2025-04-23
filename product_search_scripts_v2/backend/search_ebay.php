@@ -90,7 +90,7 @@ $params = [
     'max_price' => $maxPrice,
     'aspect_filter' => $aspectMap
 ];
-
+error_log("About to call construct_final_ebay_endpoint");
 $searchEndpoint = construct_final_ebay_endpoint($params, $recognizedBrands, $categoryId);
 error_log("ENDPOINT (in search_ebay): " . $searchEndpoint);
 
