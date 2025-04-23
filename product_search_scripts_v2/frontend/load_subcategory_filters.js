@@ -58,3 +58,4 @@ function loadSubcategoryFilters(clickedToggle) {
 }
 
 window.loadSubcategoryFilters = loadSubcategoryFilters;
+console.log("Loaded filters for subcategory:", data.filters);

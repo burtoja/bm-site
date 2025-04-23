@@ -10,7 +10,6 @@ if (!isset($_GET['subcategory_id'])) {
 }
 
 $subcategoryId = intval($_GET['subcategory_id']);
-
 $conn = get_db_connection();
 
 // Prepare filter list query
