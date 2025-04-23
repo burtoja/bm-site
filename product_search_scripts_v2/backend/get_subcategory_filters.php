@@ -29,7 +29,10 @@ $filterResult = $filterStmt->get_result();
 
 $filters = [];
 while ($row = $filterResult->fetch_assoc()) {
-    $filters[] = $row;
+    $filters[] = [
+        'filter_id' => (int)$row['filter_id'],
+        'filter_name' => $row['filter_name']
+    ];
 }
 
 $result = [];
