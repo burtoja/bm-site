@@ -41,6 +41,12 @@ function collectMainCategoryFilters() {
         categoryData[rb.name] = rb.value;
     });
 
+    // Fix for sort order field
+    if (categoryData['sort_order_1']) {
+        categoryData['sort'] = categoryData['sort_order_1'];
+    }
+
+
     // Custom price inputs
     const minPriceInput = selectedCategoryEl.querySelector('input[name^="min_price_"]');
     const maxPriceInput = selectedCategoryEl.querySelector('input[name^="max_price_"]');
@@ -50,6 +56,8 @@ function collectMainCategoryFilters() {
             max: maxPriceInput?.value || null
         };
     }
+
+
 
     // Always include this category, even if no subfilters are selected
     data[categoryName] = categoryData;
