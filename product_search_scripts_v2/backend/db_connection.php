@@ -5,7 +5,6 @@
 
 function get_db_connection()
 {
-    error_log("DB Connection Made");
     $host = 'localhost:3306';        // or the IP address of your DB server
     $username = 'boilersa_app_user';
     $password = 'CzF06TTM^lCPWc$*';

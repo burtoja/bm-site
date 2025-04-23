@@ -56,6 +56,7 @@ function extract_brands_from_response($response) {
 function construct_final_ebay_endpoint(array $params, array $recognizedBrands, int $categoryId) {
     $api_base = "https://api.ebay.com/buy/browse/v1/item_summary/search?";
     $query = [];
+    error_log("construct_final_ebay_endpoint() was called");
 
     // Always set the base keyword (k becomes q in another place)
     if (!isset($params['q'])) {
