@@ -20,3 +20,41 @@ function get_search_parameters() {
     return $params;
 }
 
+/**
+ * Given an array of filter_option_ids, returns a map of
+ * filter_name => [option_value1, option_value2, ...]
+ *
+ * @param mysqli $conn
+ * @param array $optionIds
+ * @return array
+ */
+function get_aspect_filter_map_from_option_ids($conn, $optionIds) {
+    if (empty($optionIds)) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($optionIds), '?'));
+    $types = str_repeat('i', count($optionIds));
+
+    $stmt = $conn->prepare("
+        SELECT f.name AS filter_name, fo.value AS option_value
+        FROM filter_options fo
+        JOIN filters f ON fo.filter_id = f.id
+        WHERE fo.id IN ($placeholders)
+    ");
+    $stmt->bind_param($types, ...$optionIds);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $aspectMap = [];
+    while ($row = $result->fetch_assoc()) {
+        $fname = $row['filter_name'];
+        $oval = $row['option_value'];
+        $aspectMap[$fname][] = $oval;
+    }
+
+    $stmt->close();
+    return $aspectMap;
+}
+
+
