@@ -28,6 +28,7 @@ function boilersa_categories_shortcode($atts) {
             $hasSubcategories = (bool) $cat['has_subcategories'];
 
             echo '<div class="category-item">';
+            echo "<!-- START CATEGORY: $categoryName -->";
             echo '<div class="toggle category-toggle" onclick="selectCategory(this)">[+] ' . $categoryName . '</div>';
             echo '<div class="category-filters" style="display:none;">';
 
@@ -43,6 +44,7 @@ function boilersa_categories_shortcode($atts) {
             }
 
             echo '</div>'; // close .category-filters
+            echo "<!-- END CATEGORY: $categoryName -->";
             echo '</div>'; // close .category-item
         }
     } else {
