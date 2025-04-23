@@ -25,7 +25,13 @@ function extract_brands_from_response($response) {
 
     if (empty($response)) return $brands;
 
-    $data = json_decode($response, true);
+    // If it's already decoded, skip json_decode
+    if (is_string($response)) {
+        $data = json_decode($response, true);
+    } else {
+        $data = $response;  // already an array or stdClass
+    }
+
     if (!isset($data['refinement']['aspectDistributions'])) return $brands;
 
     foreach ($data['refinement']['aspectDistributions'] as $aspect) {
