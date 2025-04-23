@@ -32,6 +32,7 @@ function loadSubcategoryFilters(clickedToggle) {
         fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`)
             .then(res => res.json())
             .then(data => {
+                console.log("Loaded filters for subcategory:", data.filters);
                 if (Array.isArray(data.filters)) {
                     filtersBox.innerHTML = data.filters.map(f => {
                         const optionsHtml = f.options.map(o => `
@@ -58,4 +59,3 @@ function loadSubcategoryFilters(clickedToggle) {
 }
 
 window.loadSubcategoryFilters = loadSubcategoryFilters;
-console.log("Loaded filters for subcategory:", data.filters);
