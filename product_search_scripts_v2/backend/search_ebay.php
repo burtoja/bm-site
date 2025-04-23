@@ -18,9 +18,10 @@ header('Content-Type: application/json');
 
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/build_ebay_endpoint.php';
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/common_search_functions.php';
 
 $categoryId = 12576; // Hardcoded category: Business & Industrial
-$params = $_GET; // Incoming search filters from frontend
+//$params = $_GET; // Incoming search filters from frontend
 
 // Check if 'q' is set — NOT 'k'
 if (!isset($_GET['q']) || empty($_GET['q'])) {
@@ -36,6 +37,7 @@ $condition = isset($_GET['condition']) ? $_GET['condition'] : '';
 $minPrice = isset($_GET['min_price']) ? $_GET['min_price'] : '';
 $maxPrice = isset($_GET['max_price']) ? $_GET['max_price'] : '';
 $aspectFilter = isset($_GET['aspect_filter']) ? $_GET['aspect_filter'] : '';
+$subcategoryId = isset($_GET['subcategory_id']) ? intval($_GET['subcategory_id']) : null;
 
 // Get OAuth token for eBay
 $token = getBasicOauthToken();
@@ -62,7 +64,26 @@ if (!$err && $brandResponse) {
     $recognizedBrands = extract_brands_from_response($brandResponse);
 }
 
+// --- Build aspect_filter from selected option IDs ---
+$selectedOptions = [];
+foreach ($_GET as $key => $value) {
+    if (strpos($key, 'filter_') === 0 && is_array($value)) {
+        $selectedOptions = array_merge($selectedOptions, $value);
+    }
+}
+
+$aspectMap = get_aspect_filter_map_from_option_ids($selectedOptions);
+
 // Build final search URL
+$params = [
+    'q' => $q,
+    'sort' => $sort,
+    'condition' => $condition,
+    'min_price' => $minPrice,
+    'max_price' => $maxPrice,
+    'aspect_filter' => $aspectMap
+];
+
 $searchEndpoint = construct_final_ebay_endpoint($params, $recognizedBrands, $categoryId);
 error_log("ENDPOINT (in search_ebay): " . $searchEndpoint);
 
