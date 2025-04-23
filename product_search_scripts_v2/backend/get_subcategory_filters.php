@@ -27,7 +27,14 @@ $filterStmt->execute();
 $filterResult = $filterStmt->get_result();
 
 $filters = [];
+//while ($row = $filterResult->fetch_assoc()) {
+//    $filters[] = [
+//        'filter_id' => (int)$row['filter_id'],
+//        'filter_name' => $row['filter_name']
+//    ];
+//}
 while ($row = $filterResult->fetch_assoc()) {
+    error_log(print_r($row, true));  // Add this line
     $filters[] = [
         'filter_id' => (int)$row['filter_id'],
         'filter_name' => $row['filter_name']
