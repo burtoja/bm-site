@@ -46,7 +46,8 @@ function buildQueryStringFromSearchParams(filterData) {
     if (params.price_range) urlParams.append('price_range', params.price_range);
     if (params.min_price) urlParams.append('min_price', params.min_price);
     if (params.max_price) urlParams.append('max_price', params.max_price);
-    if (params.sort_select) urlParams.append('sort_select', params.sort_select);
+    if (params.sort) urlParams.append('sort', params.sort);
+    //if (params.sort_select) urlParams.append('sort_select', params.sort_select);
 
     console.log("Final Built Query String:", urlParams.toString());
     console.groupEnd();

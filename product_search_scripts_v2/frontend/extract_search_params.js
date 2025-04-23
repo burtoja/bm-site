@@ -70,7 +70,7 @@ function extractSearchParameters(translatedData) {
                 if (value.min) params.min_price = value.min;
                 if (value.max) params.max_price = value.max;
             } else if (normalizedName === 'sort_order') {
-                params.sort_select = (value === 'Low to High') ? 'price_asc' : 'price_desc';
+                params.sort = (value === 'Low to High') ? 'price_asc' : 'price_desc';
             } else if (normalizedName === 'condition' && value !== 'Any') {
                 params.condition = value;
             } else if (normalizedName === 'price_range' && value !== 'Any') {
