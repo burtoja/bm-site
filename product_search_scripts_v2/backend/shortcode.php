@@ -6,7 +6,7 @@ function boilersa_categories_shortcode($atts) {
     $conn = get_db_connection();
 
     // Get all categories
-    $sql = "SELECT id, name FROM categories ORDER BY name ASC";
+    $sql = "SELECT id, name, has_subcategories FROM categories ORDER BY name ASC";
     $result = $conn->query($sql);
     error_log("Error Log Active (shortcode)");
     ob_start();
@@ -25,17 +25,25 @@ function boilersa_categories_shortcode($atts) {
         while ($cat = $result->fetch_assoc()) {
             $categoryId = (int) $cat['id'];
             $categoryName = htmlspecialchars($cat['name']);
+            $hasSubcategories = (bool) $cat['has_subcategories'];
 
             echo '<div class="category-item">';
             echo '<div class="toggle category-toggle" onclick="selectCategory(this)">[+] ' . $categoryName . '</div>';
-            //echo '<div class="toggle category-toggle" onclick="toggleVisibility(this)">[+] ' . $categoryName . '</div>';
             echo '<div class="category-filters" style="display:none;">';
 
             echo render_condition_filter($categoryId);
             echo render_price_range_filter($categoryId);
             echo render_sort_order_filter($categoryId);
-            echo render_category_filters_from_db($categoryId, $conn);
+            if ($hasSubcategories) {
+                // Subcategories will be loaded dynamically via JS
+                echo "<div class='subcategory-container' data-category-id='{$categoryId}'></div>";
+            } else {
+                // Regular flat filters
+                echo render_category_filters_from_db($categoryId, $conn);
+            }
 
+            echo '</div>'; // close .category-filters
+            echo '</div>'; // close .category-item
         }
     } else {
         echo '<p>No categories found.</p>';
