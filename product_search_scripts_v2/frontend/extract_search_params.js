@@ -58,36 +58,41 @@ function extractSearchParameters(translatedData) {
             normalizedName = 'custom_price_range';
         }
 
+        // 🔧 Special handling for sort_order first
+        if (normalizedName === 'sort_order') {
+            params.sort = (value === 'Low to High') ? 'price' : '-price';
+            continue;
+        }
+
+        // 🔧 Special handling for condition
+        if (normalizedName === 'condition' && value !== 'Any') {
+            params.condition = value;
+            continue;
+        }
+
+
+
         if (knownFields.includes(normalizedName)) {
             if (Array.isArray(value) && value.length > 0) {
                 if (normalizedName === 'manufacturer') {
                     params.manufacturer = value[0];
                 } else {
-                    const key = normalizedName;
-                    params[key] = value;
+                    params[normalizedName] = value;
                 }
             } else if (typeof value === 'object' && value !== null && normalizedName === 'custom_price_range') {
                 if (value.min) params.min_price = value.min;
                 if (value.max) params.max_price = value.max;
-            } else if (normalizedName === 'sort_order') {
-                params.sort = (value === 'Low to High') ? 'price_asc' : 'price_desc';
-            } else if (normalizedName === 'condition' && value !== 'Any') {
-                params.condition = value;
-            } else if (normalizedName === 'price_range' && value !== 'Any') {
-                params.price_range = value;
             }
         } else {
-            // Collect misc filters, but skip unwanted defaults
+            // Everything else is misc
             if (Array.isArray(value)) {
-                value.forEach(function(v) {
-                    if (v !== null && v !== undefined && v.trim() !== '' && v !== 'Any' && v !== 'High to Low') {
+                value.forEach(v => {
+                    if (v && v.trim() && v !== 'Any' && v !== 'High to Low') {
                         miscFilters.push(v.trim());
                     }
                 });
-            } else if (typeof value === 'string') {
-                if (value.trim() !== '' && value !== 'Any' && value !== 'High to Low') {
-                    miscFilters.push(value.trim());
-                }
+            } else if (typeof value === 'string' && value.trim() !== '' && value !== 'Any' && value !== 'High to Low') {
+                miscFilters.push(value.trim());
             }
         }
     }
