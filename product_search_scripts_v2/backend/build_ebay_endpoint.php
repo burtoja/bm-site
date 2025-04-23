@@ -115,7 +115,7 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     }
 
     if (!empty($params['sort'])) {
-        $query[] = "sort=" . urlencode($params['sort']);
+        $query['sort'] = $params['sort'];
     }
 
     // Default result limit and offset
