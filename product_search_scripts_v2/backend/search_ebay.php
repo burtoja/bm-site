@@ -31,8 +31,15 @@ if (!isset($_GET['q']) || empty($_GET['q'])) {
 
 $q = $_GET['q'];
 
-// Collect other incoming params
+//Collect and condition sort parameter
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'price';
+$sortMap = [
+    'high_to_low' => '-price',
+    'low_to_high' => 'price'
+];
+$sort = $sortMap[$sort] ?? '-price';
+
+// Collect other incoming params
 $condition = isset($_GET['condition']) ? $_GET['condition'] : '';
 $minPrice = isset($_GET['min_price']) ? $_GET['min_price'] : '';
 $maxPrice = isset($_GET['max_price']) ? $_GET['max_price'] : '';
