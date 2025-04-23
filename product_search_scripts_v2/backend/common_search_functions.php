@@ -1,5 +1,5 @@
 <?php
-// common_search_functions.php
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php';
 
 /**
  * Gets the search parameters from the URL
@@ -24,14 +24,15 @@ function get_search_parameters() {
  * Given an array of filter_option_ids, returns a map of
  * filter_name => [option_value1, option_value2, ...]
  *
- * @param mysqli $conn
  * @param array $optionIds
  * @return array
  */
-function get_aspect_filter_map_from_option_ids($conn, $optionIds) {
+function get_aspect_filter_map_from_option_ids($optionIds) {
     if (empty($optionIds)) {
         return [];
     }
+
+    $conn = get_db_connection();
 
     $placeholders = implode(',', array_fill(0, count($optionIds), '?'));
     $types = str_repeat('i', count($optionIds));
