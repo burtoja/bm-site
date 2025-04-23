@@ -159,9 +159,6 @@ function render_category_filters_from_db($categoryId, $conn) {
         echo '<em>No filters</em>';
     }
 
-    echo '</div>'; // .category-filters
-    echo '</div>'; // .category-item
-
     return ob_get_clean();
 }
 
