@@ -83,6 +83,8 @@ function boilersa_categories_shortcode($atts) {
     echo '<script src="/product_search_scripts_v2/frontend/render_results.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/render_pagination.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/run_search_with_offset.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/load_subcategory_filters.js?v=' . $ver . '"></script>';
+
 
     return ob_get_clean();
 }
