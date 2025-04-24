@@ -37,13 +37,6 @@ $q = $_GET['q'];
 
 //Collect and condition sort parameter
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'price';
-error_log("ORIGINAL sort (in search_eaby): " . $sort);
-//$sortMap = [
-//    'high_to_low' => '-price',
-//    'low_to_high' => 'price'
-//];
-//$sort = $sortMap[$sort] ?? '-price';
-error_log("AFTER CHECK sort (in search_eaby): " . $sort);
 
 // Collect other incoming params
 $condition = isset($_GET['condition']) ? $_GET['condition'] : '';
@@ -96,7 +89,7 @@ $params = [
     'max_price' => $maxPrice,
     'aspect_filter' => $aspectMap
 ];
-error_log("About to call construct_final_ebay_endpoint");
+
 $searchEndpoint = construct_final_ebay_endpoint($params, $recognizedBrands, $categoryId);
 error_log("ENDPOINT (in search_ebay): " . $searchEndpoint);
 
@@ -127,7 +120,3 @@ if (!$response) {
 
 // Output the final JSON response from eBay
 echo $response;
-
-// (Optional debug: write raw ebay api url and response)
-file_put_contents(__DIR__ . '/debug_search_endpoint.txt', "EP:  " . $searchEndpoint);
-//file_put_contents(__DIR__ . '/debug_response.json', $response);
