@@ -58,20 +58,18 @@ function extractSearchParameters(translatedData) {
             normalizedName = 'custom_price_range';
         }
 
-        // 🔧 Special handling for sort_order first
+        // Special handling for sort_order first
         if (normalizedName === 'sort_order') {
             params.sort = (value === 'Low to High') ? 'price' : '-price';
             continue;
         }
 
-        // 🔧 Special handling for condition
+        // Special handling for condition
         if (normalizedName === 'condition' && value !== 'Any') {
             params.condition = value;
             continue;
         }
-
-
-
+        
         if (knownFields.includes(normalizedName)) {
             if (Array.isArray(value) && value.length > 0) {
                 if (normalizedName === 'manufacturer') {

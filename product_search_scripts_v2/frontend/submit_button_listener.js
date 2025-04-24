@@ -51,7 +51,7 @@ function waitForFormAndAttachListener(retries = 20) {
 
                 // Make the final API URL
                 const apiUrl = '/product_search_scripts_v2/backend/search_ebay.php?' + normalizedParams.toString();
-                console.log("✅ Sending API Request To:", apiUrl);
+                console.log("✅ Sending Parameters to search_ebay.php: ", apiUrl);
 
                 // Fetch data
                 const data = await fetch(apiUrl).then(res => res.json());
