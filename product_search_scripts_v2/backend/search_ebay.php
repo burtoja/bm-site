@@ -23,10 +23,9 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/com
 ini_set("log_errors", 1);
 ini_set("error_log", __DIR__ . "/debug_ebay_php_errors.log");
 
-error_log("search_ebay is executing!");
+error_log("START: search_ebay is executing");
 
 $categoryId = 12576; // Hardcoded category: Business & Industrial
-//$params = $_GET; // Incoming search filters from frontend
 
 // Check if 'q' is set — NOT 'k'
 if (!isset($_GET['q']) || empty($_GET['q'])) {
@@ -38,11 +37,13 @@ $q = $_GET['q'];
 
 //Collect and condition sort parameter
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'price';
+error_log("ORIGINAL sort (in search_eaby): " . $sort);
 $sortMap = [
     'high_to_low' => '-price',
     'low_to_high' => 'price'
 ];
 $sort = $sortMap[$sort] ?? '-price';
+error_log("AFTER CHECK sort (in search_eaby): " . $sort);
 
 // Collect other incoming params
 $condition = isset($_GET['condition']) ? $_GET['condition'] : '';
