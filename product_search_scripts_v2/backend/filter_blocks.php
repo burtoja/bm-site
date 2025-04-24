@@ -156,7 +156,7 @@ function render_category_filters_from_db($categoryId, $conn) {
             echo '</div>'; // .filter-item
         }
     } else {
-        echo '<em>No filters</em>';
+        //echo '<em>No filters</em>';
     }
 
     return ob_get_clean();
