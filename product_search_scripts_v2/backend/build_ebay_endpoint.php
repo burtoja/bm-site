@@ -115,11 +115,11 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     }
 
     // Sorting
-//    if (!empty($params['sort_order'])) {
-//        $query['sort'] = ($params['sort_order'] === 'Low to High') ? 'price' : '-price';
-//    } else {
-//        $query['sort'] = '-price'; // default
-//    }
+    if (!empty($params['sort_order'])) {
+        $query['sort'] = ($params['sort_order'] === 'Low to High') ? 'price' : '-price';
+    } else {
+        $query['sort'] = '-price'; // default
+    }
 
     if (!empty($params['sort'])) {
         $query['sort'] = $params['sort'];

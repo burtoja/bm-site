@@ -10,7 +10,7 @@
  * @returns {Object} params - Cleaned and flattened search parameters
  */
 function extractSearchParameters(translatedData) {
-    console.log("Incoming translatedData:", translatedData);
+    console.log("Incoming translatedData to extractSearchParameters(): ", translatedData);
     const params = {};
     const miscFilters = [];
 
@@ -83,6 +83,7 @@ function extractSearchParameters(translatedData) {
             }
         } else {
             // Everything else is misc
+            console.warn(`Filter "${rawName}" (normalized as "${normalizedName}") treated as misc.`);
             if (Array.isArray(value)) {
                 value.forEach(v => {
                     if (v && v.trim() && v !== 'Any' && v !== 'High to Low') {
