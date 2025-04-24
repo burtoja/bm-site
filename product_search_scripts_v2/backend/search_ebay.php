@@ -38,11 +38,11 @@ $q = $_GET['q'];
 //Collect and condition sort parameter
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'price';
 error_log("ORIGINAL sort (in search_eaby): " . $sort);
-$sortMap = [
-    'high_to_low' => '-price',
-    'low_to_high' => 'price'
-];
-$sort = $sortMap[$sort] ?? '-price';
+//$sortMap = [
+//    'high_to_low' => '-price',
+//    'low_to_high' => 'price'
+//];
+//$sort = $sortMap[$sort] ?? '-price';
 error_log("AFTER CHECK sort (in search_eaby): " . $sort);
 
 // Collect other incoming params
