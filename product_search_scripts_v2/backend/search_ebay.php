@@ -20,6 +20,9 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/build_ebay_endpoint.php';
 require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/common_search_functions.php';
 
+ini_set("log_errors", 1);
+ini_set("error_log", __DIR__ . "/debug_ebay_php_errors.log");
+
 error_log("search_ebay is executing!");
 
 $categoryId = 12576; // Hardcoded category: Business & Industrial
