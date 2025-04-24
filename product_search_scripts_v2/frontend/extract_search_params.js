@@ -1,51 +1,54 @@
 /**
  * Extracts selected filters from translatedData and converts them into
- * a flat set of parameters to be used in building a query string or API call.
- *
- * Only the first category with user-selected filters will be processed.
- * Default values like "Any" for Price Range and "High to Low" for Sort Order
- * are ignored when determining which category is active.
+ * a flat set of parameters to build a query string or API call.
  *
  * @param {Object} translatedData - The object returned from translate_filters.php
  * @returns {Object} params - Cleaned and flattened search parameters
  */
 function extractSearchParameters(translatedData) {
-    console.log("Incoming translatedData to extractSearchParameters(): ", translatedData);
-    const params = {};
-    const miscFilters = [];
+    console.log("Incoming translatedData to extractSearchParameters():", translatedData);
 
-    // Define default filter values to ignore when determining active categories
+    const params = {};       // Final search parameters to be returned
+    const miscFilters = [];  // Any filter values not explicitly handled go here
+
+    // Filters with these values are considered unselected/default
     const defaultIgnoreValues = {
         "Price Range": "Any",
         "Sort Order": "High to Low"
     };
 
+    // Recognized normalized field names that should not be treated as misc
+    const knownNormalizedFields = [
+        'manufacturer',
+        'price_range',
+        'condition',
+        'sort_order',
+        'custom_price_range'
+    ];
+
     let category = null;
     let filters = null;
 
-    // Step 1: Find the first category with meaningful (non-default) filter selections
+    // Step 1: Get the first category in translatedData
     for (const [cat, f] of Object.entries(translatedData)) {
         category = cat;
         filters = f;
-        break; // Take the first category provided in the translatedData which has one category
+        break;
     }
 
-    // If no category selected at all, return empty object
     if (!category) {
         console.log("No category selected.");
-        return params;
+        return params; // Exit early if there's nothing to process
     }
 
-    // Step 2: Add the selected category as the "k" (keyword) parameter
+    // Step 2: Add the main category to the q parameter
     params.k = category;
 
-    // Step 3: Process each filter under the selected category
-    const knownFields = ['manufacturer', 'price_range', 'condition', 'sort_order', 'custom_price_range'];
-
+    // Step 3: Process each filter within the selected category
     for (const [rawName, value] of Object.entries(filters)) {
         let normalizedName = rawName;
 
-        // Normalize the field name
+        // Normalize common prefixes to generic filter names (remove the trailing id # from them)
         if (rawName.startsWith('condition_')) {
             normalizedName = 'condition';
         } else if (rawName.startsWith('price_range_')) {
@@ -58,57 +61,71 @@ function extractSearchParameters(translatedData) {
             normalizedName = 'custom_price_range';
         }
 
-        // Special handling for sort_order first
+        // Handle known filters with special behavior
         if (normalizedName === 'sort_order') {
+            // Convert user-friendly value to eBay sort param
             params.sort = (value === 'Low to High') ? 'price' : '-price';
             continue;
         }
 
-        // Special handling for condition
-        if (normalizedName === 'condition' && value !== 'Any') {
-            params.condition = value;
+        if (normalizedName === 'condition') {
+            // Only add condition if it's not the default
+            if (value !== 'Any') {
+                params.condition = value;
+            }
             continue;
         }
-        
-        if (knownFields.includes(normalizedName)) {
+
+        // Handle general known filters
+        if (knownNormalizedFields.includes(normalizedName)) {
             if (Array.isArray(value) && value.length > 0) {
                 if (normalizedName === 'manufacturer') {
-                    params.manufacturer = value[0];
+                    params.manufacturer = value[0]; // Just use first manufacturer for now
                 } else {
                     params[normalizedName] = value;
                 }
-            } else if (typeof value === 'object' && value !== null && normalizedName === 'custom_price_range') {
+            } else if (
+                typeof value === 'object' &&
+                value !== null &&
+                normalizedName === 'custom_price_range'
+            ) {
+                // For custom price range, use explicit min/max values
                 if (value.min) params.min_price = value.min;
                 if (value.max) params.max_price = value.max;
             }
-        } else {
-            // Everything else is misc
-            console.warn(`Filter "${rawName}" (normalized as "${normalizedName}") treated as misc.`);
-            if (Array.isArray(value)) {
-                value.forEach(v => {
-                    if (v && v.trim() && v !== 'Any' && v !== 'High to Low') {
-                        miscFilters.push(v.trim());
-                    }
-                });
-            } else if (typeof value === 'string' && value.trim() !== '' && value !== 'Any' && value !== 'High to Low') {
-                miscFilters.push(value.trim());
-            }
+
+            continue;
+        }
+
+        // Catch-all for miscellaneous filters
+        console.warn(`Filter "${rawName}" (normalized as "${normalizedName}") treated as misc.`);
+        if (Array.isArray(value)) {
+            value.forEach(v => {
+                if (v && v.trim() && v !== 'Any' && v !== 'High to Low') {
+                    miscFilters.push(v.trim());
+                }
+            });
+        } else if (
+            typeof value === 'string' &&
+            value.trim() !== '' &&
+            value !== 'Any' &&
+            value !== 'High to Low'
+        ) {
+            miscFilters.push(value.trim());
         }
     }
 
-    console.log("Misc Filters: " + miscFilters);
-
-    // Attach misc filters to param array
+    // Step 4: Attach misc filters to the final parameter object if any
     if (miscFilters.length > 0) {
         params.misc_filters = miscFilters;
     }
 
-    console.log("Misc and Param filters completed!!!");
+    // Debug output for clarity
     console.log("Misc Filters collected:", miscFilters);
     console.log("Final extracted search params:", params);
 
     return params;
 }
 
-// Expose the function globally so it can be used in other script files
+// Make this function globally accessible to other scripts on the page
 window.extractSearchParameters = extractSearchParameters;
