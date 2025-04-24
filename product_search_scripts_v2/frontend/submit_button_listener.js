@@ -50,6 +50,8 @@ function waitForFormAndAttachListener(retries = 20) {
                 }
 
                 // Make the final API URL
+
+                //TODO:  I'm not sure searc_ebay.php is ever running
                 const apiUrl = '/product_search_scripts_v2/backend/search_ebay.php?' + normalizedParams.toString();
                 console.log("✅ Sending Parameters to search_ebay.php: ", apiUrl);
 
