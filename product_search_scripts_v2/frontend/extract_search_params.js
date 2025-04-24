@@ -94,6 +94,7 @@ function extractSearchParameters(translatedData) {
         if (normalizedName === 'sort_order') {
             // Convert user-friendly value to eBay sort param
             params.sort = (value === 'Low to High') ? 'price' : '-price';
+            console.log("The value of parms.sort is: " + params.sort);
             continue;
         }
 
