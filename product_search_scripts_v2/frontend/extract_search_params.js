@@ -64,7 +64,7 @@ function extractSearchParameters(translatedData) {
         // Handle known filters with special behavior
         if (normalizedName === 'sort_order') {
             // Convert user-friendly value to eBay sort param
-            params.sort = (value === 'Low to High') ? 'price' : '-price';
+            params.sort = (value === 'low_to_high') ? 'price' : '-price';
             continue;
         }
 
@@ -101,7 +101,7 @@ function extractSearchParameters(translatedData) {
         console.warn(`Filter "${rawName}" (normalized as "${normalizedName}") treated as misc.`);
         if (Array.isArray(value)) {
             value.forEach(v => {
-                if (v && v.trim() && v !== 'Any' && v !== 'High to Low') {
+                if (v && v.trim() && v !== 'Any' && v !== 'high_to_low') {
                     miscFilters.push(v.trim());
                 }
             });
@@ -109,7 +109,7 @@ function extractSearchParameters(translatedData) {
             typeof value === 'string' &&
             value.trim() !== '' &&
             value !== 'Any' &&
-            value !== 'High to Low'
+            value !== 'high_to_low'
         ) {
             miscFilters.push(value.trim());
         }
