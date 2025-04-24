@@ -23,7 +23,8 @@ function extractSearchParameters(translatedData) {
         'price_range',
         'condition',
         'sort_order',
-        'custom_price_range'
+        'custom_price_range',
+        'type'
     ];
 
     let category = null;
@@ -46,9 +47,24 @@ function extractSearchParameters(translatedData) {
 
     // Step 3: Process each filter within the selected category
     for (const [rawName, value] of Object.entries(filters)) {
-        let normalizedName = rawName;
 
-        // Normalize common prefixes to generic filter names (remove the trailing id # from them)
+        // Normalize display-style and underscored filter names to a common set
+        const normalizedMap = {
+            'Sort Order': 'sort_order',
+            'sort_order': 'sort_order',
+            'Price Range': 'price_range',
+            'price_range': 'price_range',
+            'Condition': 'condition',
+            'condition': 'condition',
+            'Type': 'type',
+            'type': 'type',
+            'Manufacturer': 'manufacturer',
+            'manufacturer': 'manufacturer',
+        };
+
+        let normalizedName = normalizedMap[rawName] || rawName;
+
+// Additional prefix-based normalization
         if (rawName.startsWith('condition_')) {
             normalizedName = 'condition';
         } else if (rawName.startsWith('price_range_')) {
@@ -60,6 +76,20 @@ function extractSearchParameters(translatedData) {
         } else if (rawName.startsWith('min_price_') || rawName.startsWith('max_price_')) {
             normalizedName = 'custom_price_range';
         }
+
+        //let normalizedName = rawName;
+        // // Normalize common prefixes to generic filter names (remove the trailing id # from them)
+        // if (rawName.startsWith('condition_')) {
+        //     normalizedName = 'condition';
+        // } else if (rawName.startsWith('price_range_')) {
+        //     normalizedName = 'price_range';
+        // } else if (rawName.startsWith('sort_order_')) {
+        //     normalizedName = 'sort_order';
+        // } else if (rawName.startsWith('manufacturer')) {
+        //     normalizedName = 'manufacturer';
+        // } else if (rawName.startsWith('min_price_') || rawName.startsWith('max_price_')) {
+        //     normalizedName = 'custom_price_range';
+        // }
 
         // Handle known filters with special behavior
         if (normalizedName === 'sort_order') {
