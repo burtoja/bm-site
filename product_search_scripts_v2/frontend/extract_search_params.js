@@ -23,8 +23,7 @@ function extractSearchParameters(translatedData) {
         'price_range',
         'condition',
         'sort_order',
-        'custom_price_range',
-        'type'
+        'custom_price_range'
     ];
 
     let category = null;
