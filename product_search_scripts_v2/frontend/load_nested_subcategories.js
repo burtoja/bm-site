@@ -6,24 +6,37 @@ let selectedCategoryId = null;
 let selectedSubcategoryPath = [];
 
 // Load and render the root subcategories for a category
-function loadTopLevelSubcategories(categoryId) {
-    selectedCategoryId = categoryId;
-    selectedSubcategoryPath = [];
-    document.getElementById('subcategory-container').innerHTML = '';
+function loadTopLevelSubcategories(categoryId, toggleElement) {
+    const container = document.getElementById(`category-filters-${categoryId}`);
+    if (!container) {
+        console.error(`Container not found for category ID ${categoryId}`);
+        return;
+    }
 
-    fetch(`/product_search_scripts_v2/backend/get_subcategories.php?category_id=${categoryId}`)
-        .then(res => res.json())
-        .then(subcategories => {
-            const treeRoot = document.createElement('ul');
-            treeRoot.className = 'subcategory-tree';
-            subcategories.forEach(subcat => {
-                const node = buildSubcategoryNode(subcat);
-                treeRoot.appendChild(node);
-            });
-            document.getElementById('subcategory-container').appendChild(treeRoot);
-        })
-        .catch(err => console.error('Error loading subcategories:', err));
+    // Toggle visibility
+    if (container.style.display === "none") {
+        container.style.display = "block";
+        toggleElement.textContent = toggleElement.textContent.replace("[+]", "[-]");
+
+        const subcatContainer = container.querySelector('.subcategory-tree-container');
+        if (subcatContainer && subcatContainer.children.length === 0) {
+            // Only load if not already loaded
+            fetch(`/product_search_scripts_v2/backend/get_child_subcategories.php?category_id=${categoryId}&parent_id=0`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.subcategories.length > 0) {
+                        renderSubcategoryTree(data.subcategories, subcatContainer);
+                    } else {
+                        subcatContainer.innerHTML = "<p>No subcategories found.</p>";
+                    }
+                });
+        }
+    } else {
+        container.style.display = "none";
+        toggleElement.textContent = toggleElement.textContent.replace("[-]", "[+]");
+    }
 }
+
 
 // Build a single subcategory tree node (LI with toggle and children container)
 function buildSubcategoryNode(subcat) {
