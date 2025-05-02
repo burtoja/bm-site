@@ -31,7 +31,7 @@ function boilersa_categories_shortcode($atts) {
             echo '<div class="category-item">';
             echo "<!-- START CATEGORY: $categoryName -->";
             echo '<div class="toggle category-toggle" onclick="loadTopLevelSubcategories(' . $categoryId . ', this)">[+] ' . $categoryName . '</div>';
-            echo '<div class="category-filters" style="display:none;">';
+            echo '<div id="category-filters-' . $categoryId . '" class="category-filters" style="display:none;">';
 
             echo render_condition_filter($categoryId);
             echo render_price_range_filter($categoryId);
