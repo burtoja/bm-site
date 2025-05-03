@@ -2,6 +2,7 @@
 // Builds and manages a collapsible, recursive tree of subcategories
 // Leaf nodes load filters; parent nodes toggle child visibility
 
+console.log("BEGIN: load_nested_subcategories");
 let selectedCategoryId = null;
 let selectedSubcategoryPath = [];
 
