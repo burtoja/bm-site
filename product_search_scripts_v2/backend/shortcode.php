@@ -38,6 +38,8 @@ function boilersa_categories_shortcode($atts) {
             echo render_sort_order_filter($categoryId);
 
             echo '<div class="subcategory-tree-container" data-category-id="' . $categoryId . '"></div>';
+            echo '<div id="filters-output" class="filters-output"></div>';
+
 
             echo '</div>'; // close .category-filters
             echo "<!-- END CATEGORY: $categoryName -->";
