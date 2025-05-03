@@ -175,5 +175,4 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
 window.loadTopLevelSubcategories = loadTopLevelSubcategories;
 window.toggleSubcategoryChildren = toggleSubcategoryChildren;
 window.loadFiltersForSubcategory = loadFiltersForSubcategory;
-window.renderFiltersForContainer = renderFiltersForContainer;
 
