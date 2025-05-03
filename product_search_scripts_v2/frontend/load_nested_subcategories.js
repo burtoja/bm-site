@@ -119,9 +119,17 @@ function toggleSubcategoryChildren(subcat, wrapper) {
         document.querySelectorAll('.leaf-node.selected').forEach(el => el.classList.remove('selected'));
         wrapper.classList.add('selected');
 
-        const filtersContainer = document.getElementById('filters-output');
-        console.log("Prepare to try loading filters for subcat ID:", subcat.id);
-        loadFiltersForSubcategory(subcat.id, filtersContainer);
+        // const filtersContainer = document.getElementById('filters-output');
+        // console.log("Prepare to try loading filters for subcat ID:", subcat.id);
+        // loadFiltersForSubcategory(subcat.id, filtersContainer);
+
+        // Traverse upward to find the enclosing .category-filters div
+        const categoryFiltersWrapper = wrapper.closest('.category-filters');
+        if (categoryFiltersWrapper) {
+            loadFiltersForSubcategory(subcat.id, categoryFiltersWrapper);
+        } else {
+            console.warn("Could not find category-filters container for subcat ID:", subcat.id);
+        }
     }
 }
 
