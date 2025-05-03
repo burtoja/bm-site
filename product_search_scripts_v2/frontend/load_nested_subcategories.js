@@ -1,20 +1,30 @@
 // load_nested_subcategories.js
-// Builds a collapsible tree of nested subcategories
-// Leaf nodes trigger filter loading; inner nodes toggle visibility of children
+// Builds and manages a collapsible, recursive tree of subcategories
+// Leaf nodes load filters; parent nodes toggle child visibility
 
 let selectedCategoryId = null;
 let selectedSubcategoryPath = [];
 
-// Load and render the root subcategories for a category
+/**
+ * Loads and renders the top-level subcategories for a given root category.
+ * Called when a top-level category is clicked/toggled.
+ * @param {number} categoryId - ID of the root category.
+ * @param {HTMLElement} toggleElement - The [+]/[−] toggle element next to the category title.
+ */
 function loadTopLevelSubcategories(categoryId, toggleElement) {
     const filtersContainer = document.getElementById('category-filters-' + categoryId);
     const treeContainer = filtersContainer.querySelector('.subcategory-tree-container');
 
-    // Toggle filters section
+    // Toggle visibility
     const isVisible = filtersContainer.style.display === 'block';
     filtersContainer.style.display = isVisible ? 'none' : 'block';
-    toggleElement.textContent = isVisible ? '[+]' + toggleElement.textContent.substring(3) : '[−]' + toggleElement.textContent.substring(3);
 
+    // Update the toggle icon text
+    toggleElement.textContent = isVisible
+        ? '[+]' + toggleElement.textContent.substring(3)
+        : '[−]' + toggleElement.textContent.substring(3);
+
+    // If children are already loaded, don't fetch again
     if (!isVisible && treeContainer.childElementCount === 0) {
         fetch(`/product_search_scripts_v2/backend/get_subcategories.php?category_id=${categoryId}`)
             .then(res => res.json())
@@ -25,11 +35,18 @@ function loadTopLevelSubcategories(categoryId, toggleElement) {
                         treeContainer.appendChild(node);
                     });
                 }
+            })
+            .catch(err => {
+                console.error("Failed to load top-level subcategories:", err);
             });
     }
 }
 
-// Build a single subcategory tree node (LI with toggle and children container)
+/**
+ * Builds a subcategory tree node (DOM element) with click-to-expand behavior.
+ * @param {Object} subcat - Subcategory object { id, name }.
+ * @returns {HTMLElement} DOM node representing the subcategory.
+ */
 function buildSubcategoryNode(subcat) {
     const wrapper = document.createElement('div');
     wrapper.className = 'subcategory-node';
@@ -37,71 +54,89 @@ function buildSubcategoryNode(subcat) {
     const header = document.createElement('div');
     header.className = 'subcategory-header';
     header.innerHTML = `<span class="toggle-icon">[+]</span> ${subcat.name}`;
+
+    // Handle click to expand or load filters (if it's a leaf)
     header.onclick = () => toggleSubcategoryChildren(subcat, wrapper);
 
     wrapper.appendChild(header);
     return wrapper;
 }
 
-// Expand/collapse logic for tree nodes and loading children if needed
+/**
+ * Expands a subcategory node to load its children or marks it as a leaf.
+ * If already expanded, toggles visibility instead of re-fetching.
+ * @param {Object} subcat - Subcategory data.
+ * @param {HTMLElement} wrapper - The DOM wrapper for this node.
+ */
 function toggleSubcategoryChildren(subcat, wrapper) {
     let childContainer = wrapper.querySelector('.subcategory-children');
     const toggleIcon = wrapper.querySelector('.toggle-icon');
 
-    if (childContainer) {
+    // If children already exist, just toggle visibility
+    if (wrapper.getAttribute('data-loaded') === 'true') {
         const isVisible = childContainer.style.display === 'block';
         childContainer.style.display = isVisible ? 'none' : 'block';
         toggleIcon.textContent = isVisible ? '[+]' : '▼';
         return;
     }
 
+    // Fetch child subcategories
     fetch(`/product_search_scripts_v2/backend/get_child_subcategories.php?parent_id=${subcat.id}`)
-        .then(res => res.text())
-        .then(text => {
-            console.log("Raw response:", text); // DEBUG line
-            return JSON.parse(text);
-        })
+        .then(res => res.json())
         .then(data => {
+            // If children exist, render them and allow further expansion
             if (data.success && data.subcategories.length > 0) {
                 childContainer = document.createElement('div');
                 childContainer.className = 'subcategory-children';
+
                 data.subcategories.forEach(child => {
                     const childNode = buildSubcategoryNode(child);
                     childContainer.appendChild(childNode);
                 });
+
                 wrapper.appendChild(childContainer);
+                wrapper.setAttribute('data-loaded', 'true');
                 toggleIcon.textContent = '▼';
+
             } else {
-                loadFiltersForSubcategory(subcat.id);
+                // Leaf node: highlight it and load filters
+                wrapper.classList.add('leaf-node');
+
+                // Clear any previously selected leaf
+                document.querySelectorAll('.leaf-node.selected').forEach(el => el.classList.remove('selected'));
+                wrapper.classList.add('selected');
+
+                const filtersContainer = document.getElementById('filters-output');
+                loadFiltersForSubcategory(subcat.id, filtersContainer);
             }
         })
         .catch(err => {
-            console.error("Failed to load subcategories or filters:", err);
+            console.error("Failed to load child subcategories or filters:", err);
         });
 }
 
-// Load filters associated with a selected leaf subcategory
 /**
- * Loads and renders filter blocks for a given subcategory.
- * @param {number} subcategoryId - The leaf subcategory ID to load filters for.
- * @param {HTMLElement} targetElement - The DOM element where filters should be inserted.
+ * Loads and displays filters for a given subcategory (leaf node).
+ * @param {number} subcategoryId - The selected leaf subcategory ID.
+ * @param {HTMLElement} targetElement - The DOM container to insert filter elements.
  */
 async function loadFiltersForSubcategory(subcategoryId, targetElement) {
     console.log(`Loading filters for subcategory ID: ${subcategoryId}`);
+
+    // Clear previous filters
+    targetElement.innerHTML = '';
+
     try {
         const res = await fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
         const text = await res.text();
         const data = JSON.parse(text);
-
-        // Clear previous filters (if reloading)
-        targetElement.innerHTML = '';
 
         if (!data.filters || data.filters.length === 0) {
             targetElement.innerHTML = '<p class="no-filters">No filters available for this subcategory.</p>';
             return;
         }
 
-        // Build each filter group
+        // Build and display each filter group
         data.filters.forEach(filter => {
             const group = document.createElement('div');
             group.className = 'filter-group';
@@ -130,35 +165,3 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
         targetElement.innerHTML = '<p class="error">Failed to load filters.</p>';
     }
 }
-
-//  Render filter groups and their checkbox options
-function renderFiltersForContainer(filters, container) {
-    container.innerHTML = '';
-
-    filters.forEach(filter => {
-        const group = document.createElement('div');
-        group.className = 'filter-group';
-
-        const label = document.createElement('h4');
-        label.textContent = filter.filter_name;
-        group.appendChild(label);
-
-        filter.options.forEach(opt => {
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.name = `filter_${filter.filter_id}`;
-            checkbox.value = opt.option_id;
-            checkbox.id = `opt_${filter.filter_id}_${opt.option_id}`;
-
-            const text = document.createElement('label');
-            text.setAttribute('for', checkbox.id);
-            text.textContent = opt.value;
-            text.prepend(checkbox);
-
-            group.appendChild(text);
-        });
-
-        container.appendChild(group);
-    });
-}
-
