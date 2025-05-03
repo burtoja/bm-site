@@ -135,12 +135,11 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
     console.log("Prepare to try loading filters");
     try {
         const res = await fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
-        //const text = await res.text();
-        //const data = JSON.parse(text);
-        const data = res;
-
+        const text = await res.text();
+        const data = JSON.parse(text);
 
         //TESTING
+        console.log("The response from get_subcategory_filters--> " + res);
         if (!data.filters) {
             console.log("data filters is untrue");
         }
