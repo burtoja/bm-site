@@ -13,6 +13,7 @@ let selectedSubcategoryPath = [];
  * @param {HTMLElement} toggleElement - The [+]/[−] toggle element next to the category title.
  */
 function loadTopLevelSubcategories(categoryId, toggleElement) {
+    console.log("LoadTopLevelSubcategories() called.");
     const filtersContainer = document.getElementById('category-filters-' + categoryId);
     const treeContainer = filtersContainer.querySelector('.subcategory-tree-container');
 
