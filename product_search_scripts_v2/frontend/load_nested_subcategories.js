@@ -132,7 +132,7 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
 
     // Clear previous filters
     targetElement.innerHTML = '';
-
+    console.log("Prepare to try loading filters");
     try {
         const res = await fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
         const text = await res.text();
@@ -140,7 +140,8 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
         //TESTING
         if (!data.filters) {
             console.log("data filters is untrue");
-        } elseif (data.filters.length === 0) {
+        }
+        if (data.filters.length === 0) {
             console.log("data filters length is 0");
         }
 
