@@ -19,7 +19,7 @@ $parentId = (int) $_GET['parent_id'];
 $conn = get_db_connection();
 
 $sql = "
-    SELECT id, name, has_children
+    SELECT id, name, category_id, has_children
     FROM subcategories
     WHERE category_id = ? AND parent_subcategory_id = ?
     ORDER BY name ASC
@@ -38,14 +38,13 @@ $result = $stmt->get_result();
 $subcategories = [];
 
 while ($row = $result->fetch_assoc()) {
-    $subcategories[] = [
-        'id' => (int) $row['id'],
-        'name' => $row['name'],
-        'has_children' => (bool) $row['has_children']
-    ];
+    $subcategories[] = $row;
 }
 
 $stmt->close();
 $conn->close();
 
-echo json_encode(['success' => true, 'subcategories' => $subcategories]);
+echo json_encode([
+    'success' => true,
+    'subcategories' => $subcategories
+]);
