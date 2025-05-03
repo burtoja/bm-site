@@ -139,7 +139,9 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
         const data = JSON.parse(text);
 
         //TESTING
-        console.log("The response from get_subcategory_filters--> " + res);
+
+        console.log("The response from get_subcategory_filters--> " + text);
+        console.log("Filter data:", data);
         if (!data.filters) {
             console.log("data filters is untrue");
         }
