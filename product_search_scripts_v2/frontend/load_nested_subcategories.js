@@ -137,6 +137,15 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
         const res = await fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
         const text = await res.text();
         const data = JSON.parse(text);
+        //TESTING
+        if (!data.filters) {
+            console.log("data filters is untrue");
+        } elseif (data.filters.length === 0) {
+            console.log("data filters length is 0");
+        }
+
+        //END
+
 
         if (!data.filters || data.filters.length === 0) {
             targetElement.innerHTML = '<p class="no-filters">No filters available for this subcategory.</p>';
