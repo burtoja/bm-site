@@ -11,7 +11,7 @@ $categoryId = (int) $_GET['category_id'];
 $conn = get_db_connection();
 
 // OLD:  $sql = "SELECT id, name FROM subcategories WHERE category_id = ? ORDER BY sort_order ASC, name ASC";
-$sql = "SELECT id, name FROM subcategories WHERE category_id = ? AND parent_subcategory_id IS NULL ORDER BY name";
+$sql = "SELECT id, name, category_id, has_children FROM subcategories WHERE category_id = ? AND parent_subcategory_id IS NULL ORDER BY name";
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $categoryId);
