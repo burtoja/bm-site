@@ -131,7 +131,7 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
     }
 }
 
-// Render filter groups and their checkbox options
+//  Render filter groups and their checkbox options
 function renderFiltersForContainer(filters, container) {
     container.innerHTML = '';
 
