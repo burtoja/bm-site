@@ -42,13 +42,6 @@ function loadTopLevelSubcategories(categoryId, toggleElement) {
                 } else {
                     console.warn("No subcategories array found in response.");
                 }
-                // if (data.success && Array.isArray(data.subcategories)) {
-                //     data.subcategories.forEach(subcat => {
-                //         console.log("Building node for:", subcat);
-                //         const node = buildSubcategoryNode(subcat);
-                //         treeContainer.appendChild(node);
-                //     });
-                // }
             })
             .catch(err => {
                 console.error("Failed to load top-level subcategories:", err);
