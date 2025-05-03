@@ -1,19 +1,19 @@
 <?php
-// Returns all filters and their options for a given subcategory ID
-//
+// get_subcategory_filters.php
+// Returns filters associated with the given subcategory ID (leaf or nested)
 
 require_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
 header('Content-Type: application/json');
 
-if (!isset($_GET['subcategory_id'])) {
-    echo json_encode(['error' => 'Missing subcategory_id']);
+if (!isset($_GET['subcategory_id']) || !is_numeric($_GET['subcategory_id'])) {
+    echo json_encode(['error' => 'Missing or invalid subcategory_id']);
     exit;
 }
 
 $subcategoryId = intval($_GET['subcategory_id']);
 $conn = get_db_connection();
 
-// Prepare filter list query
+// Get all filters for the given subcategory
 $filterSql = "
     SELECT f.id AS filter_id, f.name AS filter_name
     FROM filters f
@@ -28,12 +28,7 @@ $filterStmt->execute();
 $filterResult = $filterStmt->get_result();
 
 $filters = [];
-//while ($row = $filterResult->fetch_assoc()) {
-//    $filters[] = [
-//        'filter_id' => (int)$row['filter_id'],
-//        'filter_name' => $row['filter_name']
-//    ];
-//}
+
 while ($row = $filterResult->fetch_assoc()) {
     error_log(print_r($row, true));  // Add this line
     $filters[] = [
@@ -42,6 +37,7 @@ while ($row = $filterResult->fetch_assoc()) {
     ];
 }
 
+// For each filter, get its options
 $result = [];
 
 foreach ($filters as $filter) {
