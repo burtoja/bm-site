@@ -7,110 +7,133 @@ let selectedSubcategoryPath = [];
 
 // Load and render the root subcategories for a category
 function loadTopLevelSubcategories(categoryId, toggleElement) {
-    const container = document.getElementById(`category-filters-${categoryId}`);
-    if (!container) {
-        console.error(`Container not found for category ID ${categoryId}`);
-        return;
-    }
+    const filtersContainer = document.getElementById('category-filters-' + categoryId);
+    const treeContainer = filtersContainer.querySelector('.subcategory-tree-container');
 
-    // Toggle visibility
-    if (container.style.display === "none") {
-        container.style.display = "block";
-        toggleElement.textContent = toggleElement.textContent.replace("[+]", "[-]");
+    // Toggle filters section
+    const isVisible = filtersContainer.style.display === 'block';
+    filtersContainer.style.display = isVisible ? 'none' : 'block';
+    toggleElement.textContent = isVisible ? '[+]' + toggleElement.textContent.substring(3) : '[−]' + toggleElement.textContent.substring(3);
 
-        const subcatContainer = container.querySelector('.subcategory-tree-container');
-        if (subcatContainer && subcatContainer.children.length === 0) {
-            // Only load if not already loaded
-            fetch(`/product_search_scripts_v2/backend/get_child_subcategories.php?category_id=${categoryId}&parent_id=0`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.subcategories.length > 0) {
-                        renderSubcategoryTree(data.subcategories, subcatContainer);
-                    } else {
-                        subcatContainer.innerHTML = "<p>No subcategories found.</p>";
-                    }
-                });
-        }
-    } else {
-        container.style.display = "none";
-        toggleElement.textContent = toggleElement.textContent.replace("[-]", "[+]");
+    if (!isVisible && treeContainer.childElementCount === 0) {
+        fetch(`/product_search_scripts_v2/backend/get_subcategories.php?category_id=${categoryId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && Array.isArray(data.subcategories)) {
+                    data.subcategories.forEach(subcat => {
+                        const node = buildSubcategoryNode(subcat);
+                        treeContainer.appendChild(node);
+                    });
+                }
+            });
     }
 }
-
 
 // Build a single subcategory tree node (LI with toggle and children container)
 function buildSubcategoryNode(subcat) {
-    const li = document.createElement('li');
-    li.className = 'subcategory-node';
-    li.dataset.id = subcat.id;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'subcategory-node';
 
-    const toggle = document.createElement('span');
-    toggle.className = 'toggle';
-    toggle.textContent = '▶';
-    toggle.onclick = () => toggleSubcategoryChildren(li, subcat);
+    const header = document.createElement('div');
+    header.className = 'subcategory-header';
+    header.innerHTML = `<span class="toggle-icon">[+]</span> ${subcat.name}`;
+    header.onclick = () => toggleSubcategoryChildren(subcat, wrapper);
 
-    const label = document.createElement('span');
-    label.className = 'subcategory-label';
-    label.textContent = subcat.name;
-
-    li.appendChild(toggle);
-    li.appendChild(label);
-
-    const childContainer = document.createElement('ul');
-    childContainer.className = 'subcategory-children';
-    childContainer.style.display = 'none';
-    li.appendChild(childContainer);
-
-    return li;
+    wrapper.appendChild(header);
+    return wrapper;
 }
 
 // Expand/collapse logic for tree nodes and loading children if needed
-function toggleSubcategoryChildren(parentLi, subcat) {
-    const childContainer = parentLi.querySelector('.subcategory-children');
-    const toggleIcon = parentLi.querySelector('.toggle');
+function toggleSubcategoryChildren(subcat, wrapper) {
+    let childContainer = wrapper.querySelector('.subcategory-children');
+    const toggleIcon = wrapper.querySelector('.toggle-icon');
 
-    if (childContainer.children.length > 0) {
-        // Already loaded — just toggle
+    if (childContainer) {
         const isVisible = childContainer.style.display === 'block';
         childContainer.style.display = isVisible ? 'none' : 'block';
-        toggleIcon.textContent = isVisible ? '▶' : '▼';
+        toggleIcon.textContent = isVisible ? '[+]' : '▼';
         return;
     }
 
-    // Load children from backend
     fetch(`/product_search_scripts_v2/backend/get_child_subcategories.php?parent_id=${subcat.id}`)
-        .then(res => res.json())
-        .then(children => {
-            if (children.length > 0) {
-                children.forEach(child => {
+        .then(res => res.text())
+        .then(text => {
+            console.log("Raw response:", text); // DEBUG line
+            return JSON.parse(text);
+        })
+        .then(data => {
+            if (data.success && data.subcategories.length > 0) {
+                childContainer = document.createElement('div');
+                childContainer.className = 'subcategory-children';
+                data.subcategories.forEach(child => {
                     const childNode = buildSubcategoryNode(child);
                     childContainer.appendChild(childNode);
                 });
-                childContainer.style.display = 'block';
+                wrapper.appendChild(childContainer);
                 toggleIcon.textContent = '▼';
             } else {
-                // No children = leaf → load filters
                 loadFiltersForSubcategory(subcat.id);
             }
         })
-        .catch(err => console.error('Error loading child subcategories:', err));
+        .catch(err => {
+            console.error("Failed to load subcategories or filters:", err);
+        });
 }
 
 // Load filters associated with a selected leaf subcategory
-function loadFiltersForSubcategory(subcategoryId) {
-    console.log('Loading filters for subcategory ID:', subcategoryId);
-    fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`)
-        .then(res => res.json())
-        .then(data => {
-            renderFilters(data.filters);
-        })
-        .catch(err => console.error('Error loading filters:', err));
+/**
+ * Loads and renders filter blocks for a given subcategory.
+ * @param {number} subcategoryId - The leaf subcategory ID to load filters for.
+ * @param {HTMLElement} targetElement - The DOM element where filters should be inserted.
+ */
+async function loadFiltersForSubcategory(subcategoryId, targetElement) {
+    console.log(`Loading filters for subcategory ID: ${subcategoryId}`);
+    try {
+        const res = await fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
+        const text = await res.text();
+        const data = JSON.parse(text);
+
+        // Clear previous filters (if reloading)
+        targetElement.innerHTML = '';
+
+        if (!data.filters || data.filters.length === 0) {
+            targetElement.innerHTML = '<p class="no-filters">No filters available for this subcategory.</p>';
+            return;
+        }
+
+        // Build each filter group
+        data.filters.forEach(filter => {
+            const group = document.createElement('div');
+            group.className = 'filter-group';
+
+            const label = document.createElement('label');
+            label.textContent = filter.filter_name;
+            group.appendChild(label);
+
+            const select = document.createElement('select');
+            select.name = `filter_${filter.filter_id}`;
+            select.multiple = true;
+
+            filter.options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.option_id;
+                option.textContent = opt.value;
+                select.appendChild(option);
+            });
+
+            group.appendChild(select);
+            targetElement.appendChild(group);
+        });
+
+    } catch (err) {
+        console.error('Error loading filters:', err);
+        targetElement.innerHTML = '<p class="error">Failed to load filters.</p>';
+    }
 }
 
 // Render filter groups and their checkbox options
-function renderFilters(filters) {
-    const filterContainer = document.getElementById('filter-container');
-    filterContainer.innerHTML = '';
+function renderFiltersForContainer(filters, container) {
+    container.innerHTML = '';
 
     filters.forEach(filter => {
         const group = document.createElement('div');
@@ -125,14 +148,17 @@ function renderFilters(filters) {
             checkbox.type = 'checkbox';
             checkbox.name = `filter_${filter.filter_id}`;
             checkbox.value = opt.option_id;
+            checkbox.id = `opt_${filter.filter_id}_${opt.option_id}`;
 
             const text = document.createElement('label');
+            text.setAttribute('for', checkbox.id);
             text.textContent = opt.value;
             text.prepend(checkbox);
 
             group.appendChild(text);
         });
 
-        filterContainer.appendChild(group);
+        container.appendChild(group);
     });
 }
+
