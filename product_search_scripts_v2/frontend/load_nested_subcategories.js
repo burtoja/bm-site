@@ -79,7 +79,7 @@ function toggleSubcategoryChildren(subcat, wrapper) {
     let childContainer = wrapper.querySelector('.subcategory-children');
     const toggleIcon = wrapper.querySelector('.toggle-icon');
 
-    // If children already exist, just toggle visibility
+    // If children are already loaded, just toggle visibility
     if (wrapper.getAttribute('data-loaded') === 'true') {
         const isVisible = childContainer.style.display === 'block';
         childContainer.style.display = isVisible ? 'none' : 'block';
@@ -87,40 +87,43 @@ function toggleSubcategoryChildren(subcat, wrapper) {
         return;
     }
 
-    // Fetch child subcategories
-    fetch(`/product_search_scripts_v2/backend/get_child_subcategories.php?parent_id=${subcat.id}`)
-        .then(res => res.json())
-        .then(data => {
-            // If children exist, render them and allow further expansion
-            if (data.success && data.subcategories.length > 0) {
-                childContainer = document.createElement('div');
-                childContainer.className = 'subcategory-children';
+    if (subcat.has_children) {
+        // Fetch and render child subcategories
+        fetch(`/product_search_scripts_v2/backend/get_child_subcategories.php?parent_id=${subcat.id}&category_id=${subcat.category_id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data.subcategories) && data.subcategories.length > 0) {
+                    childContainer = document.createElement('div');
+                    childContainer.className = 'subcategory-children';
 
-                data.subcategories.forEach(child => {
-                    const childNode = buildSubcategoryNode(child);
-                    childContainer.appendChild(childNode);
-                });
+                    data.subcategories.forEach(child => {
+                        const childNode = buildSubcategoryNode(child);
+                        childContainer.appendChild(childNode);
+                    });
 
-                wrapper.appendChild(childContainer);
-                wrapper.setAttribute('data-loaded', 'true');
-                toggleIcon.textContent = '▼';
+                    wrapper.appendChild(childContainer);
+                    wrapper.setAttribute('data-loaded', 'true');
+                    toggleIcon.textContent = '▼';
+                } else {
+                    console.warn("Expected children, but none were returned for subcat ID", subcat.id);
+                }
+            })
+            .catch(err => {
+                console.error("Failed to load child subcategories:", err);
+            });
 
-            } else {
-                // Leaf node: highlight it and load filters
-                wrapper.classList.add('leaf-node');
+    } else {
+        // It’s a leaf node — load filters
+        wrapper.classList.add('leaf-node');
+        document.querySelectorAll('.leaf-node.selected').forEach(el => el.classList.remove('selected'));
+        wrapper.classList.add('selected');
 
-                // Clear any previously selected leaf
-                document.querySelectorAll('.leaf-node.selected').forEach(el => el.classList.remove('selected'));
-                wrapper.classList.add('selected');
-
-                const filtersContainer = document.getElementById('filters-output');
-                loadFiltersForSubcategory(subcat.id, filtersContainer);
-            }
-        })
-        .catch(err => {
-            console.error("Failed to load child subcategories or filters:", err);
-        });
+        const filtersContainer = document.getElementById('filters-output');
+        console.log("Prepare to try loading filters for subcat ID:", subcat.id);
+        loadFiltersForSubcategory(subcat.id, filtersContainer);
+    }
 }
+
 
 /**
  * Loads and displays filters for a given subcategory (leaf node).
