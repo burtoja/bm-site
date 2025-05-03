@@ -136,7 +136,8 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
     try {
         const res = await fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
         //const text = await res.text();
-        const data = JSON.parse(text);
+        //const data = JSON.parse(text);
+        const data = res;
 
 
         //TESTING
