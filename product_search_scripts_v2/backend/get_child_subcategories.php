@@ -21,7 +21,7 @@ $conn = get_db_connection();
 $sql = "
     SELECT id, name, has_children
     FROM subcategories
-    WHERE category_id = ? AND parent_id = ?
+    WHERE category_id = ? AND parent_subcategory_id  = ?
     ORDER BY name ASC
 ";
 
