@@ -30,8 +30,11 @@ function loadTopLevelSubcategories(categoryId, toggleElement) {
         fetch(`/product_search_scripts_v2/backend/get_subcategories.php?category_id=${categoryId}`)
             .then(res => res.json())
             .then(data => {
+                console.log("Fetched data:", data);
+                console.log("treeContainer:", treeContainer);
                 if (data.success && Array.isArray(data.subcategories)) {
                     data.subcategories.forEach(subcat => {
+                        console.log("Building node for:", subcat);
                         const node = buildSubcategoryNode(subcat);
                         treeContainer.appendChild(node);
                     });
