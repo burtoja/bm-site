@@ -170,3 +170,10 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
         targetElement.innerHTML = '<p class="error">Failed to load filters.</p>';
     }
 }
+
+// Make sure these functions will show console logs
+window.loadTopLevelSubcategories = loadTopLevelSubcategories;
+window.toggleSubcategoryChildren = toggleSubcategoryChildren;
+window.loadFiltersForSubcategory = loadFiltersForSubcategory;
+window.renderFiltersForContainer = renderFiltersForContainer;
+
