@@ -104,7 +104,7 @@ function toggleSubcategoryChildren(subcat, wrapper) {
                     wrapper.appendChild(childContainer);
                     childContainer.style.display = 'block';
                     wrapper.setAttribute('data-loaded', 'true');
-                    toggleIcon.textContent = '▼';
+                    toggleIcon.textContent = '[-]]';
                 } else {
                     console.warn("Expected children, but none were returned for subcat ID", subcat.id);
                 }
