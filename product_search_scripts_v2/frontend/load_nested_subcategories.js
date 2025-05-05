@@ -119,10 +119,10 @@ function toggleSubcategoryChildren(subcat, wrapper) {
         document.querySelectorAll('.leaf-node.selected').forEach(el => el.classList.remove('selected'));
         wrapper.classList.add('selected');
 
-        // OLD
-        // const filtersContainer = document.getElementById('filters-output');
-        // console.log("Prepare to try loading filters for subcat ID:", subcat.id);
-        // loadFiltersForSubcategory(subcat.id, filtersContainer);
+        // Leaf node — load filters
+        wrapper.classList.add('leaf-node');
+        document.querySelectorAll('.leaf-node.selected').forEach(el => el.classList.remove('selected'));
+        wrapper.classList.add('selected');
 
         // Traverse upward to find the enclosing .category-filters div
         const categoryFiltersWrapper = wrapper.closest('.category-filters');
