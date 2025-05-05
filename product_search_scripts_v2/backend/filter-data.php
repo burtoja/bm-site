@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once($_SERVER['DOCUMENT_ROOT'] . '/product_search_scripts_v2/backend/wp-load.php');
-//include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');
 global $wpdb;
 
 // Step 1: Get all categories
