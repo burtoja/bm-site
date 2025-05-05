@@ -172,18 +172,43 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
             label.textContent = filter.filter_name;
             group.appendChild(label);
 
-            const select = document.createElement('select');
-            select.name = `filter_${filter.filter_id}`;
-            select.multiple = true;
+            // const select = document.createElement('select');
+            // select.name = `filter_${filter.filter_id}`;
+            // select.multiple = true;
+            //
+            // filter.options.forEach(opt => {
+            //     const option = document.createElement('option');
+            //     option.value = opt.option_id;
+            //     option.textContent = opt.value;
+            //     select.appendChild(option);
+            // });
+            //
+            // group.appendChild(select);
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'checkbox-options';
 
             filter.options.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt.option_id;
-                option.textContent = opt.value;
-                select.appendChild(option);
+                const optionWrapper = document.createElement('div');
+                optionWrapper.className = 'checkbox-option';
+
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.name = `filter_${filter.filter_id}[]`;
+                input.value = opt.option_id;
+                input.id = `filter_${filter.filter_id}_${opt.option_id}`;
+
+                const label = document.createElement('label');
+                label.setAttribute('for', input.id);
+                label.textContent = opt.value;
+
+                optionWrapper.appendChild(input);
+                optionWrapper.appendChild(label);
+                optionsContainer.appendChild(optionWrapper);
             });
 
-            group.appendChild(select);
+            group.appendChild(optionsContainer);
+
+
             targetElement.appendChild(group);
         });
 
