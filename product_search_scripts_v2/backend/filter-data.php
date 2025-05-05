@@ -36,7 +36,7 @@ while ($cat = $categoriesResult->fetch_assoc()) {
     $allSubcategories = [];
     while ($row = $subcatRes->fetch_assoc()) {
         // Normalize parent_id to int (handle nulls)
-        $row['parent_id'] = is_null($row['parent_id']) ? 0 : (int)$row['parent_id'];
+        $row['parent_subcategory_id'] = is_null($row['parent_subcategory_id']) ? 0 : (int)$row['parent_subcategory_id'];
         $allSubcategories[] = $row;
     }
 
