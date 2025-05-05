@@ -5,7 +5,7 @@ function build_subcategory_tree($subcategories, $parentId, $conn) {
 $tree = [];
 
 foreach ($subcategories as $subcat) {
-if ((int)$subcat['parent_id'] === $parentId) {
+if ((int)$subcat['parent_subcategory_id'] === $parentId) {
 // Get filters for this subcategory
 $filters = [];
 
