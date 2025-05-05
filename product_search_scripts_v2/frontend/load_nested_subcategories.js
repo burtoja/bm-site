@@ -140,76 +140,59 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
     // Clear previous filters
     targetElement.innerHTML = '';
     console.log("Prepare to try loading filters");
+
     try {
         const res = await fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
         const text = await res.text();
         const data = JSON.parse(text);
 
-        //TESTING
-
         console.log("The response from get_subcategory_filters--> " + text);
         console.log("Filter data:", data);
-        if (!data.filters) {
-            console.log("data filters is untrue");
-        }
-        if (data.filters.length === 0) {
-            console.log("data filters length is 0");
-        }
-        //END
-
 
         if (!data.filters || data.filters.length === 0) {
             targetElement.innerHTML = '<p class="no-filters">No filters available for this subcategory.</p>';
             return;
         }
 
-        // Build and display each filter group
+        // Loop through each filter and build collapsible checkbox groups
         data.filters.forEach(filter => {
-            const group = document.createElement('div');
-            group.className = 'filter-group';
+            const filterItem = document.createElement('div');
+            filterItem.className = 'filter-item';
 
-            const label = document.createElement('label');
-            label.textContent = filter.filter_name;
-            group.appendChild(label);
+            // Toggle title
+            const toggle = document.createElement('div');
+            toggle.className = 'toggle filter-toggle';
+            toggle.textContent = `[+] ${filter.filter_name}`;
+            toggle.onclick = () => {
+                const optionsDiv = toggle.nextElementSibling;
+                const isVisible = optionsDiv.style.display === 'block';
+                optionsDiv.style.display = isVisible ? 'none' : 'block';
+                toggle.textContent = isVisible ? `[+] ${filter.filter_name}` : `[−] ${filter.filter_name}`;
+            };
+            filterItem.appendChild(toggle);
 
-            // const select = document.createElement('select');
-            // select.name = `filter_${filter.filter_id}`;
-            // select.multiple = true;
-            //
-            // filter.options.forEach(opt => {
-            //     const option = document.createElement('option');
-            //     option.value = opt.option_id;
-            //     option.textContent = opt.value;
-            //     select.appendChild(option);
-            // });
-            //
-            // group.appendChild(select);
-            const optionsContainer = document.createElement('div');
-            optionsContainer.className = 'checkbox-options';
+            // Filter options container
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'filter-options';
+            optionsDiv.style.display = 'none';
 
+            const ul = document.createElement('ul');
             filter.options.forEach(opt => {
-                const optionWrapper = document.createElement('div');
-                optionWrapper.className = 'checkbox-option';
-
+                const li = document.createElement('li');
+                const label = document.createElement('label');
                 const input = document.createElement('input');
                 input.type = 'checkbox';
                 input.name = `filter_${filter.filter_id}[]`;
                 input.value = opt.option_id;
-                input.id = `filter_${filter.filter_id}_${opt.option_id}`;
-
-                const label = document.createElement('label');
-                label.setAttribute('for', input.id);
-                label.textContent = opt.value;
-
-                optionWrapper.appendChild(input);
-                optionWrapper.appendChild(label);
-                optionsContainer.appendChild(optionWrapper);
+                label.appendChild(input);
+                label.append(` ${opt.value}`);
+                li.appendChild(label);
+                ul.appendChild(li);
             });
 
-            group.appendChild(optionsContainer);
-
-
-            targetElement.appendChild(group);
+            optionsDiv.appendChild(ul);
+            filterItem.appendChild(optionsDiv);
+            targetElement.appendChild(filterItem);
         });
 
     } catch (err) {
@@ -217,6 +200,7 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
         targetElement.innerHTML = '<p class="error">Failed to load filters.</p>';
     }
 }
+
 
 // Make sure these functions will show console logs
 window.loadTopLevelSubcategories = loadTopLevelSubcategories;
