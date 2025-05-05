@@ -6,7 +6,7 @@ include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_
 $conn = get_db_connection();
 
 // Include the recursive subcategory tree builder
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/build_subcategory_tree.php');
+//include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/build_subcategory_tree.php');
 
 // Step 1: Get all top-level categories
 $categoriesStmt = $conn->prepare("SELECT id, name FROM categories ORDER BY name ASC");
