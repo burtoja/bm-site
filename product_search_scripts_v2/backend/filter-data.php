@@ -1,75 +1,84 @@
 <?php
 header('Content-Type: application/json');
-require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');
-global $wpdb;
 
-// Step 1: Get all categories
-$categories = $wpdb->get_results("
-  SELECT id, name FROM categories ORDER BY name ASC
-");
+// ✅ Use your existing DB connection
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
+$conn = get_db_connection();
 
-// Build tree
+// Step 1: Get categories
+$categoriesStmt = $conn->prepare("SELECT id, name FROM categories ORDER BY name ASC");
+$categoriesStmt->execute();
+$categoriesResult = $categoriesStmt->get_result();
+
 $result = [];
 
-foreach ($categories as $cat) {
+while ($cat = $categoriesResult->fetch_assoc()) {
+    $catId = (int)$cat['id'];
+
     // Step 2: Get subcategories
-    $subcategories = $wpdb->get_results($wpdb->prepare("
-    SELECT id, name FROM subcategories
-    WHERE category_id = %d ORDER BY name ASC
-  ", $cat->id));
+    $subcategories = [];
+    $subStmt = $conn->prepare("SELECT id, name FROM subcategories WHERE category_id = ? ORDER BY name ASC");
+    $subStmt->bind_param("i", $catId);
+    $subStmt->execute();
+    $subRes = $subStmt->get_result();
 
-    $subcatArray = [];
+    while ($sub = $subRes->fetch_assoc()) {
+        $subId = (int)$sub['id'];
 
-    foreach ($subcategories as $subcat) {
-        // Step 3: Get filters for this subcategory
-        $filters = $wpdb->get_results($wpdb->prepare("
-      SELECT f.id, f.name
-      FROM subcategory_filters sf
-      JOIN filters f ON sf.filter_id = f.id
-      WHERE sf.subcategory_id = %d
-      ORDER BY f.name ASC
-    ", $subcat->id));
+        // Step 3: Get filters for subcategory
+        $filters = [];
+        $filtStmt = $conn->prepare("
+            SELECT f.id, f.name
+            FROM subcategory_filters sf
+            JOIN filters f ON sf.filter_id = f.id
+            WHERE sf.subcategory_id = ?
+            ORDER BY f.name ASC
+        ");
+        $filtStmt->bind_param("i", $subId);
+        $filtStmt->execute();
+        $filtRes = $filtStmt->get_result();
 
-        $filterArray = [];
+        while ($filt = $filtRes->fetch_assoc()) {
+            $filtId = (int)$filt['id'];
 
-        foreach ($filters as $filter) {
             // Step 4: Get filter options
-            $options = $wpdb->get_results($wpdb->prepare("
-        SELECT id, value
-        FROM filter_options
-        WHERE filter_id = %d
-        ORDER BY sort_order ASC, value ASC
-      ", $filter->id));
+            $options = [];
+            $optStmt = $conn->prepare("
+                SELECT id, value
+                FROM filter_options
+                WHERE filter_id = ?
+                ORDER BY sort_order ASC, value ASC
+            ");
+            $optStmt->bind_param("i", $filtId);
+            $optStmt->execute();
+            $optRes = $optStmt->get_result();
 
-            $optionArray = [];
-            foreach ($options as $opt) {
-                $optionArray[] = [
-                    'id' => "opt_" . $opt->id,
-                    'value' => $opt->value
+            while ($opt = $optRes->fetch_assoc()) {
+                $options[] = [
+                    'id' => 'opt_' . $opt['id'],
+                    'value' => $opt['value']
                 ];
             }
 
-            $filterArray[] = [
-                'name' => $filter->name,
+            $filters[] = [
+                'name' => $filt['name'],
                 'open' => false,
-                'options' => $optionArray
+                'options' => $options
             ];
         }
 
-        $subcatArray[] = [
-            'name' => $subcat->name,
+        $subcategories[] = [
+            'name' => $sub['name'],
             'open' => false,
-            'filters' => $filterArray
+            'filters' => $filters
         ];
     }
 
     $result[] = [
-        'name' => $cat->name,
+        'name' => $cat['name'],
         'open' => false,
-        'subcategories' => $subcatArray
+        'subcategories' => $subcategories
     ];
 }
 
-// Output the final JSON tree
 echo json_encode($result);
-
