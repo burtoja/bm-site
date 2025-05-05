@@ -119,17 +119,11 @@ function toggleSubcategoryChildren(subcat, wrapper) {
         document.querySelectorAll('.leaf-node.selected').forEach(el => el.classList.remove('selected'));
         wrapper.classList.add('selected');
 
-        // Leaf node — load filters
-        wrapper.classList.add('leaf-node');
-        document.querySelectorAll('.leaf-node.selected').forEach(el => el.classList.remove('selected'));
-        wrapper.classList.add('selected');
-
-        // Traverse upward to find the enclosing .category-filters div
-        const categoryFiltersWrapper = wrapper.closest('.category-filters');
-        if (categoryFiltersWrapper) {
-            loadFiltersForSubcategory(subcat.id, categoryFiltersWrapper);
+        const filtersContainer = wrapper.closest('.category-filters')?.querySelector('.subcategory-filters-output');
+        if (filtersContainer) {
+            loadFiltersForSubcategory(subcat.id, filtersContainer);
         } else {
-            console.warn("Could not find category-filters container for subcat ID:", subcat.id);
+            console.warn("Could not find .subcategory-filters-output for subcat ID:", subcat.id);
         }
     }
 }
