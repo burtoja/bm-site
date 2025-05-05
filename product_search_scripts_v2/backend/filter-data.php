@@ -24,7 +24,7 @@ while ($cat = $categoriesResult->fetch_assoc()) {
 
     // Step 2: Get all subcategories (flat list) under this category
     $subcatStmt = $conn->prepare("
-        SELECT id, name, parent_id
+        SELECT id, name, parent_subcategory_id
         FROM subcategories
         WHERE category_id = ?
         ORDER BY name ASC
