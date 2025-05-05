@@ -83,7 +83,7 @@ function toggleSubcategoryChildren(subcat, wrapper) {
     if (wrapper.getAttribute('data-loaded') === 'true') {
         const isVisible = childContainer.style.display === 'block';
         childContainer.style.display = isVisible ? 'none' : 'block';
-        toggleIcon.textContent = isVisible ? '[+]' : '▼';
+        toggleIcon.textContent = isVisible ? '[+]' : '[-]';
         return;
     }
 
