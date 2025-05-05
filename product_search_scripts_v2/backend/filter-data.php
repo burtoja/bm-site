@@ -1,10 +1,10 @@
 <?php
 header('Content-Type: application/json');
 require_once($_SERVER['DOCUMENT_ROOT'] . '/product_search_scripts_v2/backend/db_connection.php');
-global $wpdb;
+global $db;
 
 // Step 1: Get all categories
-$categories = $wpdb->get_results("
+$categories = $db->get_results("
   SELECT id, name FROM categories ORDER BY name ASC
 ");
 
@@ -13,7 +13,7 @@ $result = [];
 
 foreach ($categories as $cat) {
     // Step 2: Get subcategories
-    $subcategories = $wpdb->get_results($wpdb->prepare("
+    $subcategories = $db->get_results($db->prepare("
     SELECT id, name FROM subcategories
     WHERE category_id = %d ORDER BY name ASC
   ", $cat->id));
@@ -22,7 +22,7 @@ foreach ($categories as $cat) {
 
     foreach ($subcategories as $subcat) {
         // Step 3: Get filters for this subcategory
-        $filters = $wpdb->get_results($wpdb->prepare("
+        $filters = $db->get_results($db->prepare("
       SELECT f.id, f.name
       FROM subcategory_filters sf
       JOIN filters f ON sf.filter_id = f.id
@@ -34,7 +34,7 @@ foreach ($categories as $cat) {
 
         foreach ($filters as $filter) {
             // Step 4: Get filter options
-            $options = $wpdb->get_results($wpdb->prepare("
+            $options = $db->get_results($db->prepare("
         SELECT id, value
         FROM filter_options
         WHERE filter_id = %d
