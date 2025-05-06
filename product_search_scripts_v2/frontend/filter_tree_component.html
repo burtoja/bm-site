@@ -3,7 +3,7 @@
     <!-- Loop through categories -->
     <template x-for="category in categories" :key="category.name">
         <div class="bg-gray-800 rounded p-3">
-            <button @click="category.open = !category.open" class="w-full text-left font-bold">
+            <button type="button" @click="category.open = !category.open" class="w-full text-left font-bold">
                 <span x-text="category.open ? '− ' + category.name : '+ ' + category.name"></span>
             </button>
 
@@ -14,7 +14,7 @@
                     <div>
                         <template x-for="filter in category.filters" :key="filter.name">
                             <div>
-                                <button @click="filter.open = !filter.open" class="text-sm underline">
+                                <button type="button" @click="filter.open = !filter.open" class="text-sm underline">
                                     <span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>
                                 </button>
                                 <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
@@ -33,7 +33,7 @@
                 <!-- Subcategories -->
                 <template x-for="subcat in category.subcategories" :key="subcat.name">
                     <div class="bg-gray-700 p-3 rounded ml-4">
-                        <button @click="subcat.open = !subcat.open" class="w-full text-left font-semibold">
+                        <button type="button" @click="subcat.open = !subcat.open" class="w-full text-left font-semibold">
                             <span x-text="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"></span>
                         </button>
 
@@ -43,7 +43,7 @@
                             <template x-if="subcat.filters.length > 0">
                                 <template x-for="filter in subcat.filters" :key="filter.name">
                                     <div>
-                                        <button @click="filter.open = !filter.open" class="text-sm underline">
+                                        <button type="button" @click="filter.open = !filter.open" class="text-sm underline">
                                             <span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>
                                         </button>
                                         <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
@@ -61,7 +61,7 @@
                             <!-- Sub-subcategories -->
                             <template x-for="subsub in subcat.subcategories" :key="subsub.name">
                                 <div class="bg-gray-600 p-3 rounded ml-4">
-                                    <button @click="subsub.open = !subsub.open" class="w-full text-left font-medium">
+                                    <button type="button" @click="subsub.open = !subsub.open" class="w-full text-left font-medium">
                                         <span x-text="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"></span>
                                     </button>
 
@@ -70,7 +70,7 @@
                                         <template x-if="subsub.filters.length > 0">
                                             <template x-for="filter in subsub.filters" :key="filter.name">
                                                 <div>
-                                                    <button @click="filter.open = !filter.open" class="text-sm underline">
+                                                    <button type="button" @click="filter.open = !filter.open" class="text-sm underline">
                                                         <span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>
                                                     </button>
                                                     <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
@@ -97,7 +97,7 @@
 
     <!-- Submit button -->
     <div class="mt-4">
-        <button @click="submitFilters()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">
+        <button type="button" @click="submitFilters()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">
             Search
         </button>
     </div>
