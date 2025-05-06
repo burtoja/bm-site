@@ -5,7 +5,7 @@ function filterTree() {
 
         async init() {
             try {
-                const res = await fetch('../backend/filter-data.php');
+                const res = await fetch('/product_search_scripts_v2/backend/filter-data.php');
                 if (!res.ok) throw new Error('Failed to load filters.');
                 this.categories = await res.json();
 
