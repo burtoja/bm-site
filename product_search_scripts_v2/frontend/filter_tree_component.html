@@ -1,3 +1,4 @@
+
 <div x-data="filterTree()" x-init="init()" class="p-4 space-y-3 max-w-3xl text-white">
 
     <!-- Loop through categories -->
@@ -8,6 +9,43 @@
             </button>
 
             <div x-show="category.open" class="ml-4 mt-2 space-y-2">
+
+                <!-- Global Filters -->
+                <div class="bg-gray-900 p-3 rounded space-y-2">
+
+                    <!-- Condition -->
+                    <div>
+                        <label class="block font-semibold mb-1">Condition</label>
+                        <select x-model="globalFilters.condition" class="text-black w-full rounded px-2 py-1">
+                            <option value="">Any</option>
+                            <option value="New">New</option>
+                            <option value="Used">Used</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div>
+                        <label class="block font-semibold mb-1">Price Range</label>
+                        <select x-model="globalFilters.priceRange" class="text-black w-full rounded px-2 py-1">
+                            <option value="any">Any</option>
+                            <option value="under100">Under $100</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <div x-show="globalFilters.priceRange === 'custom'" class="flex space-x-2 mt-2">
+                            <input type="number" placeholder="Min $" x-model="globalFilters.minPrice" class="text-black px-2 py-1 rounded w-1/2" />
+                            <input type="number" placeholder="Max $" x-model="globalFilters.maxPrice" class="text-black px-2 py-1 rounded w-1/2" />
+                        </div>
+                    </div>
+
+                    <!-- Sort Order -->
+                    <div>
+                        <label class="block font-semibold mb-1">Sort Order</label>
+                        <select x-model="globalFilters.sortOrder" class="text-black w-full rounded px-2 py-1">
+                            <option value="high_to_low">High to Low</option>
+                            <option value="low_to_high">Low to High</option>
+                        </select>
+                    </div>
+                </div>
 
                 <!-- Category-level filters -->
                 <template x-if="category.filters.length > 0">
@@ -38,8 +76,6 @@
                         </button>
 
                         <div x-show="subcat.open" class="ml-4 mt-2 space-y-2">
-
-                            <!-- Subcat filters -->
                             <template x-if="subcat.filters.length > 0">
                                 <template x-for="filter in subcat.filters" :key="filter.name">
                                     <div>
@@ -58,7 +94,6 @@
                                 </template>
                             </template>
 
-                            <!-- Sub-subcategories -->
                             <template x-for="subsub in subcat.subcategories" :key="subsub.name">
                                 <div class="bg-gray-600 p-3 rounded ml-4">
                                     <button type="button" @click="subsub.open = !subsub.open" class="w-full text-left font-medium">
@@ -66,7 +101,6 @@
                                     </button>
 
                                     <div x-show="subsub.open" class="ml-4 mt-2 space-y-2">
-                                        <!-- Sub-sub filters -->
                                         <template x-if="subsub.filters.length > 0">
                                             <template x-for="filter in subsub.filters" :key="filter.name">
                                                 <div>
@@ -97,11 +131,8 @@
 
     <!-- Submit button -->
     <div class="mt-4">
-        <button type="button" @click="submitFilters()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">
+        <button @click="submitFilters()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">
             Search
         </button>
     </div>
-
-    <!-- Debug output - change to true to see selected options -->
-    <pre x-show="false" x-text="JSON.stringify(selectedOptions, null, 2)" class="text-sm bg-gray-900 p-2 mt-4 rounded"></pre>
 </div>
