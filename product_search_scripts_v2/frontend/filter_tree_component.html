@@ -24,11 +24,11 @@
                         </button>
                         <div x-show="conditionOpen" class="mt-1">
                             <label class="block">
-                                <input type="checkbox" value="New" x-model="$root.globalFilters.condition" class="mr-1">
+                                <input type="checkbox" value="New" x-model="globalFilters.condition" class="mr-1">
                                 New
                             </label>
                             <label class="block">
-                                <input type="checkbox" value="Used" x-model="$root.globalFilters.condition" class="mr-1">
+                                <input type="checkbox" value="Used" x-model="globalFilters.condition" class="mr-1">
                                 Used
                             </label>
                         </div>
@@ -41,9 +41,9 @@
                         </button>
                         <div x-show="priceOpen" class="mt-1">
                             <label class="block text-sm">Minimum Price</label>
-                            <input type="number" x-model="$root.globalFilters.minPrice" placeholder="Min $" class="text-black px-2 py-1 rounded w-full" />
+                            <input type="number" x-model="globalFilters.minPrice" placeholder="Min $" class="text-black px-2 py-1 rounded w-full" />
                             <label class="block text-sm mt-1">Maximum Price</label>
-                            <input type="number" x-model="$root.globalFilters.maxPrice" placeholder="Max $" class="text-black px-2 py-1 rounded w-full" />
+                            <input type="number" x-model="globalFilters.maxPrice" placeholder="Max $" class="text-black px-2 py-1 rounded w-full" />
                         </div>
                     </div>
 
@@ -54,11 +54,11 @@
                         </button>
                         <div x-show="sortOpen" class="mt-1">
                             <label class="block">
-                                <input type="radio" name="sort" value="high_to_low" x-model="$root.globalFilters.sortOrder" class="mr-1">
+                                <input type="radio" name="sort" value="high_to_low" x-model="globalFilters.sortOrder" class="mr-1">
                                 High to Low
                             </label>
                             <label class="block">
-                                <input type="radio" name="sort" value="low_to_high" x-model="$root.globalFilters.sortOrder" class="mr-1">
+                                <input type="radio" name="sort" value="low_to_high" x-model="globalFilters.sortOrder" class="mr-1">
                                 Low to High
                             </label>
                         </div>
