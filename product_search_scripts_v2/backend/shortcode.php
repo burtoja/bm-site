@@ -36,6 +36,10 @@ function boilersa_categories_shortcode($atts) {
     // Enqueue Alpine + your frontend scripts
     $ver = time(); // cache-busting
 
+    // Add tailwind
+    echo '<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>';
+    echo '<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">';
+
     echo '<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/filter_tree_controller.js?v=' . $ver . '"></script>';
 
