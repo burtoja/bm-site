@@ -10,8 +10,8 @@
 
             <div x-show="category.open" class="ml-4 mt-2 space-y-2">
 
-                <!-- Global Filters (Collapsible Toggles) -->
-                <div class="bg-gray-900 p-3 rounded space-y-2" x-data="{
+                <!-- Global Filters (Styled + Checkboxes/Text Inputs) -->
+                <div class="bg-gray-800 p-3 rounded space-y-2" x-data="{
                     conditionOpen: false,
                     priceOpen: false,
                     sortOpen: false
@@ -22,12 +22,15 @@
                         <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline">
                             <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
                         </button>
-                        <div x-show="conditionOpen" class="ml-4 mt-1">
-                            <select x-model="$parent.globalFilters.condition" class="text-black w-full rounded px-2 py-1 mt-1">
-                                <option value="">Any</option>
-                                <option value="New">New</option>
-                                <option value="Used">Used</option>
-                            </select>
+                        <div x-show="conditionOpen" class="ml-4 mt-2 space-y-1">
+                            <label class="block">
+                                <input type="checkbox" value="New" x-model="$parent.globalFilters.condition" class="mr-1">
+                                New
+                            </label>
+                            <label class="block">
+                                <input type="checkbox" value="Used" x-model="$parent.globalFilters.condition" class="mr-1">
+                                Used
+                            </label>
                         </div>
                     </div>
 
@@ -36,16 +39,11 @@
                         <button type="button" @click="priceOpen = !priceOpen" class="text-sm underline">
                             <span x-text="priceOpen ? '− Price Range' : '+ Price Range'"></span>
                         </button>
-                        <div x-show="priceOpen" class="ml-4 mt-1 space-y-2">
-                            <select x-model="$parent.globalFilters.priceRange" class="text-black w-full rounded px-2 py-1">
-                                <option value="any">Any</option>
-                                <option value="under100">Under $100</option>
-                                <option value="custom">Custom</option>
-                            </select>
-                            <div x-show="$parent.globalFilters.priceRange === 'custom'" class="flex space-x-2">
-                                <input type="number" placeholder="Min $" x-model="$parent.globalFilters.minPrice" class="text-black px-2 py-1 rounded w-1/2" />
-                                <input type="number" placeholder="Max $" x-model="$parent.globalFilters.maxPrice" class="text-black px-2 py-1 rounded w-1/2" />
-                            </div>
+                        <div x-show="priceOpen" class="ml-4 mt-2 space-y-1">
+                            <label class="block text-sm">Minimum Price</label>
+                            <input type="number" x-model="$parent.globalFilters.minPrice" placeholder="Min $" class="text-black px-2 py-1 rounded w-full" />
+                            <label class="block text-sm mt-2">Maximum Price</label>
+                            <input type="number" x-model="$parent.globalFilters.maxPrice" placeholder="Max $" class="text-black px-2 py-1 rounded w-full" />
                         </div>
                     </div>
 
@@ -54,11 +52,15 @@
                         <button type="button" @click="sortOpen = !sortOpen" class="text-sm underline">
                             <span x-text="sortOpen ? '− Sort Order' : '+ Sort Order'"></span>
                         </button>
-                        <div x-show="sortOpen" class="ml-4 mt-1">
-                            <select x-model="$parent.globalFilters.sortOrder" class="text-black w-full rounded px-2 py-1 mt-1">
-                                <option value="high_to_low">High to Low</option>
-                                <option value="low_to_high">Low to High</option>
-                            </select>
+                        <div x-show="sortOpen" class="ml-4 mt-2 space-y-1">
+                            <label class="block">
+                                <input type="radio" name="sort" value="high_to_low" x-model="$parent.globalFilters.sortOrder" class="mr-1">
+                                High to Low
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="sort" value="low_to_high" x-model="$parent.globalFilters.sortOrder" class="mr-1">
+                                Low to High
+                            </label>
                         </div>
                     </div>
                 </div>
