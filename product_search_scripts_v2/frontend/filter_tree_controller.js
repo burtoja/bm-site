@@ -5,7 +5,7 @@ function filterTree() {
 
         async init() {
             try {
-                const res = await fetch('/wp-content/plugins/your-plugin-name/filter-data.php');
+                const res = await fetch('../backend/filter-data.php');
                 if (!res.ok) throw new Error('Failed to load filters.');
                 this.categories = await res.json();
 
