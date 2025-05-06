@@ -59,6 +59,17 @@ function filterTree() {
                 params.push(`sort_order=${sortVal}`);
             }
 
+            // Collect selections to build endpoint q parameter
+            const q = buildQueryFromSelections({
+                categories: this.categories,
+                selectedOptions: this.selectedOptions,
+                globalFilters: this.globalFilters
+            });
+
+            const finalUrl = `/product-search-results/?q=${encodeURIComponent(q)}`;
+            window.location.href = finalUrl;
+
+
             // Redirect with final query
             const query = params.join('&');
             window.location.href = `/product-search-results/?${query}`;
