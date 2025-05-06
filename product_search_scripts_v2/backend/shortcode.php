@@ -1,57 +1,25 @@
 <?php
-// shortcode.php - Updated for collapsible tree subcategory structure
+// shortcode.php - with Alpine-powered nested filter UI
+
 include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/filter_blocks.php');
 
 function boilersa_categories_shortcode($atts) {
     $conn = get_db_connection();
 
-    // Get all categories
-    $sql = "SELECT id, name, has_subcategories FROM categories ORDER BY name ASC";
-    $result = $conn->query($sql);
-    error_log("Error Log Active (shortcode)");
     ob_start();
+
     echo '<div class="product-search-grid">';
 
 //// Left Column – FILTERS ////
     echo '<div class="filters-column">';
     echo '<form id="product-filter-form" method="GET">';
 
-// Sticky Search + Reset buttons
-    echo render_sticky_search_reset_buttons();
+    // Sticky buttons if needed
+    // echo render_sticky_search_reset_buttons();
 
-    echo '<div class="category-list">';
+    // Load Alpine-based filter tree HTML from external file
+    echo file_get_contents($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/frontend/filter_tree_component.html');
 
-    if ($result->num_rows > 0) {
-        while ($cat = $result->fetch_assoc()) {
-            $categoryId = (int) $cat['id'];
-            $categoryName = htmlspecialchars($cat['name']);
-            $hasSubcategories = (bool) $cat['has_subcategories'];
-
-            echo '<div class="category-item">';
-            echo "<!-- START CATEGORY: $categoryName -->";
-            echo '<div class="toggle category-toggle" onclick="loadTopLevelSubcategories(' . $categoryId . ', this)">[+] ' . $categoryName . '</div>';
-            echo '<div id="category-filters-' . $categoryId . '" class="category-filters" style="display:none;">';
-
-            echo render_condition_filter($categoryId);
-            echo render_price_range_filter($categoryId);
-            echo render_sort_order_filter($categoryId);
-
-            echo '<div class="subcategory-tree-container" data-category-id="' . $categoryId . '"></div>';
-            echo '<div class="subcategory-filters-output"></div>';
-
-            echo '<div id="filters-output" class="filters-output"></div>';
-
-
-            echo '</div>'; // close .category-filters
-            echo "<!-- END CATEGORY: $categoryName -->";
-            echo '</div>'; // close .category-item
-        }
-    } else {
-        echo '<p>No categories found.</p>';
-    }
-
-    echo '</div>'; // close category-list
     echo '</form>';
     echo '</div>'; // close .filters-column
 
@@ -65,24 +33,19 @@ function boilersa_categories_shortcode($atts) {
 
     $conn->close();
 
-    // Add JS (be sure these are in order)
-    echo '<script src="/product_search_scripts_v2/frontend/toggle_filter_visibility.js"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/toggle_custom_price.js"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/reset_button_action.js"></script>';
+    // Enqueue Alpine + your frontend scripts
+    $ver = time(); // cache-busting
 
-    $ver = time(); // cache-busting version
-    echo '<script src="/product_search_scripts_v2/frontend/load_nested_subcategories.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/collect_filters.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/extract_search_params.js?v=' . $ver . '" ></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/build_query.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/build_api_endpoint_from_params.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/fetch-ebay-data.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/submit_button_listener.js?v=' . $ver . '"></script>';
+    echo '<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/filter_tree_controller.js?v=' . $ver . '"></script>';
+
+    // Other search behavior scripts (if needed for results)
     echo '<script src="/product_search_scripts_v2/frontend/render_results.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/render_pagination.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/run_search_with_offset.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/fetch-ebay-data.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/build_query.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_v2/frontend/submit_button_listener.js?v=' . $ver . '"></script>';
 
     return ob_get_clean();
 }
 add_shortcode('boilersa_categories', 'boilersa_categories_shortcode');
-?>

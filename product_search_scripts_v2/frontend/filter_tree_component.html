@@ -1,0 +1,112 @@
+<div x-data="filterTree()" x-init="init()" class="p-4 space-y-3 max-w-3xl">
+
+    <!-- Loop over each category -->
+    <template x-for="(category, catIndex) in categories" :key="catIndex">
+        <div class="border rounded p-3 bg-gray-50">
+            <!-- Category title -->
+            <button @click="category.open = !category.open" class="font-bold text-lg w-full text-left">
+                <span x-text="category.name"></span>
+            </button>
+
+            <div x-show="category.open" class="ml-4 mt-2 space-y-2">
+
+                <!-- Filters directly under category -->
+                <template x-if="category.filters && category.filters.length > 0">
+                    <div>
+                        <template x-for="(filter, fIndex) in category.filters" :key="fIndex">
+                            <div>
+                                <button @click="filter.open = !filter.open" class="text-sm underline text-gray-700">
+                                    <span x-text="filter.name"></span>
+                                </button>
+                                <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
+                                    <template x-for="(option, oIndex) in filter.options" :key="oIndex">
+                                        <label class="block">
+                                            <input type="checkbox" :value="option.id" x-model="selectedOptions">
+                                            <span x-text="option.value"></span>
+                                        </label>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- Subcategories -->
+                <template x-if="category.subcategories && category.subcategories.length > 0">
+                    <template x-for="(subcat, subIndex) in category.subcategories" :key="subIndex">
+                        <div class="ml-4">
+                            <button @click="subcat.open = !subcat.open" class="text-blue-700 font-semibold underline">
+                                <span x-text="subcat.name"></span>
+                            </button>
+
+                            <div x-show="subcat.open" class="ml-4 mt-2 space-y-2">
+                                <!-- Filters under subcategory -->
+                                <template x-if="subcat.filters && subcat.filters.length > 0">
+                                    <div>
+                                        <template x-for="(filter, fIndex) in subcat.filters" :key="fIndex">
+                                            <div>
+                                                <button @click="filter.open = !filter.open" class="text-sm underline text-gray-700">
+                                                    <span x-text="filter.name"></span>
+                                                </button>
+                                                <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
+                                                    <template x-for="(option, oIndex) in filter.options" :key="oIndex">
+                                                        <label class="block">
+                                                            <input type="checkbox" :value="option.id" x-model="selectedOptions">
+                                                            <span x-text="option.value"></span>
+                                                        </label>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                <!-- Sub-subcategories (recursive support) -->
+                                <template x-if="subcat.subcategories && subcat.subcategories.length > 0">
+                                    <template x-for="(subsub, ssIndex) in subcat.subcategories" :key="ssIndex">
+                                        <div class="ml-4">
+                                            <button @click="subsub.open = !subsub.open" class="text-purple-700 underline font-medium">
+                                                <span x-text="subsub.name"></span>
+                                            </button>
+
+                                            <div x-show="subsub.open" class="ml-4 mt-1 space-y-2">
+                                                <!-- Filters under sub-subcategory -->
+                                                <template x-if="subsub.filters && subsub.filters.length > 0">
+                                                    <div>
+                                                        <template x-for="(filter, fIndex) in subsub.filters" :key="fIndex">
+                                                            <div>
+                                                                <button @click="filter.open = !filter.open" class="text-sm underline text-gray-700">
+                                                                    <span x-text="filter.name"></span>
+                                                                </button>
+                                                                <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
+                                                                    <template x-for="(option, oIndex) in filter.options" :key="oIndex">
+                                                                        <label class="block">
+                                                                            <input type="checkbox" :value="option.id" x-model="selectedOptions">
+                                                                            <span x-text="option.value"></span>
+                                                                        </label>
+                                                                    </template>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- Submit button -->
+    <div class="mt-4">
+        <button @click="submitFilters()" class="bg-blue-600 text-white px-4 py-2 rounded">Search</button>
+    </div>
+
+    <!-- Debug output -->
+    <pre x-text="JSON.stringify(selectedOptions, null, 2)" class="text-sm bg-gray-100 p-2 mt-4"></pre>
+</div>
