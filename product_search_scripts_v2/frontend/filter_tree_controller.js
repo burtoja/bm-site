@@ -1,21 +1,15 @@
-
 function filterTree() {
     return {
         categories: [],
         selectedOptions: [],
-        globalFilters: {
-            condition: "",
-            priceRange: "any",
-            minPrice: "",
-            maxPrice: "",
-            sortOrder: "high_to_low"
-        },
 
         async init() {
             try {
                 const res = await fetch('/product_search_scripts_v2/backend/filter-data.php');
                 if (!res.ok) throw new Error('Failed to load filters.');
                 this.categories = await res.json();
+
+                // Add reactive "open" property to all nested nodes
                 this.applyOpenFlags(this.categories);
             } catch (error) {
                 console.error('Filter tree load error:', error);
@@ -25,9 +19,11 @@ function filterTree() {
         applyOpenFlags(nodes) {
             nodes.forEach(node => {
                 node.open = false;
+
                 if (node.filters) {
                     node.filters.forEach(f => f.open = false);
                 }
+
                 if (node.subcategories) {
                     this.applyOpenFlags(node.subcategories);
                 }
@@ -35,33 +31,20 @@ function filterTree() {
         },
 
         submitFilters() {
+            if (this.selectedOptions.length === 0) {
+                alert("Please select at least one filter option.");
+                return;
+            }
+
+            // Strip the "opt_" prefix to get numeric IDs
             const selectedIds = this.selectedOptions.map(id => id.replace(/^opt_/, ''));
-            const params = selectedIds.map(id => `filters[]=${encodeURIComponent(id)}`);
 
-            // Add global filter values
-            if (this.globalFilters.condition) {
-                params.push(`condition=${encodeURIComponent(this.globalFilters.condition)}`);
-            }
+            // Build the query string (e.g., filters[]=123&filters[]=456)
+            const query = selectedIds.map(id => `filters[]=${encodeURIComponent(id)}`).join('&');
 
-            if (this.globalFilters.priceRange === 'under100') {
-                params.push('max_price=100');
-            } else if (this.globalFilters.priceRange === 'custom') {
-                if (this.globalFilters.minPrice) {
-                    params.push(`min_price=${encodeURIComponent(this.globalFilters.minPrice)}`);
-                }
-                if (this.globalFilters.maxPrice) {
-                    params.push(`max_price=${encodeURIComponent(this.globalFilters.maxPrice)}`);
-                }
-            }
-
-            if (this.globalFilters.sortOrder) {
-                const sortVal = this.globalFilters.sortOrder === 'low_to_high' ? 'price_asc' : 'price_desc';
-                params.push(`sort_order=${sortVal}`);
-            }
-
-            // Redirect with final query
-            const query = params.join('&');
+            // Redirect or call JS search runner
             window.location.href = `/product-search-results/?${query}`;
         }
+
     };
 }
