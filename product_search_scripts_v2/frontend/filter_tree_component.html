@@ -10,19 +10,19 @@
 
             <div x-show="category.open" class="ml-4 mt-2 space-y-2">
 
-                <!-- Global Filters (Styled + Checkboxes/Text Inputs) -->
+                <!-- Global Filters (Consistent Spacing + Indentation) -->
                 <div class="bg-gray-800 p-3 rounded space-y-2" x-data="{
-                    conditionOpen: false,
-                    priceOpen: false,
-                    sortOpen: false
-                  }">
+    conditionOpen: false,
+    priceOpen: false,
+    sortOpen: false
+  }">
 
                     <!-- Condition -->
                     <div>
                         <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline">
                             <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
                         </button>
-                        <div x-show="conditionOpen" class="ml-4 mt-2 space-y-1">
+                        <div x-show="conditionOpen" class="mt-1">
                             <label class="block">
                                 <input type="checkbox" value="New" x-model="$parent.globalFilters.condition" class="mr-1">
                                 New
@@ -39,10 +39,10 @@
                         <button type="button" @click="priceOpen = !priceOpen" class="text-sm underline">
                             <span x-text="priceOpen ? '− Price Range' : '+ Price Range'"></span>
                         </button>
-                        <div x-show="priceOpen" class="ml-4 mt-2 space-y-1">
+                        <div x-show="priceOpen" class="mt-1">
                             <label class="block text-sm">Minimum Price</label>
                             <input type="number" x-model="$parent.globalFilters.minPrice" placeholder="Min $" class="text-black px-2 py-1 rounded w-full" />
-                            <label class="block text-sm mt-2">Maximum Price</label>
+                            <label class="block text-sm mt-1">Maximum Price</label>
                             <input type="number" x-model="$parent.globalFilters.maxPrice" placeholder="Max $" class="text-black px-2 py-1 rounded w-full" />
                         </div>
                     </div>
@@ -52,7 +52,7 @@
                         <button type="button" @click="sortOpen = !sortOpen" class="text-sm underline">
                             <span x-text="sortOpen ? '− Sort Order' : '+ Sort Order'"></span>
                         </button>
-                        <div x-show="sortOpen" class="ml-4 mt-2 space-y-1">
+                        <div x-show="sortOpen" class="mt-1">
                             <label class="block">
                                 <input type="radio" name="sort" value="high_to_low" x-model="$parent.globalFilters.sortOrder" class="mr-1">
                                 High to Low
@@ -64,6 +64,7 @@
                         </div>
                     </div>
                 </div>
+
 
 
                 <!-- Category-level filters -->
