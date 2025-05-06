@@ -66,13 +66,33 @@ function filterTree() {
                 globalFilters: this.globalFilters
             });
 
-            const finalUrl = `/product-search-results/?q=${encodeURIComponent(q)}`;
-            window.location.href = finalUrl;
+            const sort = this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price';
 
+            const query = new URLSearchParams();
+            query.set('q', q);
+            query.set('sort', sort);
 
-            // Redirect with final query
-            const query = params.join('&');
-            window.location.href = `/product-search-results/?${query}`;
+            if (this.globalFilters.minPrice) query.set('min_price', this.globalFilters.minPrice);
+            if (this.globalFilters.maxPrice) query.set('max_price', this.globalFilters.maxPrice);
+            if (this.globalFilters.condition.length > 0) {
+                this.globalFilters.condition.forEach(c => query.append('condition', c));
+            }
+
+            window.location.href = `/product-search-results/?${query.toString()}`;
+
+            // const q = buildQueryFromSelections({
+            //     categories: this.categories,
+            //     selectedOptions: this.selectedOptions,
+            //     globalFilters: this.globalFilters
+            // });
+            //
+            // const finalUrl = `/product-search-results/?q=${encodeURIComponent(q)}`;
+            // window.location.href = finalUrl;
+            //
+            //
+            // // Redirect with final query
+            // const query = params.join('&');
+            // window.location.href = `/product-search-results/?${query}`;
         }
     };
 }
