@@ -36,12 +36,15 @@ function filterTree() {
                 return;
             }
 
-            const query = this.selectedOptions
-                .map(id => `filters[]=${encodeURIComponent(id)}`)
-                .join('&');
+            // Strip the "opt_" prefix to get numeric IDs
+            const selectedIds = this.selectedOptions.map(id => id.replace(/^opt_/, ''));
 
-            // Redirect to results page with filter IDs in query string
+            // Build the query string (e.g., filters[]=123&filters[]=456)
+            const query = selectedIds.map(id => `filters[]=${encodeURIComponent(id)}`).join('&');
+
+            // Redirect or call JS search runner
             window.location.href = `/product-search-results/?${query}`;
         }
+
     };
 }
