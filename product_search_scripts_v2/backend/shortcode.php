@@ -39,13 +39,13 @@ function boilersa_categories_shortcode($atts) {
     // Add tailwind
     echo '<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>';
     echo '<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">';
+    echo '<script src="/product_search_scripts_v2/frontend/build_query_from_selections.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/filter_tree_controller.js?v=' . $ver . '"></script>';
 
     // Other search behavior scripts (if needed for results)
     echo '<script src="/product_search_scripts_v2/frontend/render_results.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/render_pagination.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_v2/frontend/fetch-ebay-data.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/build_query_from_selections.js?v=' . $ver . '"></script>';
     //echo '<script src="/product_search_scripts_v2/frontend/submit_button_listener.js?v=' . $ver . '"></script>';
 
     return ob_get_clean();
