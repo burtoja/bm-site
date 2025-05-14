@@ -12,7 +12,7 @@ function boilersa_categories_shortcode($atts) {
 
 //// Left Column – FILTERS ////
     echo '<div class="filters-column">';
-    echo '<form id="product-filter-form" method="GET">';
+    echo '<div id="product-filter-form">';
 
     // Sticky buttons if needed
     // echo render_sticky_search_reset_buttons();
