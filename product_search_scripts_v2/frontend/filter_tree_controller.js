@@ -54,7 +54,10 @@ function filterTree() {
             }
 
             // Redirect to search results page
-            window.location.href = `/product-search-results/?${query.toString()}`;
+            //window.location.href = `/product-search-results/?${query.toString()}`;
+            window.history.replaceState({}, '', `?${query.toString()}`);
+            runSearchWithOffset();
+
         }
     };
 }
