@@ -58,3 +58,11 @@ async function runSearchWithOffset(newOffset) {
         console.error("Error during paginated search:", err);
     }
 }
+
+// ensures the search auto-runs if the user refreshes the page or shares a link with query params
+window.addEventListener('DOMContentLoaded', () => {
+    const url = new URLSearchParams(window.location.search);
+    if (url.has('q')) {
+        runSearchWithOffset();
+    }
+});
