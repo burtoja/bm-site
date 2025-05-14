@@ -4,59 +4,43 @@
  * @param newOffset
  * @returns {Promise<void>}
  */
-async function runSearchWithOffset(newOffset) {
-    try {
-        const form = document.getElementById("product-filter-form");
-        if (!form) {
-            console.error("Cannot find form to re-run search.");
-            return;
-        }
+function runSearchWithOffset(offset = 0) {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    const sort = params.get('sort');
+    const minPrice = params.get('min_price');
+    const maxPrice = params.get('max_price');
+    const conditions = params.getAll('condition');
 
-        const filterData = collectMainCategoryFilters();
-        const translatedFilters = await fetch('/product_search_scripts_v2/backend/translate_filters.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filters: filterData })
-        }).then(res => res.json());
+    if (!q) {
+        console.warn("Missing 'q' parameter in URL. Cannot run search.");
+        return;
+    }
 
-        const params = new URLSearchParams(buildQueryStringFromSearchParams(translatedFilters));
+    const searchParams = new URLSearchParams();
+    searchParams.set('q', q);
+    if (sort) searchParams.set('sort', sort);
+    if (minPrice) searchParams.set('min_price', minPrice);
+    if (maxPrice) searchParams.set('max_price', maxPrice);
+    conditions.forEach(c => searchParams.append('condition', c));
+    searchParams.set('offset', offset);
 
-        if (!params.get('k')) {
-            console.warn("No keyword found. Skipping API call.");
-            return;
-        }
+    const endpoint = `/product_search_scripts_v2/backend/search_ebay.php?${searchParams.toString()}`;
 
-        params.set('offset', newOffset); // Update the offset for the new page
+    // Optional: show loading spinner
+    document.getElementById("search-results").innerHTML = "<p>Loading results...</p>";
 
-        const urlParams = new URLSearchParams(params);
-
-        // Convert 'k' to 'q'
-        if (urlParams.has('k')) {
-            urlParams.set('q', urlParams.get('k'));
-            urlParams.delete('k');
-        }
-
-        const apiUrl = '/product_search_scripts_v2/backend/search_ebay.php?' + urlParams.toString();
-        console.log("Proxy API URL (paginated):", apiUrl);
-
-        const data = await fetch(apiUrl).then(res => res.json());
-
-        if (data) {
+    fetch(endpoint)
+        .then(res => res.json())
+        .then(data => {
             renderResults(data);
             document.getElementById('search-results').scrollIntoView({ behavior: 'smooth' });
-        } else {
-            document.getElementById('search-results').innerHTML = '<p>No results found.</p>';
-        }
-
-        // Re-render pagination controls
-        const totalResults = data.total || 0;
-        const currentOffset = data.offset || 0;
-        const totalPages = Math.ceil(totalResults / 50); // 50 is our limit per page
-        renderPagination(totalResults, currentOffset,50);
-
-    } catch (err) {
-        console.error("Error during paginated search:", err);
-    }
+            renderPagination(data);
+        })
+        .catch(error => {
+            console.error("Error during paginated search:", error);
+            document.getElementById("search-results").innerHTML = "<p>Error loading results.</p>";
+        });
 }
 
 // ensures the search auto-runs if the user refreshes the page or shares a link with query params
