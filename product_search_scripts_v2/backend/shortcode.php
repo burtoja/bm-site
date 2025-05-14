@@ -20,7 +20,7 @@ function boilersa_categories_shortcode($atts) {
     // Load Alpine-based filter tree HTML from external file
     echo file_get_contents($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/frontend/filter_tree_component.html');
 
-    echo '</form>';
+    echo '</div>';
     echo '</div>'; // close .filters-column
 
 //// Right Column – RESULTS ////
