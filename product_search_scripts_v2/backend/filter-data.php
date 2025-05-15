@@ -81,6 +81,7 @@ while ($cat = $categoriesResult->fetch_assoc()) {
     }
 
     $result[] = [
+        'id' => $cat['id'],
         'name' => $cat['name'],
         'open' => false,
         'filters' => $filtersDirect,
