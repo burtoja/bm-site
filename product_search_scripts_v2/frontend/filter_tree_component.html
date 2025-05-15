@@ -78,7 +78,7 @@
 
                 <!-- Category-level filters -->
                 <template x-if="category.filters.length > 0">
-                    <div>
+                    <div class="mt-0">
                         <template x-for="filter in category.filters" :key="filter.name">
                             <div>
                                 <button type="button" @click="filter.open = !filter.open" class="text-sm underline">
