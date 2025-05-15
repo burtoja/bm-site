@@ -87,7 +87,8 @@ $params = [
     'condition' => $condition,
     'min_price' => $minPrice,
     'max_price' => $maxPrice,
-    'aspect_filter' => $aspectMap
+    'aspect_filter' => $aspectMap,
+    'offset' => isset($_GET['offset']) ? (int)$_GET['offset'] : 0
 ];
 
 $searchEndpoint = construct_final_ebay_endpoint($params, $recognizedBrands, $categoryId);
