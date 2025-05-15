@@ -1,6 +1,13 @@
 
 <div x-data="filterTree()" x-init="init()" class="p-4 space-y-3 max-w-3xl text-white">
 
+    <!-- Submit button (sticky at top of category list) -->
+    <div id="search-button-wrapper">
+        <button @click="submitFilters()">
+            Search
+        </button>
+    </div>
+
     <!-- Loop through categories -->
     <template x-for="category in categories" :key="category.name">
         <div class="bg-gray-800 rounded p-3">
@@ -150,10 +157,4 @@
         </div>
     </template>
 
-    <!-- Submit button -->
-    <div id="search-button-wrapper">
-        <button @click="submitFilters()">
-            Search
-        </button>
-    </div>
 </div>
