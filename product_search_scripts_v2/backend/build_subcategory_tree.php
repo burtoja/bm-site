@@ -59,6 +59,6 @@ function build_subcategory_tree($subcategories, $parentId, $conn) {
             ];
         }
     }
-
+echo $tree;
     return $tree;
 }
