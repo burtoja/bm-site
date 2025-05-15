@@ -30,7 +30,7 @@
                         <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline">
                             <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
                         </button>
-                        <div x-show="conditionOpen" class="mt-1">
+                        <div x-show="conditionOpen" class="mt-1 ml-4">
                             <label class="block">
                                 <input type="checkbox" value="New" x-model="globalFilters.condition" class="mr-1">
                                 New
@@ -47,7 +47,7 @@
                         <button type="button" @click="priceOpen = !priceOpen" class="text-sm underline">
                             <span x-text="priceOpen ? '− Price Range' : '+ Price Range'"></span>
                         </button>
-                        <div x-show="priceOpen" class="mt-1">
+                        <div x-show="priceOpen" class="mt-1 ml-4">
                             <label class="block text-sm">Minimum Price</label>
                             <input type="number" x-model="globalFilters.minPrice" placeholder="Min $" class="text-black px-2 py-1 rounded w-full" />
                             <label class="block text-sm mt-1">Maximum Price</label>
@@ -60,7 +60,7 @@
                         <button type="button" @click="sortOpen = !sortOpen" class="text-sm underline">
                             <span x-text="sortOpen ? '− Sort Order' : '+ Sort Order'"></span>
                         </button>
-                        <div x-show="sortOpen" class="mt-1">
+                        <div x-show="sortOpen" class="mt-1 ml-4">
                             <label class="block">
                                 <input type="radio" name="sort" value="high_to_low" x-model="globalFilters.sortOrder" class="mr-1">
                                 High to Low
