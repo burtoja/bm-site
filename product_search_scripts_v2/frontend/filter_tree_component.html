@@ -18,13 +18,14 @@
             <div x-show="category.open" class="ml-4 mt-2 space-y-2">
 
                 <!-- Global Filters -->
-                <div class="bg-gray-800 p-3 rounded space-y-2" x-data="{
+                <div class="space-y-2 ml-4 mt-2" x-data="{
                     conditionOpen: false,
                     priceOpen: false,
                     sortOpen: false
                   }">
 
-                    <!-- Condition -->
+
+                <!-- Condition -->
                     <div>
                         <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline">
                             <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
