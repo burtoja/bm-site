@@ -35,7 +35,7 @@ function runSearchWithOffset(offset = 0) {
         .then(data => {
             renderResults(data);
             document.getElementById('search-results').scrollIntoView({ behavior: 'smooth' });
-            renderPagination(data);
+            renderPagination(data.total, data.offset, 50);
         })
         .catch(error => {
             console.error("Error during paginated search:", error);
