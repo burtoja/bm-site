@@ -127,4 +127,8 @@ $data['offset'] = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
 // Forward total from eBay (if it's there), or set to 0
 $data['total'] = isset($data['total']) ? (int)$data['total'] : 0;
 
+// Debug output
+error_log("eBay response total: " . print_r($data['total'], true));
+error_log("Full decoded eBay response: " . print_r($data, true));
+
 echo json_encode($data);
