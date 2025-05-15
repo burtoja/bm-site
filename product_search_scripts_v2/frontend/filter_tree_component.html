@@ -30,7 +30,7 @@
                         <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline">
                             <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
                         </button>
-                        <div x-show="conditionOpen" class="mt-0">
+                        <div x-show="conditionOpen" class="mt-1">
                             <label class="block">
                                 <input type="checkbox" value="New" x-model="globalFilters.condition" class="mr-1">
                                 New
@@ -84,7 +84,7 @@
                                 <button type="button" @click="filter.open = !filter.open" class="text-sm underline">
                                     <span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>
                                 </button>
-                                <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
+                                <div x-show="filter.open" class="ml-4 mt-0 space-y-1">
                                     <template x-for="option in filter.options" :key="option.id">
                                         <label class="block">
                                             <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
