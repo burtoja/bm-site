@@ -3,6 +3,7 @@ function filterTree() {
     return {
         categories: [],
         selectedOptions: [],
+        selectedCategoryId: null,
         globalFilters: {
             condition: [],
             priceRange: "any",
@@ -33,6 +34,45 @@ function filterTree() {
                 }
             });
         },
+
+        toggleCategory(category) {
+            if (this.selectedCategoryId !== category.id) {
+                // A new category is selected, so reset others
+                this.categories.forEach(cat => {
+                    if (cat.id !== category.id) {
+                        cat.open = false;
+                        cat.filters?.forEach(f => {
+                            f.options?.forEach(o => o.checked = false);
+                        });
+                        cat.subcategories?.forEach(sub => {
+                            sub.open = false;
+                            sub.filters?.forEach(f => {
+                                f.options?.forEach(o => o.checked = false);
+                            });
+                        });
+                    }
+                });
+
+                category.open = true;
+                this.selectedCategoryId = category.id;
+            } else {
+                // Clicking the same category again toggles it closed
+                category.open = !category.open;
+                if (!category.open) {
+                    this.selectedCategoryId = null;
+                    category.filters?.forEach(f => {
+                        f.options?.forEach(o => o.checked = false);
+                    });
+                    category.subcategories?.forEach(sub => {
+                        sub.open = false;
+                        sub.filters?.forEach(f => {
+                            f.options?.forEach(o => o.checked = false);
+                        });
+                    });
+                }
+            }
+        },
+
 
         submitFilters() {
             const q = buildQueryFromSelections({

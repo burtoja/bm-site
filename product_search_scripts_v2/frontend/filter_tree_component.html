@@ -27,8 +27,8 @@
 
                 <!-- Condition -->
                     <div>
-                        <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline">
-                            <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
+                        <button type="button" @click="toggleCategory(category)" class="text-sm underline">
+                            <span x-text="(selectedCategoryId === category.id && category.open) ? '− ' + category.name : '+ ' + category.name"></span>
                         </button>
                         <div x-show="conditionOpen" class="mt-1 ml-4">
                             <label class="block">
