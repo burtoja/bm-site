@@ -9,7 +9,7 @@
     </div>
 
     <!-- Loop through categories -->
-    <template x-for="category in categories" :key="category.name">
+    <template x-for="category in categories" :key="category.id">
         <div class="bg-gray-800 rounded p-3">
             <button type="button" @click="toggleCategory(category)" class="w-full text-left font-bold">
                 <span x-text="(selectedCategoryId === category.id && category.open) ? '− ' + category.name : '+ ' + category.name"></span>
