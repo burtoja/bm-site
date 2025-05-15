@@ -52,6 +52,7 @@ function build_subcategory_tree($subcategories, $parentId, $conn) {
             $children = build_subcategory_tree($subcategories, $subcatId, $conn);
 
             $tree[] = [
+                'id' => $subcat['id'],
                 'name' => $subcat['name'],
                 'open' => false,
                 'filters' => $filters,
