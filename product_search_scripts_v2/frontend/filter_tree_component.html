@@ -84,7 +84,7 @@
                                 <button type="button" @click="filter.open = !filter.open" class="text-sm underline">
                                     <span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>
                                 </button>
-                                <div x-show="filter.open" class="ml-4 mt-0 space-y-1">
+                                <div x-show="filter.open" class="ml-4">
                                     <template x-for="option in filter.options" :key="option.id">
                                         <label class="block">
                                             <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
