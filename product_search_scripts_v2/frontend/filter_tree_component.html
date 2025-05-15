@@ -28,6 +28,9 @@
 
                 <!-- Condition -->
                     <div>
+                        <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline">
+                            <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
+                        </button>
                         <div x-show="conditionOpen" class="mt-1 ml-4">
                             <label class="block">
                                 <input type="checkbox" value="New" x-model="globalFilters.condition" class="mr-1">
