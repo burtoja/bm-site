@@ -86,7 +86,7 @@
                                     <span
                                             x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                             class="block truncate max-w-full"
-                                            :title="filter.name"
+                                            :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                     ></span>
                                     <!--<span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>-->
                                 </button>
@@ -114,7 +114,7 @@
                             <span
                                     x-text="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"
                                     class="block truncate max-w-full"
-                                    :title="filter.name"
+                                    :title="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"
                             ></span>
                         </button>
 
@@ -126,7 +126,7 @@
                                             <span
                                                     x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                                     class="block truncate max-w-full"
-                                                    :title="filter.name"
+                                                    :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                             ></span>
                                             <!--<span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>-->
                                         </button>
@@ -134,7 +134,11 @@
                                             <template x-for="option in filter.options" :key="option.id">
                                                 <label class="block">
                                                     <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
-                                                    <span x-text="option.value"></span>
+                                                    <span
+                                                            x-text="option.value"
+                                                            class="block truncate max-w-full"
+                                                            :title="option.name"
+                                                    ></span>
                                                 </label>
                                             </template>
                                         </div>
@@ -148,7 +152,7 @@
                                         <span
                                                 x-text="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"
                                                 class="block truncate max-w-full"
-                                                :title="filter.name"
+                                                :title="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"
                                         ></span>
                                     </button>
 
@@ -160,7 +164,7 @@
                                                         <span
                                                                 x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                                                 class="block truncate max-w-full"
-                                                                :title="filter.name"
+                                                                :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                                         ></span>
                                                     </button>
                                                     <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
