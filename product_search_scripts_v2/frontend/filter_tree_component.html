@@ -85,7 +85,7 @@
                                 <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                     <span
                                             x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
-                                            class="block truncate px-2"
+                                            class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                             :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                     ></span>
                                     <!--<span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>-->
@@ -96,7 +96,7 @@
                                             <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
                                             <span
                                                     x-text="option.value"
-                                                    class="truncate px-1 inline-block"
+                                                    class="truncate px-1 inline-block align-middle"
                                                     :title="option.name"
                                             ></span>
                                         </label>
@@ -113,7 +113,7 @@
                         <button type="button" @click="subcat.open = !subcat.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                             <span
                                     x-text="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"
-                                    class="block truncate px-2"
+                                    class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                     :title="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"
                             ></span>
                         </button>
@@ -125,7 +125,7 @@
                                         <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                             <span
                                                     x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
-                                                    class="block truncate px-2"
+                                                    class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                                     :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                             ></span>
                                             <!--<span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>-->
@@ -151,7 +151,7 @@
                                     <button type="button" @click="subsub.open = !subsub.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                         <span
                                                 x-text="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"
-                                                class="block truncate px-2"
+                                                class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                                 :title="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"
                                         ></span>
                                     </button>
@@ -163,7 +163,7 @@
                                                     <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                                         <span
                                                                 x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
-                                                                class="block truncate px-2"
+                                                                class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                                                 :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                                         ></span>
                                                     </button>
