@@ -95,11 +95,11 @@
                                 </button>
                                 <div x-show="filter.open" class="ml-4">
                                     <template x-for="option in filter.options" :key="option.id">
-                                        <label class="block">
-                                            <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
+                                        <label class="flex items-center space-x-2 overflow-hidden">
+                                            <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
                                             <span
                                                     x-text="option.value"
-                                                    class="truncate px-1 inline-block align-middle"
+                                                    class="truncate"
                                                     :title="option.name"
                                             ></span>
                                         </label>
@@ -135,11 +135,11 @@
                                         </button>
                                         <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
                                             <template x-for="option in filter.options" :key="option.id">
-                                                <label class="block">
-                                                    <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
+                                                <label class="flex items-center space-x-2 overflow-hidden">
+                                                    <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
                                                     <span
                                                             x-text="option.value"
-                                                            class="truncate px-1 inline-block align-middle"
+                                                            class="truncate"
                                                             :title="option.name"
                                                     ></span>
                                                 </label>
@@ -172,11 +172,11 @@
                                                     </button>
                                                     <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
                                                         <template x-for="option in filter.options" :key="option.id">
-                                                            <label class="block">
-                                                                <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
+                                                            <label class="flex items-center space-x-2 overflow-hidden">
+                                                                <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
                                                                 <span
                                                                         x-text="option.value"
-                                                                        class="truncate px-1 inline-block align-middle"
+                                                                        class="truncate"
                                                                         :title="option.name"
                                                                 ></span>
                                                             </label>
