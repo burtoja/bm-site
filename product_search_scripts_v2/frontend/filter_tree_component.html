@@ -82,10 +82,10 @@
                     <div class="mt-0">
                         <template x-for="filter in category.filters" :key="filter.name">
                             <div>
-                                <button type="button" @click="filter.open = !filter.open" class="text-sm underline px-2">
+                                <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left">
                                     <span
                                             x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
-                                            class="block truncate max-w-full"
+                                            class="block truncate px-2"
                                             :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                     ></span>
                                     <!--<span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>-->
@@ -110,10 +110,10 @@
                 <!-- Subcategories -->
                 <template x-for="subcat in category.subcategories" :key="subcat.name">
                     <div class="bg-gray-700 p-3 rounded ml-4">
-                        <button type="button" @click="subcat.open = !subcat.open" class="w-full text-left font-semibold px-2">
+                        <button type="button" @click="subcat.open = !subcat.open" class="text-sm underline w-full text-left">
                             <span
                                     x-text="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"
-                                    class="block truncate max-w-full"
+                                    class="block truncate px-2"
                                     :title="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"
                             ></span>
                         </button>
@@ -122,10 +122,10 @@
                             <template x-if="subcat.filters.length > 0">
                                 <template x-for="filter in subcat.filters" :key="filter.name">
                                     <div>
-                                        <button type="button" @click="filter.open = !filter.open" class="text-sm underline px-2">
+                                        <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left">
                                             <span
                                                     x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
-                                                    class="block truncate max-w-full"
+                                                    class="block truncate px-2"
                                                     :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                             ></span>
                                             <!--<span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>-->
@@ -148,10 +148,10 @@
 
                             <template x-for="subsub in subcat.subcategories" :key="subsub.name">
                                 <div class="bg-gray-600 p-3 rounded ml-4">
-                                    <button type="button" @click="subsub.open = !subsub.open" class="w-full text-left font-medium px-2">
+                                    <button type="button" @click="subsub.open = !subsub.open" class="text-sm underline w-full text-left">
                                         <span
                                                 x-text="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"
-                                                class="block truncate max-w-full"
+                                                class="block truncate px-2"
                                                 :title="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"
                                         ></span>
                                     </button>
@@ -160,10 +160,10 @@
                                         <template x-if="subsub.filters.length > 0">
                                             <template x-for="filter in subsub.filters" :key="filter.name">
                                                 <div>
-                                                    <button type="button" @click="filter.open = !filter.open" class="text-sm underline px-2">
+                                                    <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left">
                                                         <span
                                                                 x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
-                                                                class="block truncate max-w-full"
+                                                                class="block truncate px-2"
                                                                 :title="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                                         ></span>
                                                     </button>
@@ -189,6 +189,7 @@
                         </div>
                     </div>
                 </template>
+
             </div>
         </div>
     </template>
