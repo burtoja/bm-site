@@ -10,8 +10,11 @@
 
     <!-- Loop through categories -->
     <template x-for="category in categories" :key="category.id">
-        <div class="bg-gray-800 rounded p-3 hover:bg-gray-700 rounded">
-            <button type="button" @click="toggleCategory(category)" class="w-full text-left font-bold hover:bg-gray-700 rounded">
+        <div
+            class="bg-gray-800 rounded p-3"
+            :class="(selectedCategoryId !== category.id || !category.open) ? 'hover:bg-gray-700' : ''"
+        >
+            <button type="button" @click="toggleCategory(category)" class="w-full text-left font-bold">
                 <span x-text="(selectedCategoryId === category.id && category.open) ? '− ' + category.name : '+ ' + category.name"></span>
             </button>
 
