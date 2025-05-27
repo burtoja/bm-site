@@ -94,7 +94,11 @@
                                     <template x-for="option in filter.options" :key="option.id">
                                         <label class="block">
                                             <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
-                                            <span x-text="option.value"></span>
+                                            <span
+                                                    x-text="option.value"
+                                                    class="block truncate max-w-full"
+                                                    :title="option.name"
+                                            ></span>
                                         </label>
                                     </template>
                                 </div>
@@ -163,7 +167,11 @@
                                                         <template x-for="option in filter.options" :key="option.id">
                                                             <label class="block">
                                                                 <input type="checkbox" :value="option.id" x-model="selectedOptions" class="mr-1">
-                                                                <span x-text="option.value"></span>
+                                                                <span
+                                                                        x-text="option.value"
+                                                                        class="block truncate max-w-full"
+                                                                        :title="option.name"
+                                                                ></span>
                                                             </label>
                                                         </template>
                                                     </div>
