@@ -115,7 +115,12 @@
                                 <template x-for="filter in subcat.filters" :key="filter.name">
                                     <div>
                                         <button type="button" @click="filter.open = !filter.open" class="text-sm underline">
-                                            <span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>
+                                            <span
+                                                    x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
+                                                    class="block truncate max-w-full"
+                                                    :title="filter.name"
+                                            ></span>
+                                            <!--<span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"></span>-->
                                         </button>
                                         <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
                                             <template x-for="option in filter.options" :key="option.id">
