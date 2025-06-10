@@ -98,5 +98,9 @@ foreach ($filters as &$f) {
         'open' => false
     ];
 }
-
+//TESTING
+header('Content-Type: application/json');
+echo json_encode(['filters' => $filters], JSON_PRETTY_PRINT);
+exit;
+//END
 echo json_encode(['filters' => $filters]);
