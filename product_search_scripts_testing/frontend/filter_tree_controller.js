@@ -80,13 +80,8 @@ function filterTree() {
         async loadCategoryFilters(category) {
             if (category.loaded) return;
             try {
-                console.log('--- loadCatrgoyrFilters running() ---')
-
                 const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?category_id=${category.id}`);
                 const data = await res.json();
-
-                console.log('Filters for category:', category.name, data.filters); //TESTING
-
                 category.filters = data.filters;
                 category.loaded = true;
 
