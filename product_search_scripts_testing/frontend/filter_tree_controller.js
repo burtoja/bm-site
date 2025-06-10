@@ -82,9 +82,12 @@ function filterTree() {
             try {
                 const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?category_id=${category.id}`);
                 const data = await res.json();
+
+                console.log('Filters for category:', category.name, data.filters); //TESTING
+
                 category.filters = data.filters;
                 category.loaded = true;
-                console.log(`Loaded filters for category ${category.name}:`, category.filters);
+
             } catch (error) {
                 console.error('Failed to load category filters:', error);
             }
