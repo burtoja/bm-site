@@ -57,18 +57,22 @@ if (empty($filter_ids)) {
 }
 
 // Step 2: Get options
-$placeholders = implode(',', array_fill(0, count($filter_ids), '?'));
-$types = str_repeat('i', count($filter_ids));
+$escaped_ids = array_map('intval', $filter_ids);
+$in_clause = implode(',', $escaped_ids);
 
 $sql_options = "
     SELECT id, filter_id, value
     FROM filter_options
-    WHERE filter_id IN ($placeholders)
+    WHERE filter_id IN ($in_clause)
     ORDER BY sort_order ASC, value ASC
 ";
 
-$stmt = $conn->prepare($sql_options);
-$stmt->bind_param($types, ...$filter_ids);
+$result = $conn->query($sql_options);
+$options = [];
+while ($row = $result->fetch_assoc()) {
+    $options[] = $row;
+}
+
 $stmt->execute();
 $result = $stmt->get_result();
 
