@@ -10,10 +10,15 @@ function filterTree() {
             maxPrice: "",
             sortOrder: "high_to_low"
         },
+        initialized: false,
 
         async init() {
+            if (this.initialized) {
+                console.warn('init() already called — skipping');
+                return;
+            }
+            this.initialized = true;
             console.log('Running init() at', new Date().toISOString());
-            console.trace();
             try {
                 const res = await fetch('/product_search_scripts_testing/backend/filter_data.php');
                 if (!res.ok) throw new Error('Failed to load filters.');
