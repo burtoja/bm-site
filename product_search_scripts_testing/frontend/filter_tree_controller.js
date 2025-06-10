@@ -112,33 +112,44 @@ function filterTree() {
         async submitFilters() {
             this.isLoadingFilters = true;
 
-            // 🔄 Ensure all open categories/subcategories have filters loaded
-            for (const category of this.categories) {
-                if (category.open && !category.loaded) {
-                    await this.loadCategoryFilters(category);
-                }
+            // 🔁 Make sure filters are loaded for all categories with selected options
+            const nodesToScan = [...this.categories];
 
-                for (const subcat of category.subcategories || []) {
-                    if (subcat.open && !subcat.loaded) {
-                        await this.loadSubcategoryFilters(subcat);
+            // Helper: Flatten and collect all nodes (categories, subcats, subsubs)
+            function collectAllNodes(nodes) {
+                const all = [];
+                for (const node of nodes) {
+                    all.push(node);
+                    if (Array.isArray(node.subcategories)) {
+                        all.push(...collectAllNodes(node.subcategories));
                     }
+                }
+                return all;
+            }
 
-                    for (const subsub of subcat.subcategories || []) {
-                        if (subsub.open && !subsub.loaded) {
-                            await this.loadSubcategoryFilters(subsub, 'subsub');
-                        }
+            const allNodes = collectAllNodes(nodesToScan);
+
+            // 🔄 Load filters for any node that might contain selected option IDs
+            for (const node of allNodes) {
+                if (!node.loaded && node.filters === undefined) {
+                    if (node.hasOwnProperty('subsubcategory_id')) {
+                        await this.loadSubcategoryFilters(node, 'subsub');
+                    } else if (node.hasOwnProperty('subcategory_id') || node.subcategories) {
+                        await this.loadSubcategoryFilters(node);
+                    } else {
+                        await this.loadCategoryFilters(node);
                     }
                 }
             }
 
-            // Build search query string using selected filters
+            // ✅ Now build the query
             const q = buildQueryFromSelections({
                 categories: this.categories,
                 selectedOptions: this.selectedOptions,
                 globalFilters: this.globalFilters
             });
 
-            console.log('Built q:', q);  // ← should include e.g. "Boilers Cleaver Brooks"
+            console.log('Built q:', q);
 
             const sort = this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price';
             const query = new URLSearchParams();
@@ -151,15 +162,13 @@ function filterTree() {
                 this.globalFilters.condition.forEach(c => query.append('condition', c));
             }
 
-            // Push query string into browser URL
             console.log('Final query string:', query.toString());
             window.history.replaceState({}, '', `?${query.toString()}`);
-
-            // Trigger the eBay search
             runSearchWithOffset();
 
             this.isLoadingFilters = false;
         }
+
 
     };
 }
