@@ -6,6 +6,7 @@ include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backen
 
 $conn = get_db_connection();
 
+// Fetch categories
 $categoriesStmt = $conn->prepare("SELECT id, name, has_subcategories FROM categories ORDER BY name ASC");
 $categoriesStmt->execute();
 $categoriesResult = $categoriesStmt->get_result();
@@ -16,7 +17,6 @@ while ($cat = $categoriesResult->fetch_assoc()) {
     $catId = (int)$cat['id'];
     $hasSubcats = (int)$cat['has_subcategories'];
 
-    $filtersDirect = [];
     $nestedSubcategories = [];
 
     if ($hasSubcats === 1) {
@@ -38,53 +38,14 @@ while ($cat = $categoriesResult->fetch_assoc()) {
         }
 
         $nestedSubcategories = build_subcategory_tree($allSubcategories, 0, $conn);
-    } else {
-        // No subcategories — load filters directly from category_filters
-        $filtStmt = $conn->prepare("
-            SELECT f.id, f.name
-            FROM category_filters cf
-            JOIN filters f ON cf.filter_id = f.id
-            WHERE cf.category_id = ?
-            ORDER BY f.name ASC
-        ");
-        $filtStmt->bind_param("i", $catId);
-        $filtStmt->execute();
-        $filtRes = $filtStmt->get_result();
-
-        while ($filt = $filtRes->fetch_assoc()) {
-            $filtId = (int)$filt['id'];
-
-            $optStmt = $conn->prepare("
-                SELECT id, value
-                FROM filter_options
-                WHERE filter_id = ?
-                ORDER BY sort_order ASC, value ASC
-            ");
-            $optStmt->bind_param("i", $filtId);
-            $optStmt->execute();
-            $optRes = $optStmt->get_result();
-
-            $options = [];
-            while ($opt = $optRes->fetch_assoc()) {
-                $options[] = [
-                    'id' => 'opt_' . $opt['id'],
-                    'value' => $opt['value']
-                ];
-            }
-
-            $filtersDirect[] = [
-                'name' => $filt['name'],
-                'open' => false,
-                'options' => $options
-            ];
-        }
     }
 
     $result[] = [
-        'id' => $cat['id'],
+        'id' => $catId,
         'name' => $cat['name'],
         'open' => false,
-        'filters' => $filtersDirect,
+        'loaded' => false,
+        'filters' => [], // placeholder; will be lazy-loaded
         'subcategories' => $nestedSubcategories
     ];
 }
