@@ -1,7 +1,10 @@
 <?php
 // shortcode.php - with Alpine-powered nested filter UI
 
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/db_connection.php');
+//Make sure testing db_connection file has not been included to avoid conflicts
+if (!function_exists('get_db_connection')) {
+    include $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/db_connection.php';
+}
 
 function boilersa_categories_testing_shortcode($atts) {
     $conn = get_db_connection();
