@@ -13,6 +13,7 @@ function filterTree() {
 
         async init() {
             console.log('Running init() at', new Date().toISOString());
+            console.trace();
             try {
                 const res = await fetch('/product_search_scripts_testing/backend/filter_data.php');
                 if (!res.ok) throw new Error('Failed to load filters.');
