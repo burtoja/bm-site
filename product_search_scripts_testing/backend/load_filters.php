@@ -1,10 +1,9 @@
 <?php
 header('Content-Type: application/json');
 
-// Use your existing DB connection script
-require_once '../../your_db_connection_script.php'; // Adjust path as needed
-
-$pdo = getDbConnection(); // Example: function returns PDO instance
+// Connect to DB
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/db_connection.php');
+$conn = get_db_connection(); // Returns a mysqli object
 
 // Determine which ID is passed
 $category_id = $_GET['category_id'] ?? null;
@@ -17,10 +16,7 @@ if (!$category_id && !$subcategory_id && !$subsubcategory_id) {
     exit;
 }
 
-// Determine the filter scope
-$scope = '';
-$scope_id = 0;
-
+// Determine scope
 if ($subsubcategory_id) {
     $scope = 'subsubcategory';
     $scope_id = (int)$subsubcategory_id;
@@ -35,7 +31,7 @@ if ($subsubcategory_id) {
     $id_column = 'category_id';
 }
 
-// Step 1: Fetch filters
+// Step 1: Get filters
 $sql = "
     SELECT f.id AS filter_id, f.name AS filter_name
     FROM filters f
@@ -43,47 +39,64 @@ $sql = "
     WHERE cf.{$id_column} = ?
     ORDER BY f.sort_order ASC, f.name ASC
 ";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$scope_id]);
-$filters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Step 2: Fetch options for each filter
+$filters = [];
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $scope_id);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $filters[] = $row;
+}
+$stmt->close();
+
 $filter_ids = array_column($filters, 'filter_id');
-
 if (empty($filter_ids)) {
     echo json_encode(['filters' => []]);
     exit;
 }
 
-$in_clause = implode(',', array_fill(0, count($filter_ids), '?'));
+// Step 2: Get options
+$placeholders = implode(',', array_fill(0, count($filter_ids), '?'));
+$types = str_repeat('i', count($filter_ids));
 
 $sql_options = "
     SELECT id, filter_id, value
     FROM filter_options
-    WHERE filter_id IN ($in_clause)
+    WHERE filter_id IN ($placeholders)
     ORDER BY sort_order ASC, value ASC
 ";
-$stmt = $pdo->prepare($sql_options);
-$stmt->execute($filter_ids);
-$options = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Group options under their filters
+$stmt = $conn->prepare($sql_options);
+$stmt->bind_param($types, ...$filter_ids);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$options = [];
+while ($row = $result->fetch_assoc()) {
+    $options[] = $row;
+}
+$stmt->close();
+
+// Group options under filters
 $grouped_options = [];
 foreach ($options as $opt) {
-    $grouped_options[$opt['filter_id']][] = [
+    $fid = $opt['filter_id'];
+    $grouped_options[$fid][] = [
         'id' => (int)$opt['id'],
         'value' => $opt['value']
     ];
 }
 
-// Assemble final response
+// Final JSON output
 foreach ($filters as &$f) {
-    $f['id'] = (int)$f['filter_id'];
-    $f['name'] = $f['filter_name'];
-    $f['options'] = $grouped_options[$f['filter_id']] ?? [];
-    $f['open'] = false;
-    unset($f['filter_id'], $f['filter_name']);
+    $fid = (int)$f['filter_id'];
+    $f = [
+        'id' => $fid,
+        'name' => $f['filter_name'],
+        'options' => $grouped_options[$fid] ?? [],
+        'open' => false
+    ];
 }
 
 echo json_encode(['filters' => $filters]);
-
