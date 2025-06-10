@@ -40,8 +40,8 @@ $sql = "
     FROM filters f
     JOIN {$scope}_filters cf ON cf.filter_id = f.id
     WHERE cf.{$id_column} = ?
-    ORDER BY f.sort_order ASC, f.name ASC
 ";
+//    ORDER BY f.sort_order ASC, f.name ASC
 
 $filters = [];
 $stmt = $conn->prepare($sql);
@@ -72,8 +72,8 @@ $sql_options = "
     SELECT id, filter_id, value
     FROM filter_options
     WHERE filter_id IN ($in_clause)
-    ORDER BY sort_order ASC, value ASC
 ";
+//    ORDER BY sort_order ASC, value ASC
 
 $result = $conn->query($sql_options);
 if (!$result) {
