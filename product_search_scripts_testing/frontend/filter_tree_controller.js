@@ -110,7 +110,6 @@ function filterTree() {
         },
 
         submitFilters() {
-            console.log('Selected options at submit:', this.selectedOptions);
             const q = buildQueryFromSelections({
                 categories: this.categories,
                 selectedOptions: this.selectedOptions,

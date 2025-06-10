@@ -3,9 +3,7 @@
 
     <!-- Submit button (sticky at top of category list) -->
     <div id="search-button-wrapper">
-        <button @click="submitFilters()">
-            Search
-        </button>
+        <button @click="submitFilters()" :disabled="isLoadingFilters">Search Products</button>
     </div>
 
     <!-- Loop through categories -->
