@@ -27,9 +27,12 @@ function buildQueryFromSelections({ categories, selectedOptions, globalFilters }
         if (!node.filters) return;
         for (const filter of node.filters) {
             for (const option of filter.options) {
+                console.log('Checking option.id:', option.id, 'match?', selectedSet.has(String(option.id)));
                 if (selectedSet.has(String(option.id))) {
+                    console.log('Matched option:', option.value);
                     selectedTerms.push(option.value);
                 }
+
             }
         }
     }
