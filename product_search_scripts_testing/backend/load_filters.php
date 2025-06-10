@@ -13,6 +13,11 @@ $category_id = $_GET['category_id'] ?? null;
 $subcategory_id = $_GET['subcategory_id'] ?? null;
 $subsubcategory_id = $_GET['subsubcategory_id'] ?? null;
 
+//TESTING
+error_log("category_id: $category_id");
+error_log("subcategory_id: $subcategory_id");
+error_log("subsubcategory_id: $subsubcategory_id");
+
 if (!$category_id && !$subcategory_id && !$subsubcategory_id) {
     http_response_code(400);
     echo json_encode(['error' => 'Missing category, subcategory, or subsubcategory ID']);
@@ -33,6 +38,9 @@ if ($subsubcategory_id) {
     $scope_id = (int)$category_id;
     $id_column = 'category_id';
 }
+
+//TESTING
+error_log("Using scope: $scope, column: $id_column, value: $scope_id");
 
 // Step 1: Get filters
 $sql = "
@@ -107,6 +115,9 @@ foreach ($filters as &$f) {
         'open' => false
     ];
 }
+
+
+
 
 echo json_encode(['filters' => $filters], JSON_PRETTY_PRINT);
 exit;
