@@ -3,7 +3,7 @@
 
 include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
 
-function boilersa_categories_shortcode($atts) {
+function boilersa_categories_testing_shortcode($atts) {
     $conn = get_db_connection();
 
     ob_start();
@@ -50,4 +50,4 @@ function boilersa_categories_shortcode($atts) {
 
     return ob_get_clean();
 }
-add_shortcode('boilersa_categories', 'boilersa_categories_shortcode');
+add_shortcode('boilersa_categories-testing', 'boilersa_categories_testing_shortcode');
