@@ -5,9 +5,8 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
-// Connect to DB
 include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/db_connection.php');
-$conn = get_db_connection(); // Returns a mysqli object
+$conn = get_db_connection();
 
 // Determine which ID is passed
 $category_id = $_GET['category_id'] ?? null;
@@ -41,12 +40,16 @@ $sql = "
     FROM filters f
     JOIN {$scope}_filters cf ON cf.filter_id = f.id
     WHERE cf.{$id_column} = ?
-    
+    ORDER BY f.sort_order ASC, f.name ASC
 ";
-//ORDER BY f.sort_order ASC, f.name ASC
 
 $filters = [];
 $stmt = $conn->prepare($sql);
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Prepare failed: ' . $conn->error]);
+    exit;
+}
 $stmt->bind_param("i", $scope_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -69,24 +72,20 @@ $sql_options = "
     SELECT id, filter_id, value
     FROM filter_options
     WHERE filter_id IN ($in_clause)
-    
+    ORDER BY sort_order ASC, value ASC
 ";
-//ORDER BY sort_order ASC, value ASC
 
 $result = $conn->query($sql_options);
+if (!$result) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Option query failed: ' . $conn->error]);
+    exit;
+}
+
 $options = [];
 while ($row = $result->fetch_assoc()) {
     $options[] = $row;
 }
-
-$stmt->execute();
-$result = $stmt->get_result();
-
-$options = [];
-while ($row = $result->fetch_assoc()) {
-    $options[] = $row;
-}
-$stmt->close();
 
 // Group options under filters
 $grouped_options = [];
@@ -108,9 +107,6 @@ foreach ($filters as &$f) {
         'open' => false
     ];
 }
-//TESTING
-header('Content-Type: application/json');
+
 echo json_encode(['filters' => $filters], JSON_PRETTY_PRINT);
 exit;
-//END
-echo json_encode(['filters' => $filters]);
