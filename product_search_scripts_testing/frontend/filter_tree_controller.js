@@ -130,6 +130,7 @@ function filterTree() {
                 this.globalFilters.condition.forEach(c => query.append('condition', c));
             }
 
+            console.log('Final query string:', query.toString());
             window.history.replaceState({}, '', `?${query.toString()}`);
             runSearchWithOffset();
             this.isLoadingFilters = false;
