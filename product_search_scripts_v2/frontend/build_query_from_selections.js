@@ -3,13 +3,14 @@
  * Constructs a 'q' string from selected category, subcategory names, and selected filter values.
  * Excludes filter group names like "Manufacturer" or "Type".
  */
+
 function buildQueryFromSelections({ categories, selectedOptions, globalFilters }) {
     const selectedTerms = [];
 
-    // Convert selected option IDs to a Set of strings for safe comparison
+    // Normalize selectedOptions into a Set of strings for comparison
     const selectedSet = new Set(selectedOptions.map(id => String(id)));
 
-    // Recursively collect active category/subcategory names
+    // Collect names of open (visible) categories and subcategories
     function collectActiveCategories(nodes) {
         for (const node of nodes) {
             if (node.open) {
@@ -21,6 +22,7 @@ function buildQueryFromSelections({ categories, selectedOptions, globalFilters }
         }
     }
 
+    // Collect selected filter option values
     function traverseFilters(node) {
         if (!node.filters) return;
         for (const filter of node.filters) {
@@ -32,31 +34,29 @@ function buildQueryFromSelections({ categories, selectedOptions, globalFilters }
         }
     }
 
-
-    collectActiveCategories(categories);
-
-    for (const category of categories) {
-        traverseFilters(category);
-        for (const subcat of category.subcategories || []) {
-            traverseFilters(subcat);
-            for (const subsub of subcat.subcategories || []) {
-                traverseFilters(subsub);
+    // Traverse full category tree
+    function collectAllSelectedFilters(nodes) {
+        for (const node of nodes) {
+            traverseFilters(node);
+            if (Array.isArray(node.subcategories)) {
+                collectAllSelectedFilters(node.subcategories);
             }
         }
     }
 
-    if (globalFilters.condition.length > 0) {
-        globalFilters.condition.forEach(val => selectedTerms.push(val));
-    }
+    collectActiveCategories(categories);
+    collectAllSelectedFilters(categories);
 
+    // Add global filters
+    if (globalFilters.condition?.length) {
+        selectedTerms.push(...globalFilters.condition);
+    }
     if (globalFilters.minPrice) {
         selectedTerms.push(`min ${globalFilters.minPrice}`);
     }
-
     if (globalFilters.maxPrice) {
         selectedTerms.push(`max ${globalFilters.maxPrice}`);
     }
 
     return selectedTerms.join(' ');
 }
-
