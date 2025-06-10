@@ -109,18 +109,39 @@ function filterTree() {
             }
         },
 
-        submitFilters() {
+        async submitFilters() {
             this.isLoadingFilters = true;
+
+            // 🔄 Ensure all open categories/subcategories have filters loaded
+            for (const category of this.categories) {
+                if (category.open && !category.loaded) {
+                    await this.loadCategoryFilters(category);
+                }
+
+                for (const subcat of category.subcategories || []) {
+                    if (subcat.open && !subcat.loaded) {
+                        await this.loadSubcategoryFilters(subcat);
+                    }
+
+                    for (const subsub of subcat.subcategories || []) {
+                        if (subsub.open && !subsub.loaded) {
+                            await this.loadSubcategoryFilters(subsub, 'subsub');
+                        }
+                    }
+                }
+            }
+
+            // Build search query string using selected filters
             const q = buildQueryFromSelections({
                 categories: this.categories,
                 selectedOptions: this.selectedOptions,
                 globalFilters: this.globalFilters
             });
-            console.log('Built q:', q);
+
+            console.log('Built q:', q);  // ← should include e.g. "Boilers Cleaver Brooks"
 
             const sort = this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price';
             const query = new URLSearchParams();
-
             query.set('q', q);
             query.set('sort', sort);
 
@@ -130,10 +151,15 @@ function filterTree() {
                 this.globalFilters.condition.forEach(c => query.append('condition', c));
             }
 
+            // Push query string into browser URL
             console.log('Final query string:', query.toString());
             window.history.replaceState({}, '', `?${query.toString()}`);
+
+            // Trigger the eBay search
             runSearchWithOffset();
+
             this.isLoadingFilters = false;
         }
+
     };
 }
