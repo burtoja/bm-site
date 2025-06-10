@@ -112,37 +112,43 @@ function filterTree() {
         async submitFilters() {
             this.isLoadingFilters = true;
 
-            // 🔁 Make sure filters are loaded for all categories with selected options
-            const nodesToScan = [...this.categories];
+            // ✅ Normalize selected option IDs to string for matching
+            const selectedSet = new Set(this.selectedOptions.map(id => String(id)));
 
-            // Helper: Flatten and collect all nodes (categories, subcats, subsubs)
-            function collectAllNodes(nodes) {
-                const all = [];
+            // 🔍 Recursively walk the tree and ensure filters are loaded where needed
+            async function preloadFiltersForSelectedOptions(nodes, context) {
                 for (const node of nodes) {
-                    all.push(node);
+                    // If node has filters and is not loaded, load them
+                    if (!node.loaded && node.filters === undefined) {
+                        if (context === 'subsub') {
+                            await this.loadSubcategoryFilters(node, 'subsub');
+                        } else if (context === 'subcat') {
+                            await this.loadSubcategoryFilters(node);
+                        } else {
+                            await this.loadCategoryFilters(node);
+                        }
+                    }
+
+                    // If filters are now loaded, check if they include a selected option
+                    if (node.filters) {
+                        const found = node.filters.some(filter =>
+                            filter.options?.some(opt => selectedSet.has(String(opt.id)))
+                        );
+
+                        if (found) continue; // already has the match
+                    }
+
+                    // Recurse into subcategories
                     if (Array.isArray(node.subcategories)) {
-                        all.push(...collectAllNodes(node.subcategories));
-                    }
-                }
-                return all;
-            }
-
-            const allNodes = collectAllNodes(nodesToScan);
-
-            // 🔄 Load filters for any node that might contain selected option IDs
-            for (const node of allNodes) {
-                if (!node.loaded && node.filters === undefined) {
-                    if (node.hasOwnProperty('subsubcategory_id')) {
-                        await this.loadSubcategoryFilters(node, 'subsub');
-                    } else if (node.hasOwnProperty('subcategory_id') || node.subcategories) {
-                        await this.loadSubcategoryFilters(node);
-                    } else {
-                        await this.loadCategoryFilters(node);
+                        const level = context === 'category' ? 'subcat' : 'subsub';
+                        await preloadFiltersForSelectedOptions.call(this, node.subcategories, level);
                     }
                 }
             }
 
-            // ✅ Now build the query
+            await preloadFiltersForSelectedOptions.call(this, this.categories, 'category');
+
+            // ✅ Build the query after all matching filters are loaded
             const q = buildQueryFromSelections({
                 categories: this.categories,
                 selectedOptions: this.selectedOptions,
@@ -168,6 +174,7 @@ function filterTree() {
 
             this.isLoadingFilters = false;
         }
+
 
 
     };
