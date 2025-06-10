@@ -1,4 +1,3 @@
-
 function filterTree() {
     return {
         categories: [],
@@ -26,6 +25,7 @@ function filterTree() {
         applyOpenFlags(nodes) {
             nodes.forEach(node => {
                 node.open = false;
+                node.loaded = false; // for lazy-loading
                 if (node.filters) {
                     node.filters.forEach(f => f.open = false);
                 }
@@ -35,7 +35,7 @@ function filterTree() {
             });
         },
 
-        toggleCategory(category) {
+        async toggleCategory(category) {
             if (this.selectedCategoryId !== category.id) {
                 // A new category is selected, so reset others
                 this.categories.forEach(cat => {
@@ -55,6 +55,10 @@ function filterTree() {
 
                 category.open = true;
                 this.selectedCategoryId = category.id;
+
+                if (!category.loaded) {
+                    await this.loadCategoryFilters(category);
+                }
             } else {
                 // Clicking the same category again toggles it closed
                 category.open = !category.open;
@@ -73,6 +77,29 @@ function filterTree() {
             }
         },
 
+        async loadCategoryFilters(category) {
+            if (category.loaded) return;
+            try {
+                const res = await fetch(`/product_search_scripts_v2/backend/load-filters.php?category_id=${category.id}`);
+                const data = await res.json();
+                category.filters = data.filters;
+                category.loaded = true;
+            } catch (error) {
+                console.error('Failed to load category filters:', error);
+            }
+        },
+
+        async loadFiltersForNode(node, paramName, id) {
+            if (node.loaded) return;
+            try {
+                const res = await fetch(`/product_search_scripts_v2/backend/load-filters.php?${paramName}=${id}`);
+                const data = await res.json();
+                node.filters = data.filters;
+                node.loaded = true;
+            } catch (error) {
+                console.error(`Failed to load filters for ${paramName}=${id}:`, error);
+            }
+        },
 
         submitFilters() {
             const q = buildQueryFromSelections({
@@ -93,11 +120,8 @@ function filterTree() {
                 this.globalFilters.condition.forEach(c => query.append('condition', c));
             }
 
-            // Redirect to search results page
-            //window.location.href = `/product-search-results/?${query.toString()}`;
             window.history.replaceState({}, '', `?${query.toString()}`);
             runSearchWithOffset();
-
         }
     };
 }

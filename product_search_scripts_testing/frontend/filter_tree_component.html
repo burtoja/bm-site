@@ -113,7 +113,7 @@
                 <!-- Subcategories -->
                 <template x-for="subcat in category.subcategories" :key="subcat.name">
                     <div class="bg-gray-700 p-3 rounded ml-4">
-                        <button type="button" @click="subcat.open = !subcat.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
+                        <button type="button" @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                             <span
                                     x-text="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"
                                     class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
@@ -151,7 +151,7 @@
 
                             <template x-for="subsub in subcat.subcategories" :key="subsub.name">
                                 <div class="bg-gray-600 p-3 rounded ml-4">
-                                    <button type="button" @click="subsub.open = !subsub.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
+                                    <button type="button" @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                         <span
                                                 x-text="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"
                                                 class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
