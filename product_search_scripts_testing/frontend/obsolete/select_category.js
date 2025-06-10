@@ -37,7 +37,7 @@ function selectCategory(clickedToggle) {
     // If subcategory container is present and empty, load subcategories via AJAX
     if (subcategoryContainer && subcategoryContainer.childElementCount === 0) {
         const categoryId = subcategoryContainer.getAttribute('data-category-id');
-        fetch(`/product_search_scripts_v2/backend/get_subcategories.php?category_id=${categoryId}`)
+        fetch(`/product_search_scripts_testing/backend/get_subcategories.php?category_id=${categoryId}`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data.subcategories)) {

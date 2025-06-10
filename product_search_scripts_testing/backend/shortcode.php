@@ -1,7 +1,7 @@
 <?php
 // shortcode.php - with Alpine-powered nested filter UI
 
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/db_connection.php');
 
 function boilersa_categories_testing_shortcode($atts) {
     $conn = get_db_connection();
@@ -18,7 +18,7 @@ function boilersa_categories_testing_shortcode($atts) {
     // echo render_sticky_search_reset_buttons();
 
     // Load Alpine-based filter tree HTML from external file
-    echo file_get_contents($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/frontend/filter_tree_component.html');
+    echo file_get_contents($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/frontend/filter_tree_component.html');
 
     echo '</div>';
     echo '</div>'; // close .filters-column
@@ -39,14 +39,14 @@ function boilersa_categories_testing_shortcode($atts) {
     // Add tailwind
     echo '<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>';
     echo '<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">';
-    echo '<script src="/product_search_scripts_v2/frontend/build_query_from_selections.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/filter_tree_controller.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_testing/frontend/build_query_from_selections.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_testing/frontend/filter_tree_controller.js?v=' . $ver . '"></script>';
 
     // Other search behavior scripts (if needed for results)
-    echo '<script src="/product_search_scripts_v2/frontend/render_results.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/render_pagination.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/fetch-ebay-data.js?v=' . $ver . '"></script>';
-    echo '<script src="/product_search_scripts_v2/frontend/run_search_with_offset.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_testing/frontend/render_results.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_testing/frontend/render_pagination.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_testing/frontend/fetch-ebay-data.js?v=' . $ver . '"></script>';
+    echo '<script src="/product_search_scripts_testing/frontend/run_search_with_offset.js?v=' . $ver . '"></script>';
 
     return ob_get_clean();
 }

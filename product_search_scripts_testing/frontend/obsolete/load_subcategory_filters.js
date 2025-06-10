@@ -29,7 +29,7 @@ function loadSubcategoryFilters(clickedToggle) {
 
     // Load filters via AJAX if not already loaded
     if (filtersBox.childElementCount === 0) {
-        fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`)
+        fetch(`/product_search_scripts_testing/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`)
             .then(res => res.json())
             .then(data => {
                 console.log("Loaded filters for subcategory:", data.filters);

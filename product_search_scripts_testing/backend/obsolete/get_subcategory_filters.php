@@ -2,7 +2,7 @@
 // get_subcategory_filters.php
 // Returns filters associated with the given subcategory ID (leaf or nested)
 
-require_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
+require_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/db_connection.php');
 header('Content-Type: application/json');
 
 if (!isset($_GET['subcategory_id']) || !is_numeric($_GET['subcategory_id'])) {

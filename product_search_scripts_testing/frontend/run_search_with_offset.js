@@ -25,7 +25,7 @@ function runSearchWithOffset(offset = 0) {
     conditions.forEach(c => searchParams.append('condition', c));
     searchParams.set('offset', offset);
 
-    const endpoint = `/product_search_scripts_v2/backend/search_ebay.php?${searchParams.toString()}`;
+    const endpoint = `/product_search_scripts_testing/backend/search_ebay.php?${searchParams.toString()}`;
 
     // Optional: show loading spinner
     document.getElementById("search-results").innerHTML = "<p>Loading results...</p>";

@@ -28,7 +28,7 @@ function loadTopLevelSubcategories(categoryId, toggleElement) {
 
     // If children are already loaded, don't fetch again
     if (!isVisible && treeContainer.childElementCount === 0) {
-        fetch(`/product_search_scripts_v2/backend/get_subcategories.php?category_id=${categoryId}`)
+        fetch(`/product_search_scripts_testing/backend/get_subcategories.php?category_id=${categoryId}`)
             .then(res => res.json())
             .then(data => {
                 console.log("Fetched data:", data);
@@ -89,7 +89,7 @@ function toggleSubcategoryChildren(subcat, wrapper) {
 
     if (subcat.has_children) {
         // Fetch and render child subcategories
-        fetch(`/product_search_scripts_v2/backend/get_child_subcategories.php?parent_id=${subcat.id}&category_id=${subcat.category_id}`)
+        fetch(`/product_search_scripts_testing/backend/get_child_subcategories.php?parent_id=${subcat.id}&category_id=${subcat.category_id}`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data.subcategories) && data.subcategories.length > 0) {
@@ -142,7 +142,7 @@ async function loadFiltersForSubcategory(subcategoryId, targetElement) {
     console.log("Prepare to try loading filters");
 
     try {
-        const res = await fetch(`/product_search_scripts_v2/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
+        const res = await fetch(`/product_search_scripts_testing/backend/get_subcategory_filters.php?subcategory_id=${subcategoryId}`);
         const text = await res.text();
         const data = JSON.parse(text);
 

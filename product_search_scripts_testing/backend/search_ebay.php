@@ -17,8 +17,8 @@
 header('Content-Type: application/json');
 
 require_once $_SERVER["DOCUMENT_ROOT"] . '/ebay_oauth/getBasicToken.php';
-require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/build_ebay_endpoint.php';
-require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/common_search_functions.php';
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/build_ebay_endpoint.php';
+require_once $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/common_search_functions.php';
 
 //Turn on debugging log
 ini_set("log_errors", 1);

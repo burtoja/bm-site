@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/db_connection.php');
-include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_v2/backend/build_subcategory_tree.php');
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/db_connection.php');
+include_once($_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/build_subcategory_tree.php');
 
 $conn = get_db_connection();
 
