@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="93ffce1f-00c4-4c09-beae-f6765555fa7d" name="A2-B&amp;M" url="http://ftp.boilersandmachinery.com">
-        <fileTransfer host="ftp.boilersandmachinery.com" port="21">
+        <fileTransfer rootFolder="/public_html/" host="ftp.boilersandmachinery.com" port="21">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
