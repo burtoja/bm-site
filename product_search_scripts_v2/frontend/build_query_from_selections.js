@@ -24,16 +24,14 @@ function buildQueryFromSelections({ categories, selectedOptions, globalFilters }
     function traverseFilters(node) {
         if (!node.filters) return;
         for (const filter of node.filters) {
-            const selectedSet = new Set(selectedOptions.map(id => String(id)));
-
             for (const option of filter.options) {
                 if (selectedSet.has(String(option.id))) {
                     selectedTerms.push(option.value);
                 }
             }
-
         }
     }
+
 
     collectActiveCategories(categories);
 
