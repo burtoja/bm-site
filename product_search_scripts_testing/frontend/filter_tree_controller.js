@@ -84,6 +84,7 @@ function filterTree() {
                 const data = await res.json();
                 category.filters = data.filters;
                 category.loaded = true;
+                console.log(`Loaded filters for category ${category.name}:`, category.filters);
             } catch (error) {
                 console.error('Failed to load category filters:', error);
             }
