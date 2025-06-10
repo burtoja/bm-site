@@ -116,6 +116,7 @@ function filterTree() {
                 selectedOptions: this.selectedOptions,
                 globalFilters: this.globalFilters
             });
+            console.log('Built q:', q);
 
             const sort = this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price';
             const query = new URLSearchParams();
