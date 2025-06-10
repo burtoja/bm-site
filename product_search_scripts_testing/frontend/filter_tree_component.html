@@ -83,7 +83,7 @@
                 <!-- Category-level filters -->
                 <template x-if="category.filters.length > 0">
                     <div class="mt-0">
-                        <template x-for="filter in category.filters" :key="filter.id">
+                        <template x-for="filter in category.filters" :key="filter.name">
                             <div>
                                 <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                     <span
@@ -123,7 +123,7 @@
 
                         <div x-show="subcat.open" class="ml-4 mt-2 space-y-2">
                             <template x-if="subcat.filters.length > 0">
-                                <template x-for="filter in subcat.filters" :key="filter.id">
+                                <template x-for="filter in subcat.filters" :key="filter.name">
                                     <div>
                                         <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                             <span
@@ -161,7 +161,7 @@
 
                                     <div x-show="subsub.open" class="ml-4 mt-2 space-y-2">
                                         <template x-if="subsub.filters.length > 0">
-                                            <template x-for="filter in subsub.filters" :key="filter.id">
+                                            <template x-for="filter in subsub.filters" :key="filter.name">
                                                 <div>
                                                     <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                                         <span
