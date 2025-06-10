@@ -110,6 +110,7 @@ function filterTree() {
         },
 
         submitFilters() {
+            this.isLoadingFilters = true;
             const q = buildQueryFromSelections({
                 categories: this.categories,
                 selectedOptions: this.selectedOptions,
@@ -131,6 +132,7 @@ function filterTree() {
 
             window.history.replaceState({}, '', `?${query.toString()}`);
             runSearchWithOffset();
+            this.isLoadingFilters = false;
         }
     };
 }
