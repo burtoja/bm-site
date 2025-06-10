@@ -13,7 +13,7 @@ function filterTree() {
 
         async init() {
             try {
-                const res = await fetch('/product_search_scripts_testing/backend/filter-data.php');
+                const res = await fetch('/product_search_scripts_testing/backend/filter_data.php');
                 if (!res.ok) throw new Error('Failed to load filters.');
                 this.categories = await res.json();
                 this.applyOpenFlags(this.categories);
@@ -80,7 +80,7 @@ function filterTree() {
         async loadCategoryFilters(category) {
             if (category.loaded) return;
             try {
-                const res = await fetch(`/product_search_scripts_testing/backend/load-filters.php?category_id=${category.id}`);
+                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?category_id=${category.id}`);
                 const data = await res.json();
                 category.filters = data.filters;
                 category.loaded = true;
@@ -92,7 +92,7 @@ function filterTree() {
         async loadFiltersForNode(node, paramName, id) {
             if (node.loaded) return;
             try {
-                const res = await fetch(`/product_search_scripts_testing/backend/load-filters.php?${paramName}=${id}`);
+                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${id}`);
                 const data = await res.json();
                 node.filters = data.filters;
                 node.loaded = true;
