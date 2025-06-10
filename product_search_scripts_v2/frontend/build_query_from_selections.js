@@ -40,6 +40,7 @@ function buildQueryFromSelections({ categories, selectedOptions, globalFilters }
     // Traverse full category tree
     function collectAllSelectedFilters(nodes) {
         for (const node of nodes) {
+            console.log('Traversing subcat:', subcat.name, subcat);
             traverseFilters(node);
             if (Array.isArray(node.subcategories)) {
                 collectAllSelectedFilters(node.subcategories);
