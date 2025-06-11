@@ -28,18 +28,15 @@ function runSearchWithOffset(offset = 0) {
     const endpoint = `/product_search_scripts_testing/backend/search_ebay.php?${searchParams.toString()}`;
 
     // Optional: show loading spinner
-    document.getElementById("search-results").innerHTML = "<p>Loading results...</p>";
+    //document.getElementById("search-results").innerHTML = "<p>Loading results...</p>";
 
-    document.getElementById("search-results").innerHTML = '
-    <div className="space-y-4" id="results-loading">
-        <div className="text-sm text-gray-300 italic text-center">Loading results...</div>
-
-        <div className="animate-pulse space-y-4">
-            <div className="bg-gray-300 h-32 rounded"></div>
-            <div className="bg-gray-300 h-32 rounded"></div>
-            <div className="bg-gray-300 h-32 rounded"></div>
-        </div>
-    </div>';
+    document.getElementById("search-results").innerHTML = '' +
+        '<div class="text-sm text-gray-300 italic text-center">Loading results...</div>    ' +
+        '<div class="animate-pulse space-y-4"> ' +
+        '<div class="bg-gray-300 h-32 rounded"></div> ' +
+        '<div class="bg-gray-300 h-32 rounded"></div> ' +
+        '<div class="bg-gray-300 h-32 rounded"></div> ' +
+        '</div>';
 
     fetch(endpoint)
         .then(res => res.json())
