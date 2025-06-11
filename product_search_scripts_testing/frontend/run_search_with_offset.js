@@ -31,7 +31,6 @@ function runSearchWithOffset(offset = 0) {
     //document.getElementById("search-results").innerHTML = "<p>Loading results...</p>";
 
     document.getElementById("search-results").innerHTML = '' +
-        '<div class="text-sm text-gray-300 italic text-center">Loading results...</div>    ' +
         '<div class="animate-pulse space-y-4"> ' +
         '<div class="result-card"><div class="result-image"></div><div class="result-details"></div></div> ' +
         '<div class="result-card"><div class="result-image"></div><div class="result-details"></div></div> ' +
