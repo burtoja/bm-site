@@ -106,19 +106,19 @@ function filterTree() {
         async loadSubcategoryFilters(subcat, type = 'subcat') {
             if (subcat.loaded) return;
             const param = type === 'subsub' ? 'subsubcategory_id' : 'subcategory_id';
-            console.log(`🔄 loadSubcategoryFilters() triggered for ${type}:`, subcat.name);
+            console.log(`--loadSubcategoryFilters() triggered for ${type}:`, subcat.name);
 
             try {
                 const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${param}=${subcat.id}`);
                 const data = await res.json();
 
-                console.log(`✅ Filters loaded for ${type}:`, subcat.name);
+                console.log(`Filters loaded for ${type}:`, subcat.name);
                 console.log(data.filters);
 
                 subcat.filters = data.filters;
                 subcat.loaded = true;
             } catch (error) {
-                console.error(`❌ Failed to load filters for ${type}:`, error);
+                console.error(`Failed to load filters for ${type}:`, error);
             }
         },
 
