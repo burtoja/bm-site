@@ -205,3 +205,5 @@ function filterTree() {
 
     };
 }
+
+window.filterTree = filterTree;
