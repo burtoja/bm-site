@@ -3,6 +3,7 @@ function filterTree() {
         categories: [],
         selectedOptions: [],
         selectedCategoryId: null,
+        isLoadingFilters: false,
         globalFilters: {
             condition: [],
             priceRange: "any",
@@ -112,10 +113,10 @@ function filterTree() {
         async submitFilters() {
             this.isLoadingFilters = true;
 
-            // ✅ Normalize selected option IDs to string for matching
+            // Normalize selected option IDs to string for matching
             const selectedSet = new Set(this.selectedOptions.map(id => String(id)));
 
-            // 🔍 Recursively walk the tree and ensure filters are loaded where needed
+            // Recursively walk the tree and ensure filters are loaded where needed
             async function preloadFiltersForSelectedOptions(nodes, context) {
                 for (const node of nodes) {
                     // If node has filters and is not loaded, load them
@@ -148,7 +149,7 @@ function filterTree() {
 
             await preloadFiltersForSelectedOptions.call(this, this.categories, 'category');
 
-            // ✅ Build the query after all matching filters are loaded
+            // Build the query after all matching filters are loaded
             const q = buildQueryFromSelections({
                 categories: this.categories,
                 selectedOptions: this.selectedOptions,
