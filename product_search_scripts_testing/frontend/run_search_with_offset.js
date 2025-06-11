@@ -31,10 +31,10 @@ function runSearchWithOffset(offset = 0) {
     //document.getElementById("search-results").innerHTML = "<p>Loading results...</p>";
 
     document.getElementById("search-results").innerHTML = '' +
-        '<div class="result-card"><div class="result-image"></div><div class="result-details">Loading...</div></div> ' +
-        '<div class="result-card"><div class="result-image"></div><div class="result-details">Loading...</div></div> ' +
-        '<div class="result-card"><div class="result-image"></div><div class="result-details">Loading...</div></div> ' +
-        '<div class="result-card"><div class="result-image"></div><div class="result-details">Loading...</div></div> ' +
+        '<div class="result-card"><div class="result-image"></div><div class="animate-pulse">Loading...</div></div> ' +
+        '<div class="result-card"><div class="result-image"></div><div class="animate-pulse">Loading...</div></div> ' +
+        '<div class="result-card"><div class="result-image"></div><div class="animate-pulse">Loading...</div></div> ' +
+        '<div class="result-card"><div class="result-image"></div><div class="animate-pulse">Loading...</div></div> ' +
         '</div>';
 
     fetch(endpoint)
