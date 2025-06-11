@@ -35,15 +35,27 @@ function buildQueryFromSelections({ categories, selectedOptions, globalFilters }
     }
 
     function traverseFilters(node) {
-        if (!node.filters) return;
+        if (!node.filters) {
+            console.warn("No filters in node:", node.name);
+            return;
+        }
+
         for (const filter of node.filters) {
+            if (!Array.isArray(filter.options)) {
+                console.warn("Filter has no options:", filter.name);
+                continue;
+            }
+
             for (const option of filter.options) {
-                if (selectedOptions.includes(option.id)) {
+                const id = String(option.id);
+                if (selectedOptions.includes(id)) {
+                    console.log(`Matched option: ${id} ->`, option.value);
                     selectedTerms.push(option.value);
                 }
             }
         }
     }
+
 
     // Global filters
     if (globalFilters.condition.length > 0) {
