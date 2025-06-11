@@ -70,18 +70,11 @@ function filterTree() {
 
 
         async loadCategoryFilters(category) {
-            console.log('--loadCategoryFilters() triggered for:', category.name);
             try {
                 const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?category_id=${category.id}`);
                 const data = await res.json();
-
-                console.log('Filters loaded for category:', category.name);
-                console.log(data.filters);
-
                 category.filters = data.filters;
-                //category.loaded = true;
             } catch (error) {
-                console.error('Failed to load category filters:', error);
                 category.loaded = false; // allow retry if it fails
             }
         }
@@ -90,15 +83,10 @@ function filterTree() {
         async loadSubcategoryFilters(subcat, type = 'subcat') {
             if (subcat.loaded) return;
             const param = type === 'subsub' ? 'subsubcategory_id' : 'subcategory_id';
-            console.log(`--loadSubcategoryFilters() triggered for ${type}:`, subcat.name);
 
             try {
                 const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${param}=${subcat.id}`);
                 const data = await res.json();
-
-                console.log(`Filters loaded for ${type}:`, subcat.name);
-                console.log(data.filters);
-
                 subcat.filters = data.filters;
                 subcat.loaded = true;
             } catch (error) {
@@ -165,8 +153,6 @@ function filterTree() {
                 globalFilters: this.globalFilters
             });
 
-            console.log('Built q:', q);
-
             const sort = this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price';
             const query = new URLSearchParams();
             query.set('q', q);
@@ -178,7 +164,6 @@ function filterTree() {
                 this.globalFilters.condition.forEach(c => query.append('condition', c));
             }
 
-            console.log('Final query string:', query.toString());
             window.history.replaceState({}, '', `?${query.toString()}`);
             runSearchWithOffset();
 
