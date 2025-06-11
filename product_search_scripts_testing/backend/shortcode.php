@@ -6,7 +6,7 @@ if (!function_exists('get_db_connection')) {
     include $_SERVER["DOCUMENT_ROOT"] . '/product_search_scripts_testing/backend/db_connection.php';
 }
 
-function boilersa_search_block_testing($atts) {
+function boilersa_search_block_shortcode_testing($atts) {
     $conn = get_db_connection();
 
     ob_start();
