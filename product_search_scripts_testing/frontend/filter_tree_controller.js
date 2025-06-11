@@ -45,19 +45,10 @@ function filterTree() {
 
         async toggleCategory(category) {
             if (this.selectedCategoryId !== category.id) {
-                // A new category is selected, so reset others
+                // A new category is selected
                 this.categories.forEach(cat => {
                     if (cat.id !== category.id) {
                         cat.open = false;
-                        cat.filters?.forEach(f => {
-                            f.options?.forEach(o => o.checked = false);
-                        });
-                        cat.subcategories?.forEach(sub => {
-                            sub.open = false;
-                            sub.filters?.forEach(f => {
-                                f.options?.forEach(o => o.checked = false);
-                            });
-                        });
                     }
                 });
 
@@ -65,28 +56,20 @@ function filterTree() {
                 this.selectedCategoryId = category.id;
 
                 if (!category.loaded) {
+                    category.loaded = true;  // Set this BEFORE the await to avoid race condition
                     await this.loadCategoryFilters(category);
                 }
             } else {
-                // Clicking the same category again toggles it closed
+                // Toggling same category closed
                 category.open = !category.open;
                 if (!category.open) {
                     this.selectedCategoryId = null;
-                    category.filters?.forEach(f => {
-                        f.options?.forEach(o => o.checked = false);
-                    });
-                    category.subcategories?.forEach(sub => {
-                        sub.open = false;
-                        sub.filters?.forEach(f => {
-                            f.options?.forEach(o => o.checked = false);
-                        });
-                    });
                 }
             }
         },
 
+
         async loadCategoryFilters(category) {
-            if (category.loaded) return;
             console.log('--loadCategoryFilters() triggered for:', category.name);
             try {
                 const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?category_id=${category.id}`);
@@ -96,12 +79,13 @@ function filterTree() {
                 console.log(data.filters);
 
                 category.filters = data.filters;
-                category.loaded = true;
-
+                //category.loaded = true;
             } catch (error) {
                 console.error('Failed to load category filters:', error);
+                category.loaded = false; // allow retry if it fails
             }
-        },
+        }
+        ,
 
         async loadSubcategoryFilters(subcat, type = 'subcat') {
             if (subcat.loaded) return;

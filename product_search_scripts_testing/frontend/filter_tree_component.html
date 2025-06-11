@@ -18,7 +18,7 @@
             :class="(selectedCategoryId !== category.id || !category.open) ? 'hover:bg-gray-700' : ''"
         >
             <button type="button"
-                    @click="toggleCategory(category); if (category.open && !category.loaded) loadCategoryFilters(category)"
+                    @click="toggleCategory(category)"
                     class="w-full text-left font-bold">
                 <span x-text="(selectedCategoryId === category.id && category.open) ? '− ' + category.name : '+ ' + category.name"></span>
             </button>
