@@ -15,11 +15,9 @@ function filterTree() {
 
         async init() {
             if (this.initialized) {
-                console.warn('init() already called — skipping');
                 return;
             }
             this.initialized = true;
-            console.log('Running init() at', new Date().toISOString());
             try {
                 const res = await fetch('/product_search_scripts_testing/backend/filter_data.php');
                 if (!res.ok) throw new Error('Failed to load filters.');
@@ -169,8 +167,6 @@ function filterTree() {
 
             this.isLoadingFilters = false;
         }
-
-
 
     };
 }
