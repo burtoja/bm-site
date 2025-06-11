@@ -30,11 +30,22 @@ function runSearchWithOffset(offset = 0) {
     // Optional: show loading spinner
     document.getElementById("search-results").innerHTML = "<p>Loading results...</p>";
 
+    document.getElementById("search-results").innerHTML = '
+    <div className="space-y-4" id="results-loading">
+        <div className="text-sm text-gray-300 italic text-center">Loading results...</div>
+
+        <div className="animate-pulse space-y-4">
+            <div className="bg-gray-300 h-32 rounded"></div>
+            <div className="bg-gray-300 h-32 rounded"></div>
+            <div className="bg-gray-300 h-32 rounded"></div>
+        </div>
+    </div>';
+
     fetch(endpoint)
         .then(res => res.json())
         .then(data => {
             renderResults(data);
-            document.getElementById('search-results').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('search-results').scrollIntoView({behavior: 'smooth'});
             renderPagination(data.total, data.offset, 50);
         })
         .catch(error => {
