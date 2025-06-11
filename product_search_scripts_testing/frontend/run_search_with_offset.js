@@ -27,9 +27,6 @@ function runSearchWithOffset(offset = 0) {
 
     const endpoint = `/product_search_scripts_testing/backend/search_ebay.php?${searchParams.toString()}`;
 
-    // Optional: show loading spinner
-    //document.getElementById("search-results").innerHTML = "<p>Loading results...</p>";
-
     document.getElementById("search-results").innerHTML = '' +
         '<div class="result-card flex flex-col items-center justify-center text-center"><div class="result-image"></div><div class="animate-pulse">Loading...</div></div> ' +
         '<div class="result-card flex flex-col items-center justify-center text-center"><div class="result-image"></div><div class="animate-pulse">Loading...</div></div> ' +

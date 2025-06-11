@@ -6,11 +6,6 @@
         <button @click="submitFilters()" :disabled="isLoadingFilters">Search Products</button>
     </div>
 
-    <!-- Show spinner while processing search -->
-    <div x-show="isLoadingFilters" class="text-sm text-gray-400 italic">
-        Preparing search...
-    </div>
-
     <!-- Loop through categories -->
     <template x-for="category in categories" :key="category.id">
         <div
