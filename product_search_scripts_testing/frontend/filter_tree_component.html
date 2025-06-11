@@ -6,29 +6,6 @@
         <button @click="submitFilters()" :disabled="isLoadingFilters">Search Products</button>
     </div>
 
-    <!-- Show spinner while processing search -->
-    <div x-show="isLoadingFilters" class="text-sm text-gray-400 italic">
-        Preparing search...
-    </div>
-
-    <!-- Skeleton Loader -->
-    <div x-show="isLoadingFilters" class="animate-pulse space-y-4 text-white">
-        <div class="bg-gray-700 rounded p-3">
-            <div class="h-5 bg-gray-500 rounded w-1/3 mb-2"></div>
-            <div class="h-4 bg-gray-600 rounded w-full mb-1"></div>
-            <div class="h-4 bg-gray-600 rounded w-5/6 mb-1"></div>
-            <div class="h-4 bg-gray-600 rounded w-2/3"></div>
-        </div>
-        <div class="bg-gray-700 rounded p-3">
-            <div class="h-5 bg-gray-500 rounded w-1/4 mb-2"></div>
-            <div class="h-4 bg-gray-600 rounded w-full mb-1"></div>
-            <div class="h-4 bg-gray-600 rounded w-3/4 mb-1"></div>
-            <div class="h-4 bg-gray-600 rounded w-1/2"></div>
-        </div>
-    </div>
-
-
-
     <!-- Loop through categories -->
     <template x-for="category in categories" :key="category.id">
         <div
