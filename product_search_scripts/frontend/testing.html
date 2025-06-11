@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subcategory Tree Test</title>
+    <style>
+        .subcategory-node { margin-left: 20px; }
+        .subcategory-header { cursor: pointer; font-weight: bold; }
+        .subcategory-children { margin-left: 20px; display: none; }
+        .filter-group { margin-top: 10px; margin-left: 20px; }
+        .filter-group h4 { margin-bottom: 5px; }
+        label { display: block; }
+    </style>
+</head>
+<body>
+
+<h2>Test: Instrumentation Subcategory Tree </h2>
+<button onclick="loadTopLevelSubcategories(20, this)">[+] Instrumentation</button>
+
+<div id="category-filters-20" class="category-filters" style="display: none;">
+    <div class="subcategory-tree-container"></div>
+    <div id="filters-output" class="filters-output"></div>
+</div>
+
+<script src="/product_search_scripts/frontend/load_nested_subcategories.js"></script>
+
+</body>
+</html>
