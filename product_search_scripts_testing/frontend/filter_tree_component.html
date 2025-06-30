@@ -2,7 +2,6 @@
 <div x-data="{
     showFilters: true,
     submitFilters() {
-        // Trigger your actual search function here
         if (window.innerWidth < 768) this.showFilters = false;
         console.log('Search submitted');
     }
@@ -50,7 +49,7 @@
             <!-- SEARCH BUTTON -->
             <div id="search-button-wrapper">
                 <button
-                        @click="$root.submitFilters()"
+                        @click="submitFilters()"
                         :disabled="isLoadingFilters"
                         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded"
                 >
