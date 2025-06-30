@@ -165,6 +165,8 @@ function filterTree() {
             window.history.replaceState({}, '', `?${query.toString()}`);
             runSearchWithOffset();
 
+            if (window.innerWidth < 768) this.showFilters = false;
+
             this.isLoadingFilters = false;
         }
 
