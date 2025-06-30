@@ -1,194 +1,250 @@
+<!-- Responsive Filter Wrapper -->
+<div x-data="{
+    showFilters: window.innerWidth >= 768,
+    submitFilters() {
+        // Trigger your actual search function here
+        if (window.innerWidth < 768) this.showFilters = false;
+        console.log('Search submitted');
+    }
+}" x-init="
+    window.addEventListener('resize', () => {
+        showFilters = window.innerWidth >= 768;
+    });
+    $watch('showFilters', value => {
+        document.body.classList.toggle('overflow-hidden', value && window.innerWidth < 768);
+    });
+">
 
-<div x-data="filterTree()" x-init="init()" class="p-4 space-y-3 max-w-3xl text-white">
-    <!-- FILTER TREE COMPONENT RENDERED -->
-    <!-- Submit button (sticky at top of category list) -->
-    <div id="search-button-wrapper">
-        <button @click="submitFilters()" :disabled="isLoadingFilters">Search Products</button>
-    </div>
+    <!-- HAMBURGER BUTTON (mobile only) -->
+    <button
+            class="md:hidden fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded shadow"
+            @click="showFilters = !showFilters"
+    >
+        ☰ Filters
+    </button>
 
-    <!-- Loop through categories -->
-    <template x-for="category in categories" :key="category.id">
-        <div
-            class="bg-gray-800 rounded p-3"
-            :class="(selectedCategoryId !== category.id || !category.open) ? 'hover:bg-gray-700' : ''"
-        >
-            <button type="button"
-                    @click="toggleCategory(category)"
-                    class="w-full text-left font-bold">
-                <span x-text="(selectedCategoryId === category.id && category.open) ? '− ' + category.name : '+ ' + category.name"></span>
-            </button>
+    <!-- BACKDROP OVERLAY (mobile only) -->
+    <div
+            x-show="showFilters && window.innerWidth < 768"
+            @click="showFilters = false"
+            class="fixed inset-0 bg-black bg-opacity-50 z-40"
+            x-transition.opacity
+    ></div>
+
+    <!-- FILTER TREE SIDEBAR -->
+    <div
+            class="fixed md:static top-0 left-0 z-50 w-3/4 md:w-full h-full md:h-auto bg-gray-900 text-white p-4 overflow-y-auto transition-transform duration-300 ease-in-out transform md:translate-x-0"
+            :class="{'-translate-x-full': !showFilters && window.innerWidth < 768}"
+            x-transition
+    >
+
+        <!-- CLOSE BUTTON (mobile only) -->
+        <div class="flex justify-between items-center mb-4 md:hidden">
+            <h2 class="text-lg font-semibold">Filters</h2>
+            <button @click="showFilters = false" class="text-white text-xl">✕</button>
+        </div>
+
+        <!-- YOUR FILTER TREE -->
+        <div x-data="filterTree()" x-init="init()" class="space-y-3 max-w-3xl text-white">
+
+            <!-- SEARCH BUTTON -->
+            <div id="search-button-wrapper">
+                <button
+                        @click="$root.submitFilters()"
+                        :disabled="isLoadingFilters"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded"
+                >
+                    Search Products
+                </button>
+            </div>
+
+            <!-- Loop through categories -->
+            <template x-for="category in categories" :key="category.id">
+                <div
+                        class="bg-gray-800 rounded p-3"
+                        :class="(selectedCategoryId !== category.id || !category.open) ? 'hover:bg-gray-700' : ''"
+                >
+                    <button type="button"
+                            @click="toggleCategory(category)"
+                            class="w-full text-left font-bold">
+                        <span x-text="(selectedCategoryId === category.id && category.open) ? '− ' + category.name : '+ ' + category.name"></span>
+                    </button>
 
 
 
-            <div x-show="category.open" class="ml-4 mt-2 space-y-1">
+                    <div x-show="category.open" class="ml-4 mt-2 space-y-1">
 
-                <!-- Global Filters -->
-                <div class="ml-2 mt-2" x-data="{
+                        <!-- Global Filters -->
+                        <div class="ml-2 mt-2" x-data="{
                     conditionOpen: false,
                     priceOpen: false,
                     sortOpen: false
                   }">
 
 
-                <!-- Condition -->
-                    <div>
-                        <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline hover:bg-gray-700 rounded">
-                            <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
-                        </button>
-                        <div x-show="conditionOpen" class="mt-1 ml-4">
-                            <label class="block">
-                                <input type="checkbox" value="New" x-model="globalFilters.condition" class="mr-1">
-                                New
-                            </label>
-                            <label class="block">
-                                <input type="checkbox" value="Used" x-model="globalFilters.condition" class="mr-1">
-                                Used
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Price Range -->
-                    <div>
-                        <button type="button" @click="priceOpen = !priceOpen" class="text-sm underline hover:bg-gray-700 rounded">
-                            <span x-text="priceOpen ? '− Price Range' : '+ Price Range'"></span>
-                        </button>
-                        <div x-show="priceOpen" class="mt-1 ml-4">
-                            <label class="block text-sm">Minimum Price</label>
-                            <input type="number" x-model="globalFilters.minPrice" placeholder="Min $" class="text-black px-2 py-1 rounded w-full" />
-                            <label class="block text-sm mt-1">Maximum Price</label>
-                            <input type="number" x-model="globalFilters.maxPrice" placeholder="Max $" class="text-black px-2 py-1 rounded w-full" />
-                        </div>
-                    </div>
-
-                    <!-- Sort Order -->
-                    <div>
-                        <button type="button" @click="sortOpen = !sortOpen" class="text-sm underline hover:bg-gray-700 rounded">
-                            <span x-text="sortOpen ? '− Sort Order' : '+ Sort Order'"></span>
-                        </button>
-                        <div x-show="sortOpen" class="mt-1 ml-4">
-                            <label class="block">
-                                <input type="radio" name="sort" value="high_to_low" x-model="globalFilters.sortOrder" class="mr-1">
-                                High to Low
-                            </label>
-                            <label class="block">
-                                <input type="radio" name="sort" value="low_to_high" x-model="globalFilters.sortOrder" class="mr-1">
-                                Low to High
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-
-
-
-                <!-- Category-level filters -->
-                <template x-if="Array.isArray(category.filters) && category.filters.length">
-                    <div class="mt-0">
-                        <template x-for="(filter, i) in category.filters" :key="filter.id || i">
+                            <!-- Condition -->
                             <div>
-                                <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
+                                <button type="button" @click="conditionOpen = !conditionOpen" class="text-sm underline hover:bg-gray-700 rounded">
+                                    <span x-text="conditionOpen ? '− Condition' : '+ Condition'"></span>
+                                </button>
+                                <div x-show="conditionOpen" class="mt-1 ml-4">
+                                    <label class="block">
+                                        <input type="checkbox" value="New" x-model="globalFilters.condition" class="mr-1">
+                                        New
+                                    </label>
+                                    <label class="block">
+                                        <input type="checkbox" value="Used" x-model="globalFilters.condition" class="mr-1">
+                                        Used
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Price Range -->
+                            <div>
+                                <button type="button" @click="priceOpen = !priceOpen" class="text-sm underline hover:bg-gray-700 rounded">
+                                    <span x-text="priceOpen ? '− Price Range' : '+ Price Range'"></span>
+                                </button>
+                                <div x-show="priceOpen" class="mt-1 ml-4">
+                                    <label class="block text-sm">Minimum Price</label>
+                                    <input type="number" x-model="globalFilters.minPrice" placeholder="Min $" class="text-black px-2 py-1 rounded w-full" />
+                                    <label class="block text-sm mt-1">Maximum Price</label>
+                                    <input type="number" x-model="globalFilters.maxPrice" placeholder="Max $" class="text-black px-2 py-1 rounded w-full" />
+                                </div>
+                            </div>
+
+                            <!-- Sort Order -->
+                            <div>
+                                <button type="button" @click="sortOpen = !sortOpen" class="text-sm underline hover:bg-gray-700 rounded">
+                                    <span x-text="sortOpen ? '− Sort Order' : '+ Sort Order'"></span>
+                                </button>
+                                <div x-show="sortOpen" class="mt-1 ml-4">
+                                    <label class="block">
+                                        <input type="radio" name="sort" value="high_to_low" x-model="globalFilters.sortOrder" class="mr-1">
+                                        High to Low
+                                    </label>
+                                    <label class="block">
+                                        <input type="radio" name="sort" value="low_to_high" x-model="globalFilters.sortOrder" class="mr-1">
+                                        Low to High
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        <!-- Category-level filters -->
+                        <template x-if="Array.isArray(category.filters) && category.filters.length">
+                            <div class="mt-0">
+                                <template x-for="(filter, i) in category.filters" :key="filter.id || i">
+                                    <div>
+                                        <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                   <span
                                           x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                           class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                           :title="filter.name"
                                   ></span>
-                                </button>
-                                <div x-show="filter.open" class="ml-4">
-                                    <template x-for="option in filter.options" :key="option.id">
-                                        <label class="flex items-center space-x-2 overflow-hidden">
-                                            <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
-                                            <span x-text="option.value" class="truncate" :title="option.value?.toString()"></span>
-                                        </label>
-                                    </template>
-                                </div>
+                                        </button>
+                                        <div x-show="filter.open" class="ml-4">
+                                            <template x-for="option in filter.options" :key="option.id">
+                                                <label class="flex items-center space-x-2 overflow-hidden">
+                                                    <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
+                                                    <span x-text="option.value" class="truncate" :title="option.value?.toString()"></span>
+                                                </label>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </template>
-                    </div>
-                </template>
 
 
-                <!-- Subcategories -->
-                <template x-for="subcat in category.subcategories" :key="subcat.name">
-                    <div class="bg-gray-700 p-3 rounded ml-4">
-                        <button type="button" @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
+                        <!-- Subcategories -->
+                        <template x-for="subcat in category.subcategories" :key="subcat.name">
+                            <div class="bg-gray-700 p-3 rounded ml-4">
+                                <button type="button" @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                             <span
                                     x-text="subcat.open ? '− ' + subcat.name : '+ ' + subcat.name"
                                     class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                     :title="subcat.name"
                             ></span>
-                        </button>
+                                </button>
 
-                        <div x-show="subcat.open" class="ml-4 mt-2 space-y-2">
-                            <template x-if="subcat.filters.length > 0">
-                                <template x-if="Array.isArray(subcat.filters) && subcat.filters.length">
-                                    <template x-for="(filter, i) in subcat.filters" :key="filter.id || i">
-                                        <div>
-                                            <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
+                                <div x-show="subcat.open" class="ml-4 mt-2 space-y-2">
+                                    <template x-if="subcat.filters.length > 0">
+                                        <template x-if="Array.isArray(subcat.filters) && subcat.filters.length">
+                                            <template x-for="(filter, i) in subcat.filters" :key="filter.id || i">
+                                                <div>
+                                                    <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                                 <span
                                                         x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                                         class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                                         :title="filter.name"
                                                 ></span>
-                                            </button>
-                                            <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
-                                                <template x-for="option in filter.options" :key="option.id">
-                                                    <label class="flex items-center space-x-2 overflow-hidden">
-                                                        <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
-                                                        <span x-text="option.value" class="truncate" :title="option.value?.toString()"></span>
-                                                    </label>
-                                                </template>
-                                            </div>
-                                        </div>
+                                                    </button>
+                                                    <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
+                                                        <template x-for="option in filter.options" :key="option.id">
+                                                            <label class="flex items-center space-x-2 overflow-hidden">
+                                                                <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
+                                                                <span x-text="option.value" class="truncate" :title="option.value?.toString()"></span>
+                                                            </label>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </template>
+
                                     </template>
-                                </template>
 
-                            </template>
-
-                            <template x-for="subsub in subcat.subcategories" :key="subsub.name">
-                                <div class="bg-gray-600 p-3 rounded ml-4">
-                                    <button type="button" @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
+                                    <template x-for="subsub in subcat.subcategories" :key="subsub.name">
+                                        <div class="bg-gray-600 p-3 rounded ml-4">
+                                            <button type="button" @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                         <span
                                                 x-text="subsub.open ? '− ' + subsub.name : '+ ' + subsub.name"
                                                 class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                                 :title="subsub.name"
                                         ></span>
-                                    </button>
+                                            </button>
 
-                                    <div x-show="subsub.open" class="ml-4 mt-2 space-y-2">
-                                        <template x-if="subsub.filters.length > 0">
-                                            <template x-if="Array.isArray(subsub.filters) && subsub.filters.length">
-                                                <template x-for="(filter, i) in subsub.filters" :key="filter.id || i">
-                                                    <div>
-                                                        <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
+                                            <div x-show="subsub.open" class="ml-4 mt-2 space-y-2">
+                                                <template x-if="subsub.filters.length > 0">
+                                                    <template x-if="Array.isArray(subsub.filters) && subsub.filters.length">
+                                                        <template x-for="(filter, i) in subsub.filters" :key="filter.id || i">
+                                                            <div>
+                                                                <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
                                                             <span
                                                                     x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name"
                                                                     class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
                                                                     :title="filter.name"
                                                             ></span>
-                                                        </button>
-                                                        <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
-                                                            <template x-for="option in filter.options" :key="option.id">
-                                                                <label class="flex items-center space-x-2 overflow-hidden">
-                                                                    <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
-                                                                    <span x-text="option.value" class="truncate" :title="option.value?.toString()"></span>
-                                                                </label>
-                                                            </template>
-                                                        </div>
-                                                    </div>
+                                                                </button>
+                                                                <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
+                                                                    <template x-for="option in filter.options" :key="option.id">
+                                                                        <label class="flex items-center space-x-2 overflow-hidden">
+                                                                            <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
+                                                                            <span x-text="option.value" class="truncate" :title="option.value?.toString()"></span>
+                                                                        </label>
+                                                                    </template>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </template>
+
                                                 </template>
-                                            </template>
+                                            </div>
+                                        </div>
+                                    </template>
 
-                                        </template>
-                                    </div>
                                 </div>
-                            </template>
+                            </div>
+                        </template>
 
-                        </div>
                     </div>
-                </template>
+                </div>
+            </template>
 
-            </div>
         </div>
-    </template>
-
+    </div>
 </div>
+
+
