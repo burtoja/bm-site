@@ -82,7 +82,7 @@ function filterTree() {
             subcat.loaded = true;
 
             let paramName = 'subcategory_id';
-            if (level === 'subsub') paramName = 'subsubcategory_id';
+            if (level === 'subsub') paramName = 'subcategory_id';
 
             try {
                 const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${subcat.id}`);
