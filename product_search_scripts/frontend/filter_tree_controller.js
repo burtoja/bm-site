@@ -78,17 +78,24 @@ function filterTree() {
         }
         ,
 
-        async loadSubcategoryFilters(subcat, type = 'subcat') {
-            if (subcat.loaded) return;
-            const param = type === 'subsub' ? 'subsubcategory_id' : 'subcategory_id';
+        async loadSubcategoryFilters(subcat, level = 'subcategory') {
+            subcat.loaded = true;
+
+            let paramName = 'subcategory_id';
+            if (level === 'subsub') paramName = 'subcategory_id';
 
             try {
-                const res = await fetch(`/product_search_scripts/backend/load_filters.php?${param}=${subcat.id}`);
+                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${subcat.id}`);
                 const data = await res.json();
-                subcat.filters = data.filters;
-                subcat.loaded = true;
-            } catch (error) {
-                console.error(`Failed to load filters for ${type}:`, error);
+
+                if (data.filters) {
+                    subcat.filters = data.filters;
+                } else {
+                    subcat.filters = [];
+                }
+            } catch (e) {
+                console.error("Failed to load filters for " + level + ":", e);
+                subcat.filters = [];
             }
         },
 
