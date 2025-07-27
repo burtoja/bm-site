@@ -78,7 +78,7 @@ function filterTree() {
         }
         ,
 
-        async function loadSubcategoryFilters(subcat, level = 'subcategory') {
+        async loadSubcategoryFilters(subcat, level = 'subcategory') {
             subcat.loaded = true;
 
             let paramName = 'subcategory_id';
