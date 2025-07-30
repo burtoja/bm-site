@@ -42,11 +42,6 @@ while ($cat = $categoriesResult->fetch_assoc()) {
 
     if ($hasSubcats === 1) {
         // Load all subcategories for this category
-//        $subcatStmt = $conn->prepare("
-//            SELECT id, name, parent_subcategory_id
-//            FROM subcategories
-//            WHERE category_id = ?
-//        ");
         $subcatStmt = $conn->prepare("
             SELECT s.* 
             FROM subcategories s
