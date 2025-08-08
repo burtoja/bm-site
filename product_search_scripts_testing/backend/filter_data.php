@@ -28,7 +28,7 @@ function build_subcategory_tree_minimal(array $allSubcategories, int $parentId):
 }
 
 // Get all categories
-$categoriesStmt = $conn->prepare("SELECT id, name, has_subcategories FROM categories ORDER BY name ASC");
+$categoriesStmt = $conn->prepare("SELECT id, name, has_subcategories FROM categories WHERE is_active = 1 ORDER BY name ASC");
 $categoriesStmt->execute();
 $categoriesResult = $categoriesStmt->get_result();
 
