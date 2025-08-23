@@ -40,7 +40,7 @@ $sql = "
     FROM filters f
     JOIN {$scope}_filters cf ON cf.filter_id = f.id
     WHERE cf.{$id_column} = ?
-    ORDER BY f.sort_order ASC, f.name ASC
+    ORDER BY f.sort_order ASC, f.name DESC
 ";
 //    ORDER BY f.sort_order ASC, f.name ASC
 
