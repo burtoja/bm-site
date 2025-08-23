@@ -42,7 +42,6 @@ $sql = "
     WHERE cf.{$id_column} = ?
     ORDER BY f.sort_order ASC, f.name ASC
 ";
-//    ORDER BY f.sort_order ASC, f.name ASC
 
 $filters = [];
 $stmt = $conn->prepare($sql);
