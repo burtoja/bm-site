@@ -43,10 +43,16 @@ while ($cat = $categoriesResult->fetch_assoc()) {
     if ($hasSubcats === 1) {
         // Load all subcategories for this category
         $subcatStmt = $conn->prepare("
-            SELECT s.* 
+            SELECT s.id, s.name, s.sort_order, s.parent_subcategory_id, s.has_children
             FROM subcategories s
             JOIN subcategory_category_links scl ON scl.subcategory_id = s.id
-            WHERE scl.category_id = ?;
+            WHERE scl.category_id = ?
+            ORDER BY
+            (s.parent_subcategory_id IS NULL) DESC,
+            s.parent_subcategory_id,
+            (s.sort_order IS NULL OR s.sort_order = 0) ASC,
+            COALESCE(NULLIF(s.sort_order, 0), 999999) ASC,
+            s.name ASC
         ");
         $subcatStmt->bind_param("i", $catId);
         $subcatStmt->execute();
