@@ -37,7 +37,7 @@ if ($subsubcategory_id) {
 // Step 1: Get filters
 $sql = "
   SELECT s.id, s.name, s.sort_order, s.parent_subcategory_id, s.has_children
-  FROM subcategories55 s
+  FROM subcategories s
   JOIN subcategory_category_links scl ON scl.subcategory_id = s.id
   WHERE scl.category_id = ?
   ORDER BY
