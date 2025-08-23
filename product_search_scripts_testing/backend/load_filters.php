@@ -34,6 +34,7 @@ if ($subsubcategory_id) {
     $id_column = 'category_id';
 }
 
+
 // Step 1: Get filters
 $sql = "
     SELECT f.id AS filter_id, f.name AS filter_name
