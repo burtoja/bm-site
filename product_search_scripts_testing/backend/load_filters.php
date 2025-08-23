@@ -47,7 +47,6 @@ $sql = "
     COALESCE(s.sort_order, 999999) ASC,         -- then by explicit sort_order
     s.name ASC                                  -- tie-break alphabetically
 ";
-//    ORDER BY f.sort_order ASC, f.name ASC
 
 $filters = [];
 $stmt = $conn->prepare($sql);
