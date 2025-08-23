@@ -45,7 +45,7 @@ $sql = "
     s.parent_subcategory_id,                    -- group siblings together
     (s.sort_order IS NULL) ASC,                 -- non-NULL sort_order first
     COALESCE(s.sort_order, 999999) ASC,         -- then by explicit sort_order
-    s.name DESC                                  -- tie-break alphabetically
+    s.name ASC                                  -- tie-break alphabetically
 ";
 //    ORDER BY f.sort_order ASC, f.name ASC
 
