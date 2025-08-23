@@ -36,10 +36,16 @@ if ($subsubcategory_id) {
 
 // Step 1: Get filters
 $sql = "
-    SELECT f.id AS filter_id, f.name AS filter_name
-    FROM filters f
-    JOIN {$scope}_filters cf ON cf.filter_id = f.id
-    WHERE cf.{$id_column} = ?
+  SELECT s.id, s.name, s.sort_order, s.parent_subcategory_id, s.has_children
+  FROM subcategories s
+  JOIN subcategory_category_links scl ON scl.subcategory_id = s.id
+  WHERE scl.category_id = ?
+  ORDER BY
+    (s.parent_subcategory_id IS NULL) DESC,     -- top-level first
+    s.parent_subcategory_id,                    -- group siblings together
+    (s.sort_order IS NULL) ASC,                 -- non-NULL sort_order first
+    COALESCE(s.sort_order, 999999) ASC,         -- then by explicit sort_order
+    s.name ASC                                  -- tie-break alphabetically
 ";
 //    ORDER BY f.sort_order ASC, f.name ASC
 
