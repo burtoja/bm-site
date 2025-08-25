@@ -80,7 +80,7 @@
                 </button>
             </div>
 
-            <!-- Loop through categories (RockAuto-style tree) -->
+            <!-- Loop through categories -->
             <ul class="bm-tree text-white space-y-1" role="tree">
                 <template x-for="category in categories" :key="category.id">
                     <li role="treeitem" :aria-expanded="category.open">
@@ -104,7 +104,7 @@
                         <template x-if="category.open">
                             <ul class="ml-2 mt-1 space-y-[2px]" role="group">
                                 <!-- Subcategories -->
-                                <template x-for="subcat in category.subcategories" :key="subcat.name">
+                                <template x-for="subcat in category.subcategories" :key="subcat.id">
                                     <li role="treeitem" :aria-expanded="subcat.open">
                                         <div class="flex items-start gap-1.5">
                                             <button class="bm-hit shrink-0"
@@ -123,7 +123,7 @@
                                         <!-- Sub-subcategories -->
                                         <template x-if="subcat.open">
                                             <ul class="ml-2 mt-1 space-y-[2px]" role="group">
-                                                <template x-for="subsub in subcat.subcategories" :key="subsub.name">
+                                                <template x-for="subsub in subcat.subcategories" :key="subsub.id">
                                                     <li role="treeitem" :aria-expanded="subsub.open">
                                                         <div class="flex items-start gap-1.5">
                                                             <button class="bm-hit shrink-0"
