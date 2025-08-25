@@ -43,18 +43,15 @@
             <button @click="showFilters = false" class="text-white text-xl">✕</button>
         </div>
 
-        <!-- Breadcrumb / selection path -->
-        <div x-data
-             class="mb-2 rounded border border-amber-300 bg-amber-50 text-[13px] leading-tight">
+        <!-- Breadcrumb strip (yellow bar) -->
+        <div x-data="bmBreadcrumb()" x-init="init()" class="mb-2 rounded border border-amber-300 bg-amber-50 text-[13px] leading-tight">
             <div class="flex flex-wrap items-center gap-1 px-2 py-1.5">
-                <!-- Replace these spans with your live path pieces -->
-                <a href="#" class="text-sky-700 hover:underline">Part Catalog</a>
-                <span>›</span>
-                <a href="#" class="text-sky-700 hover:underline">TOYOTA</a>
-                <span>›</span>
-                <a href="#" class="text-sky-700 hover:underline">2024</a>
-                <span>›</span>
-                <span class="font-medium text-slate-900">COROLLA</span>
+                <template x-for="(crumb,i) in path" :key="i">
+                    <div class="flex items-center gap-1">
+                        <template x-if="i>0"><span>›</span></template>
+                        <button @click="jump(i)" class="text-sky-700 hover:underline" :class="i===path.length-1 ? 'font-medium text-slate-900 pointer-events-none no-underline' : ''" x-text="crumb"></button>
+                    </div>
+                </template>
             </div>
         </div>
 
@@ -260,5 +257,99 @@
         </div>
     </div>
 </div>
+
+<script>
+    async init(){
+// Load initial data
+        const res = await fetch(BM_ENDPOINTS.ROOT, { credentials: 'same-origin' });
+        const data = await res.json();
+// Expecting an array like: [{id,name,has_children, subcategories?}] for top-level
+        this.nodes = this.attachParents(data);
+        this.indexNodes(this.nodes);
+        this.updatePath();
+
+
+// Optional: react when user clicks a crumb in the breadcrumb bar
+        window.addEventListener('bm:path:jump', (e)=>{
+            const idx = e.detail; // which crumb index
+// collapse everything after that level
+            const pathNodes = this.getSelectedAncestors();
+            pathNodes.slice(idx+1).forEach(n=> this.open.delete(n.id));
+            this.select(pathNodes[idx]);
+        });
+    },
+
+
+    // ----- helpers -----
+    attachParents(list, parent=null){
+        return (list||[]).map(n=>{
+            n._parent = parent || null;
+// normalize booleans/fields coming from PHP
+            n.has_children = Number(n.has_children||0) === 1 || (n.subcategories && n.subcategories.length>0);
+            if (n.subcategories && n.subcategories.length) n.subcategories = this.attachParents(n.subcategories, n);
+            return n;
+        });
+    },
+
+
+    indexNodes(list){
+        (list||[]).forEach(n=>{
+            this.byId.set(n.id, n);
+            if (n.subcategories) this.indexNodes(n.subcategories);
+        });
+    },
+
+
+    hasKids(n){ return n.has_children || (n.subcategories && n.subcategories.length>0); },
+    isOpen(n){ return this.open.has(n.id); },
+
+
+    async toggle(n){
+        if (this.isOpen(n)) { this.open.delete(n.id); return; }
+        this.open.add(n.id);
+// Lazy-load if needed
+        if ((!n.subcategories || n.subcategories.length===0) && n.has_children){
+            const res = await fetch(BM_ENDPOINTS.CHILDREN(n.id), { credentials: 'same-origin' });
+            const kids = await res.json();
+            n.subcategories = this.attachParents(kids, n);
+            this.indexNodes(n.subcategories);
+        }
+    },
+
+
+    childrenOf(n){ return n.subcategories || []; },
+
+
+    select(n){
+        this.selected = n;
+// Ensure ancestors are open so the selection stays visible
+        let cur = n._parent; while (cur){ this.open.add(cur.id); cur = cur._parent; }
+// Broadcast the breadcrumb path
+        this.updatePath();
+
+
+// TODO: Hook your search trigger here, e.g. build eBay endpoint
+// window.dispatchEvent(new CustomEvent('bm:search', { detail: { subcategory_id: n.id } }));
+    },
+
+
+    updatePath(){
+        const path = this.getSelectedNames();
+        window.dispatchEvent(new CustomEvent('bm:path', { detail: path }));
+    },
+
+
+    getSelectedAncestors(){
+        const chain = [];
+        let cur = this.selected;
+        while(cur){ chain.unshift(cur); cur = cur._parent; }
+        return chain;
+    },
+
+
+    getSelectedNames(){ return this.getSelectedAncestors().map(n=> n.name); },
+    };
+    }
+</script>
 
 
