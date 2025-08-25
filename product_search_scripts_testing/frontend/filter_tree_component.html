@@ -43,6 +43,21 @@
             <button @click="showFilters = false" class="text-white text-xl">✕</button>
         </div>
 
+        <!-- Breadcrumb / selection path -->
+        <div x-data
+             class="mb-2 rounded border border-amber-300 bg-amber-50 text-[13px] leading-tight">
+            <div class="flex flex-wrap items-center gap-1 px-2 py-1.5">
+                <!-- Replace these spans with your live path pieces -->
+                <a href="#" class="text-sky-700 hover:underline">Part Catalog</a>
+                <span>›</span>
+                <a href="#" class="text-sky-700 hover:underline">TOYOTA</a>
+                <span>›</span>
+                <a href="#" class="text-sky-700 hover:underline">2024</a>
+                <span>›</span>
+                <span class="font-medium text-slate-900">COROLLA</span>
+            </div>
+        </div>
+
         <!-- YOUR FILTER TREE -->
         <div x-data="filterTree()" x-init="init()" class="space-y-3 max-w-3xl text-white">
 
