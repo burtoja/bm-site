@@ -1,204 +1,182 @@
-<!-- Updated filter tree with fixes for subcategory filters not rendering -->
 <style>
+    /* RockAuto-ish category tree */
     .bm-tree { font-size: 13px; line-height: 1.2; }
-    .bm-tree ul { margin-left: .5rem; border-left: 1px solid #e5e7eb; }
+    .bm-tree ul { margin-left: .5rem; border-left: 1px solid #e5e7eb; } /* thin vertical */
     .bm-tree li { position: relative; padding-left: .55rem; }
-    .bm-tree li::before { content: ""; position: absolute; left: -1px; top: .85rem; width: .55rem; border-top: 1px solid #e5e7eb; }
-    .bm-hit { width: 1.05rem; height: 1.05rem; display: inline-grid; place-items: center; border: 1px solid #94a3b8; border-radius: 3px; font-size: 11px; line-height: 1; background: #0f172a0a; }
-    .bm-hit[aria-expanded="true"] { background:#f8fafc; }
+    .bm-tree li::before { /* “elbow” branch line */
+        content: "";
+        position: absolute;
+        left: -1px; top: .85rem; width: .55rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    .bm-hit { /* +/- toggle */
+        width: 1.05rem; height: 1.05rem; display: inline-grid; place-items: center;
+        border: 1px solid #94a3b8; border-radius: 3px; font-size: 11px; line-height: 1;
+        background: #0f172a0a; /* subtle */
+    }
+    .bm-hit[aria-expanded="true"]{ background:#f8fafc; }
     .bm-node { color:#e5e7eb; }
     .bm-node:hover { text-decoration: underline; }
-    .bm-active { font-weight: 600; color:#38bdf8; }
+    .bm-active { font-weight: 600; color:#38bdf8; } /* selected highlight */
 </style>
 
-<ul class="bm-tree text-white space-y-1" role="tree">
-    <template x-for="category in categories" :key="category.id">
-        <li role="treeitem" :aria-expanded="category.open">
-            <div class="flex items-start gap-1.5">
-                <button class="bm-hit shrink-0" @click="toggleCategory(category)" :aria-expanded="category.open">
-                    <span x-text="category.open ? '–' : '+'"></span>
-                </button>
-                <button type="button" @click="toggleCategory(category)" class="bm-node text-left" :class="(selectedCategoryId === category.id && category.open) ? 'bm-active' : ''">
-                    <span x-text="category.name"></span>
+<!-- Responsive Filter Wrapper -->
+<div x-data="{
+  showFilters: true,
+  submitFilters() {
+    if (window.innerWidth < 768) this.showFilters = false;
+    console.log('Search submitted');
+  }
+}" x-init="
+  window.addEventListener('resize', () => { showFilters = window.innerWidth >= 768; });
+  $watch('showFilters', value => { document.body.classList.toggle('overflow-hidden', value && window.innerWidth < 768); });
+">
+
+    <!-- HAMBURGER BUTTON (mobile only) -->
+    <button class="md:hidden fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded shadow"
+            @click="showFilters = !showFilters">☰ Filters</button>
+
+    <!-- BACKDROP OVERLAY (mobile only) -->
+    <div x-show="showFilters && window.innerWidth < 768"
+         @click="showFilters = false"
+         class="fixed inset-0 bg-black bg-opacity-50 z-40"
+         x-transition.opacity></div>
+
+    <!-- FILTER TREE SIDEBAR -->
+    <div class="fixed md:static top-0 left-0 z-50 w-3/4 md:w-full h-full md:h-auto bg-gray-900 text-white p-4 overflow-y-auto transition-transform duration-300 ease-in-out transform md:translate-x-0"
+         :class="{'-translate-x-full': !showFilters && window.innerWidth < 768}"
+         x-transition>
+
+        <!-- CLOSE BUTTON (mobile only) -->
+        <div class="flex justify-between items-center mb-4 md:hidden">
+            <h2 class="text-lg font-semibold">Filters</h2>
+            <button @click="showFilters = false" class="text-white text-xl">✕</button>
+        </div>
+
+        <!-- FILTER TREE (Alpine component provided by your controller) -->
+        <div x-data="filterTree()" x-init="init()" class="space-y-3 max-w-3xl text-white">
+
+            <!-- SEARCH BUTTON -->
+            <div id="search-button-wrapper">
+                <button @click="submitFilters()" :disabled="isLoadingFilters"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
+                    Search Products
                 </button>
             </div>
 
-            <template x-if="category.open">
-                <ul class="ml-2 mt-1 space-y-[2px]" role="group">
-                    <template x-for="subcat in category.subcategories" :key="subcat.id">
-                        <li role="treeitem" :aria-expanded="subcat.open">
-                            <div class="flex items-start gap-1.5">
-                                <button class="bm-hit shrink-0" @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)" :aria-expanded="subcat.open">
-                                    <span x-text="subcat.open ? '–' : '+'"></span>
-                                </button>
-                                <button type="button" @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)" class="bm-node text-left" :class="subcat.open ? 'bm-active' : ''">
-                                    <span x-text="subcat.name"></span>
-                                </button>
-                            </div>
+            <!-- RockAuto-style category/subcategory tree -->
+            <ul class="bm-tree text-white space-y-1" role="tree">
+                <template x-for="category in categories" :key="category.id">
+                    <li role="treeitem" :aria-expanded="category.open">
+                        <div class="flex items-start gap-1.5">
+                            <!-- +/- -->
+                            <button class="bm-hit shrink-0"
+                                    @click="toggleCategory(category)"
+                                    :aria-expanded="category.open">
+                                <span x-text="category.open ? '–' : '+'"></span>
+                            </button>
+                            <!-- label -->
+                            <button type="button"
+                                    @click="toggleCategory(category)"
+                                    class="bm-node text-left"
+                                    :class="(selectedCategoryId === category.id && category.open) ? 'bm-active' : ''">
+                                <span x-text="category.name"></span>
+                            </button>
+                        </div>
 
-                            <!-- FIX: always render container, remove length gate -->
-                            <div x-show="subcat.open" class="ml-4 mt-2 space-y-2">
-                                <div x-show="subcat.loading" class="text-xs text-gray-300">Loading…</div>
-                                <template x-if="Array.isArray(subcat.filters) && subcat.filters.length">
-                                    <div class="space-y-1">
-                                        <template x-for="(filter, i) in subcat.filters" :key="filter.id || i">
-                                            <div>
-                                                <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
-                                                    <span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name" class="block w-full truncate" :title="filter.name"></span>
-                                                </button>
-                                                <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
-                                                    <template x-for="opt in filter.options" :key="opt.id">
-                                                        <label class="flex items-center space-x-2 overflow-hidden">
-                                                            <input type="checkbox" :value="opt.id" x-model="selectedOptions" class="shrink-0">
-                                                            <span x-text="opt.value" class="truncate" :title="opt.value"></span>
-                                                        </label>
+                        <!-- children -->
+                        <template x-if="category.open">
+                            <ul class="ml-2 mt-1 space-y-[2px]" role="group">
+                                <!-- Subcategories -->
+                                <template x-for="subcat in category.subcategories" :key="subcat.id">
+                                    <li role="treeitem" :aria-expanded="subcat.open">
+                                        <div class="flex items-start gap-1.5">
+                                            <button class="bm-hit shrink-0"
+                                                    @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
+                                                    :aria-expanded="subcat.open">
+                                                <span x-text="subcat.open ? '–' : '+'"></span>
+                                            </button>
+                                            <button type="button"
+                                                    @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
+                                                    class="bm-node text-left"
+                                                    :class="subcat.open ? 'bm-active' : ''">
+                                                <span x-text="subcat.name"></span>
+                                            </button>
+                                        </div>
+
+                                        <!-- Sub-subcategories -->
+                                        <template x-if="subcat.open">
+                                            <ul class="ml-2 mt-1 space-y-[2px]" role="group">
+                                                <template x-for="subsub in subcat.subcategories" :key="subsub.id">
+                                                    <li role="treeitem" :aria-expanded="subsub.open">
+                                                        <div class="flex items-start gap-1.5">
+                                                            <button class="bm-hit shrink-0"
+                                                                    @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')"
+                                                                    :aria-expanded="subsub.open">
+                                                                <span x-text="subsub.open ? '–' : '+'"></span>
+                                                            </button>
+                                                            <button type="button"
+                                                                    @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')"
+                                                                    class="bm-node text-left"
+                                                                    :class="subsub.open ? 'bm-active' : ''">
+                                                                <span x-text="subsub.name"></span>
+                                                            </button>
+                                                        </div>
+                                                        <!-- If you ever have a 4th level, repeat the same pattern -->
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </template>
+
+                                        <!-- ===== Subcategory Filters (simplified, reactive) ===== -->
+                                        <div x-show="subcat.open" class="ml-4 mt-2 space-y-2">
+                                            <!-- Loading -->
+                                            <div x-show="subcat.loading" class="text-xs text-gray-300">Loading…</div>
+
+                                            <!-- Filters list -->
+                                            <template x-if="Array.isArray(subcat.filters) && subcat.filters.length">
+                                                <div class="space-y-1">
+                                                    <template x-for="(filter, i) in subcat.filters" :key="filter.id || i">
+                                                        <div>
+                                                            <button type="button"
+                                                                    @click="filter.open = !filter.open"
+                                                                    class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
+                                <span x-text="(filter.open ? '− ' : '+ ') + filter.name"
+                                      class="block w-full truncate whitespace-nowrap overflow-hidden px-2"
+                                      :title="filter.name"></span>
+                                                            </button>
+                                                            <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
+                                                                <template x-for="option in filter.options" :key="option.id">
+                                                                    <label class="flex items-center space-x-2 overflow-hidden">
+                                                                        <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
+                                                                        <span x-text="option.value" class="truncate" :title="option.value?.toString()"></span>
+                                                                    </label>
+                                                                </template>
+                                                            </div>
+                                                        </div>
                                                     </template>
                                                 </div>
+                                            </template>
+
+                                            <!-- Empty state -->
+                                            <div x-show="!subcat.loading && (!subcat.filters || subcat.filters.length===0)"
+                                                 class="text-xs text-gray-400">
+                                                (No filters for this subcategory)
                                             </div>
-                                        </template>
-                                    </div>
+                                        </div>
+                                        <!-- ===== end subcategory filters ===== -->
+
+                                    </li>
                                 </template>
-                                <div x-show="!subcat.loading && (!subcat.filters || subcat.filters.length===0)" class="text-xs text-gray-400">(No filters for this subcategory)</div>
-                            </div>
-
-                            <!-- Sub-subcategories -->
-                            <template x-if="subcat.open">
-                                <ul class="ml-2 mt-1 space-y-[2px]" role="group">
-                                    <template x-for="subsub in subcat.subcategories" :key="subsub.id">
-                                        <li role="treeitem" :aria-expanded="subsub.open">
-                                            <div class="flex items-start gap-1.5">
-                                                <button class="bm-hit shrink-0" @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')" :aria-expanded="subsub.open">
-                                                    <span x-text="subsub.open ? '–' : '+'"></span>
-                                                </button>
-                                                <button type="button" @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')" class="bm-node text-left" :class="subsub.open ? 'bm-active' : ''">
-                                                    <span x-text="subsub.name"></span>
-                                                </button>
-                                            </div>
-
-                                            <div x-show="subsub.open" class="ml-4 mt-2 space-y-2">
-                                                <div x-show="subsub.loading" class="text-xs text-gray-300">Loading…</div>
-                                                <template x-if="Array.isArray(subsub.filters) && subsub.filters.length">
-                                                    <div class="space-y-1">
-                                                        <template x-for="(filter, i) in subsub.filters" :key="filter.id || i">
-                                                            <div>
-                                                                <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
-                                                                    <span x-text="filter.open ? '− ' + filter.name : '+ ' + filter.name" class="block w-full truncate" :title="filter.name"></span>
-                                                                </button>
-                                                                <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
-                                                                    <template x-for="opt in filter.options" :key="opt.id">
-                                                                        <label class="flex items-center space-x-2 overflow-hidden">
-                                                                            <input type="checkbox" :value="opt.id" x-model="selectedOptions" class="shrink-0">
-                                                                            <span x-text="opt.value" class="truncate" :title="opt.value"></span>
-                                                                        </label>
-                                                                    </template>
-                                                                </div>
-                                                            </div>
-                                                        </template>
-                                                    </div>
-                                                </template>
-                                                <div x-show="!subsub.loading && (!subsub.filters || subsub.filters.length===0)" class="text-xs text-gray-400">(No filters for this subcategory)</div>
-                                            </div>
-                                        </li>
-                                    </template>
-                                </ul>
-                            </template>
-                        </li>
-                    </template>
-                </ul>
-            </template>
-        </li>
-    </template>
-</ul>
-
-
-<!-- =========================
-PATCH: Make subcategory filters render reliably (RockAuto tree)
-Applies to your current filter_tree_component.html + controller
-Includes 3 changes: stable keys, reactive loader, simpler filter block
-========================= -->
-
-<!-- 1) STABLE KEYS (replace in your template loops) -->
-<!-- Before: :key="subcat.name" / :key="subsub.name" -->
-<!-- After:  :key="subcat.id"   / :key="subsub.id" -->
-<!-- Example replacement snippets: -->
-<!-- Subcategories loop -->
-<template x-for="subcat in category.subcategories" :key="subcat.id">
-    <!-- ... unchanged inner content (toggle, label, etc.) ... -->
-</template>
-<!-- Sub-subcategories loop -->
-<template x-for="subsub in subcat.subcategories" :key="subsub.id">
-    <!-- ... -->
-</template>
-
-<script>
-    // 2) REACTIVE LOADER (drop this into your controller file)
-    async function loadSubcategoryFilters(subcat, level){
-        try {
-            if (subcat.loaded) return;
-            subcat.loading = true;
-            // make arrays reactive before fetch
-            if (!Array.isArray(subcat.filters)) subcat.filters = [];
-            if (!Array.isArray(subcat.subcategories)) subcat.subcategories = subcat.subcategories || [];
-
-            const res = await fetch(`/filter_data.php?subcategory_id=${subcat.id}`, { credentials: 'same-origin' });
-            const data = await res.json(); // { filters: [...], subcategories: [...] }
-
-            subcat.filters = Array.isArray(data.filters) ? data.filters : [];
-            if (Array.isArray(data.subcategories) && data.subcategories.length) {
-                // attach parent pointers if you use breadcrumbs elsewhere
-                subcat.subcategories = data.subcategories.map(s => ({ ...s, _parent: subcat }));
-            }
-
-            subcat.loaded = true;
-        } catch (e) {
-            console.error('loadSubcategoryFilters error', e);
-        } finally {
-            subcat.loading = false;
-        }
-    }
-</script>
-
-<!-- 3) SIMPLER FILTER RENDER (replace your current subcat filter block) -->
-<!-- Find the block under: <div x-show="subcat.open" class="ml-4 mt-2 space-y-2"> ... and replace its inner content with the following: -->
-<div x-show="subcat.open" class="ml-4 mt-2 space-y-2">
-    <!-- Loading state -->
-    <div x-show="subcat.loading" class="text-xs text-gray-300">Loading…</div>
-
-    <!-- Filters list -->
-    <template x-if="Array.isArray(subcat.filters) && subcat.filters.length">
-        <div class="space-y-1">
-            <template x-for="(filter, i) in subcat.filters" :key="filter.id || i">
-                <div>
-                    <button type="button" @click="filter.open = !filter.open" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
-                        <span x-text="(filter.open ? '− ' : '+ ') + filter.name" class="block w-full truncate whitespace-nowrap overflow-hidden px-2" :title="filter.name"></span>
-                    </button>
-                    <div x-show="filter.open" class="ml-4 mt-1 space-y-1">
-                        <template x-for="option in filter.options" :key="option.id">
-                            <label class="flex items-center space-x-2 overflow-hidden">
-                                <input type="checkbox" :value="option.id" x-model="selectedOptions" class="shrink-0">
-                                <span x-text="option.value" class="truncate" :title="option.value?.toString()"></span>
-                            </label>
+                            </ul>
                         </template>
-                    </div>
-                </div>
-            </template>
+                    </li>
+                </template>
+            </ul>
         </div>
-    </template>
-
-    <!-- Empty state -->
-    <div x-show="!subcat.loading && (!subcat.filters || subcat.filters.length===0)" class="text-xs text-gray-400">(No filters for this subcategory)</div>
-
-    <!-- Sub-subcategories (keep your existing pattern; just ensure stable key) -->
-    <template x-for="subsub in subcat.subcategories" :key="subsub.id">
-        <div class="bg-gray-600 p-3 rounded ml-4">
-            <button type="button" @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')" class="text-sm underline w-full text-left hover:bg-gray-700 rounded">
-                <span x-text="(subsub.open ? '− ' : '+ ') + subsub.name" class="block w-full truncate whitespace-nowrap overflow-hidden px-2" :title="subsub.name"></span>
-            </button>
-            <div x-show="subsub.open" class="ml-4 mt-2 space-y-2">
-                <!-- repeat the same Filters list pattern here if subsub.filters exist -->
-            </div>
-        </div>
-    </template>
+    </div>
 </div>
 
-<!-- End patch -->
+
+
+
