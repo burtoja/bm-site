@@ -78,51 +78,26 @@ function filterTree() {
         }
         ,
 
-        async loadSubcategoryFilters(subcat, level = 'subcategory'){
+        async loadSubcategoryFilters(subcat, level = 'subcategory') {
+            subcat.loaded = true;
+
+            let paramName = 'subcategory_id';
+            if (level === 'subsub') paramName = 'subcategory_id';
+
             try {
-                if (subcat.loaded) return;
-                subcat.loading = true;
-                // make arrays reactive before fetch
-                if (!Array.isArray(subcat.filters)) subcat.filters = [];
-                if (!Array.isArray(subcat.subcategories)) subcat.subcategories = subcat.subcategories || [];
+                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${subcat.id}`);
+                const data = await res.json();
 
-                const res = await fetch(`/filter_data.php?subcategory_id=${subcat.id}`, { credentials: 'same-origin' });
-                const data = await res.json(); // { filters: [...], subcategories: [...] }
-
-                subcat.filters = Array.isArray(data.filters) ? data.filters : [];
-                if (Array.isArray(data.subcategories) && data.subcategories.length) {
-                    // attach parent pointers if you use breadcrumbs elsewhere
-                    subcat.subcategories = data.subcategories.map(s => ({ ...s, _parent: subcat }));
+                if (data.filters) {
+                    subcat.filters = data.filters;
+                } else {
+                    subcat.filters = [];
                 }
-
-                subcat.loaded = true;
             } catch (e) {
-                console.error('loadSubcategoryFilters error', e);
-            } finally {
-                subcat.loading = false;
+                console.error("Failed to load filters for " + level + ":", e);
+                subcat.filters = [];
             }
         },
-
-        // async loadSubcategoryFilters(subcat, level = 'subcategory') {
-        //     subcat.loaded = true;
-        //
-        //     let paramName = 'subcategory_id';
-        //     if (level === 'subsub') paramName = 'subcategory_id';
-        //
-        //     try {
-        //         const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${subcat.id}`);
-        //         const data = await res.json();
-        //
-        //         if (data.filters) {
-        //             subcat.filters = data.filters;
-        //         } else {
-        //             subcat.filters = [];
-        //         }
-        //     } catch (e) {
-        //         console.error("Failed to load filters for " + level + ":", e);
-        //         subcat.filters = [];
-        //     }
-        // },
 
 
 
