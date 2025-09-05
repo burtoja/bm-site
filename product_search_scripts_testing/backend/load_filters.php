@@ -3,6 +3,11 @@
  * Boilers & Machinery
  * load_filters.php  —  returns filters (+ options) for a given scope
  *
+ * GOAL:
+ *  - When asking for filters for a subcategory, also return only the OPTIONS
+ *    that belong to THAT subcategory (if a link table exists).
+ *  - Falls back to the old behavior (global options per filter_id) if no
+ *    scoped link table is present yet.
  *
  * INPUT PARAMS (GET):
  *   - subcategory_id (preferred)    int
@@ -22,6 +27,7 @@
  *   - category_filter_options(category_id, option_id)
  *   - subcategory_filter_options(subcategory_id, option_id)
  *
+ * Author: ChatGPT (merged/patched)
  * Date:   2025-09-05
  */
 
@@ -62,7 +68,7 @@ $subcategory_id    = bm_int($_GET['subcategory_id']    ?? null);
 $subsubcategory_id = bm_int($_GET['subsubcategory_id'] ?? null); // alias
 $category_id       = bm_int($_GET['category_id']       ?? null);
 
-// Normalize: treat subsubcategory_id as subcategory_id (same table in schema)
+// Normalize: treat subsubcategory_id as subcategory_id (same table in your schema)
 if ($subcategory_id === null && $subsubcategory_id !== null) {
     $subcategory_id = $subsubcategory_id;
 }
