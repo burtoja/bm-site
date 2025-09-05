@@ -13,7 +13,7 @@ Change: Render each filter group as its own <li> branch with a +/- hit,
     .bm-tree li { position: relative; padding-left: .55rem; }
     .bm-tree li::before { content: ""; position: absolute; left: -1px; top: .85rem; width: .55rem; border-top: 1px solid #e5e7eb; }
     .bm-hit { width: 1.05rem; height: 1.05rem; display: inline-grid; place-items: center; border: 1px solid #94a3b8; border-radius: 3px; font-size: 11px; line-height: 1; background: #0f172a0a; }
-    .bm-hit[aria-expanded="true"]{ background:#f8fafc; }
+    .bm-hit[aria-expanded="true"]{ background:red; }
     .bm-node { color:#e5e7eb; }
     .bm-node:hover { text-decoration: underline; }
     .bm-active { font-weight: 600; color:#38bdf8; }
@@ -34,7 +34,7 @@ Change: Render each filter group as its own <li> branch with a +/- hit,
             <li role="treeitem" :aria-expanded="category.open">
                 <div class="flex items-start gap-1.5">
                     <button class="bm-hit shrink-0" @click="toggleCategory(category)" :aria-expanded="category.open">
-                        <span x-text="category.open ? '' : '+'"></span>
+                        <span x-text="category.open ? '-' : '+'"></span>
                     </button>
                     <button type="button" @click="toggleCategory(category)"
                             class="bm-node text-left"
