@@ -120,6 +120,40 @@ function filterTree() {
             // this.selectedCategoryId = null;
         },
 
+        setActiveBranch(subcat, subsub = null) {
+            this.activeSubcategoryId = subcat ? subcat.id : null;
+            this.activeSubsubcategoryId = subsub ? subsub.id : null;
+            // ensure we know the owning category (usually already set by toggleCategory)
+            if (!this.selectedCategoryId) {
+                const owner = this.categories.find(c =>
+                    (c.subcategories || []).some(s =>
+                        s.id === (subsub ? subcat.id : subcat?.id)
+                    )
+                );
+                if (owner) this.selectedCategoryId = owner.id;
+            }
+        },
+
+        breadcrumb() {
+            const names = [];
+            const cat = this.categories.find(c => c.id === this.selectedCategoryId);
+            if (!cat) return names;
+            names.push(cat.name);
+
+            const lvl1 = cat.subcategories || [];
+            const sub = lvl1.find(s => s.id === this.activeSubcategoryId) ||
+                lvl1.find(s => (s.subcategories || []).some(ss => ss.id === this.activeSubcategoryId));
+            if (sub) names.push(sub.name);
+
+            const lvl2 = lvl1.flatMap(s => s.subcategories || []);
+            const subsub = lvl2.find(ss => ss.id === this.activeSubsubcategoryId);
+            if (subsub) names.push(subsub.name);
+
+            return names;
+        },
+
+
+
         /* END Summary Helpers for current selections display */
 
         async toggleCategory(category) {

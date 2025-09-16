@@ -124,14 +124,19 @@ Date: Sept 2025
                             <li role="treeitem" :aria-expanded="subcat.open">
                                 <div class="flex items-start gap-1.5">
                                     <button class="bm-hit shrink-0"
-                                            @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
+                                            @click="
+                                                subcat.open = !subcat.open;
+                                                setActiveBranch(subcat);
+                                                if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
                                             :aria-expanded="subcat.open">
                                         <span x-text="subcat.open ? '–' : '+'"></span>
                                     </button>
                                     <button type="button"
                                             @click="
                                                 subcat.open = !subcat.open;
-                                                activeSubcategoryId = subcat.id; activeSubsubcategoryId = null;
+                                                activeSubcategoryId = subcat.id;
+                                                activeSubsubcategoryId = null;
+                                                setActiveBranch(subcat);
                                                 if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
                                             class="bm-node text-left"
                                             :class="subcat.open ? 'bm-active' : ''">
@@ -170,7 +175,7 @@ Date: Sept 2025
                                                                 <div class="flex items-start gap-1.5">
                                                                     <!--<span class="bm-hit shrink-0 opacity-30">•</span>-->
                                                                     <label class="flex items-center gap-2">
-                                                                        <input type="checkbox" :value="opt.id" x-model="selectedOptions" class="shrink-0">
+                                                                        <input type="checkbox" :value="opt.id" x-model="selectedOptions" @change="setActiveBranch(subcat)" class="shrink-0">
                                                                         <span class="truncate" :title="opt.value" x-text="opt.value"></span>
                                                                     </label>
                                                                 </div>
@@ -201,6 +206,7 @@ Date: Sept 2025
                                                     <button class="bm-hit shrink-0"
                                                             @click="
                                                                     subsub.open = !subsub.open;
+                                                                    setActiveBranch(subcat, subsub);
                                                                     if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')
                                                                   "
                                                             :aria-expanded="subsub.open">
@@ -209,7 +215,7 @@ Date: Sept 2025
                                                     <button type="button"
                                                             @click="
                                                                     subsub.open = !subsub.open;
-                                                                    activeSubsubcategoryId = subsub.id; activeSubcategoryId = subcat.id;
+                                                                    setActiveBranch(subcat, subsub);
                                                                     if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')
                                                                   "
                                                             class="bm-node text-left"
@@ -249,7 +255,7 @@ Date: Sept 2025
                                                                                 <div class="flex items-start gap-1.5">
                                                                                     <!--<span class="bm-hit shrink-0 opacity-30">•</span>-->
                                                                                     <label class="flex items-center gap-2">
-                                                                                        <input type="checkbox" :value="opt.id" x-model="selectedOptions" class="shrink-0">
+                                                                                        <input type="checkbox" :value="opt.id" x-model="selectedOptions" @change="setActiveBranch(subcat, subsub)" class="shrink-0">
                                                                                         <span class="truncate" :title="opt.value" x-text="opt.value"></span>
                                                                                     </label>
                                                                                 </div>
