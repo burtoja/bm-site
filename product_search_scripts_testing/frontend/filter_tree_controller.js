@@ -115,9 +115,7 @@ function filterTree() {
             this.selectedOptions = [];
             this.activeSubsubcategoryId = null;
             this.activeSubcategoryId = null;
-            // keep selectedCategoryId so the user knows where they are,
-            // remove it too if you prefer:
-            // this.selectedCategoryId = null;
+            this.selectedCategoryId = null;
         },
 
         setActiveBranch(subcat, subsub = null) {
