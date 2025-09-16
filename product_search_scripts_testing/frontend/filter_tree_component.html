@@ -90,7 +90,7 @@ Date: Sept 2025
                 <template x-if="category.open">
                     <ul class="ml-2 mt-1 space-y-[2px]" role="group">
 
-                        <!-- (Optional) CATEGORY-LEVEL FILTERS AS PEER BRANCHES -->
+                        <!-- CATEGORY-LEVEL FILTERS AS PEER BRANCHES -->
                         <template x-for="(filter, i) in category.filters || []" :key="filter.id || i">
                             <li role="treeitem" :aria-expanded="filter.open">
                                 <div class="flex items-start gap-1.5">
@@ -129,7 +129,10 @@ Date: Sept 2025
                                         <span x-text="subcat.open ? '–' : '+'"></span>
                                     </button>
                                     <button type="button"
-                                            @click="subcat.open = !subcat.open; if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
+                                            @click="
+                                                subcat.open = !subcat.open;
+                                                activeSubcategoryId = subcat.id; activeSubsubcategoryId = null;
+                                                if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
                                             class="bm-node text-left"
                                             :class="subcat.open ? 'bm-active' : ''">
                                         <span x-text="subcat.name"></span>
@@ -206,6 +209,7 @@ Date: Sept 2025
                                                     <button type="button"
                                                             @click="
                                                                     subsub.open = !subsub.open;
+                                                                    activeSubsubcategoryId = subsub.id; activeSubcategoryId = subcat.id;
                                                                     if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')
                                                                   "
                                                             class="bm-node text-left"
