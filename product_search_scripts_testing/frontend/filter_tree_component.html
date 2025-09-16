@@ -27,9 +27,10 @@ Date: Sept 2025
 
 <div x-data="filterTree()" x-init="init()" class="space-y-3 max-w-3xl text-white">
 
-    <div id="search-button-wrapper">
-        <button @click="submitFilters()" :disabled="isLoadingFilters"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
+    <div id="search-button-wrapper" class="sticky top-4 z-20 space-y-3">
+        <button @click="submitFilters()"
+                :disabled="isLoadingFilters"
+                class="search-submit px-4 py-2 rounded font-semibold">
             Search Products
         </button>
 
@@ -39,16 +40,19 @@ Date: Sept 2025
             <div class="text-sm text-slate-200 flex flex-wrap items-center gap-1">
                 <span class="font-semibold">Selected:</span>
                 <template x-if="breadcrumb().length">
-      <span class="flex flex-wrap items-center gap-1">
-        <template x-for="(crumb, i) in breadcrumb()" :key="i">
-          <span class="flex items-center gap-1">
-            <span x-text="crumb"></span>
-            <span x-show="i < breadcrumb().length - 1" class="opacity-60">›</span>
-          </span>
-        </template>
-      </span>
+                      <span class="flex flex-wrap items-center gap-1">
+                            <template x-for="(crumb, i) in breadcrumb()" :key="i">
+                                  <span class="flex items-center gap-1">
+                                        <span x-text="crumb"></span>
+                                        <span x-show="i < breadcrumb().length - 1" class="opacity-60">›</span>
+                                  </span>
+                            </template>
+                      </span>
                 </template>
-                <button @click="clearAll()" class="ml-auto text-xs underline opacity-80 hover:opacity-100">Clear all</button>
+                <button @click="clearAll()"
+                        class="clear-btn appearance-none bg-transparent border-0 p-0 m-0 text-xs underline opacity-80 hover:opacity-100">
+                        Clear all
+                </button>
             </div>
 
             <!-- Selected filter chips, grouped by filter -->
@@ -60,7 +64,7 @@ Date: Sept 2025
                             <template x-for="opt in group.options" :key="opt.id">
                                 <button
                                         @click="removeOption(opt.id)"
-                                        class="text-xs bg-slate-600/80 hover:bg-slate-500 border border-slate-400 rounded px-2 py-0.5">
+                                        class="chip-btn appearance-none inline-flex items-center text-xs bg-slate-600/80 hover:bg-slate-500 border border-slate-400 rounded px-2 py-0.5">
                                     <span x-text="opt.value"></span> ×
                                 </button>
                             </template>
