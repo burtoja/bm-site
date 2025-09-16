@@ -116,6 +116,7 @@ function filterTree() {
             this.activeSubsubcategoryId = null;
             this.activeSubcategoryId = null;
             this.selectedCategoryId = null;
+            this.collapseTree();
         },
 
         setActiveBranch(subcat, subsub = null) {
@@ -130,6 +131,23 @@ function filterTree() {
                 );
                 if (owner) this.selectedCategoryId = owner.id;
             }
+        },
+
+        collapseTree() {
+            const closeBranch = (node) => {
+                if (!node) return;
+                node.open = false;
+                // close any filter accordions at this node
+                (node.filters || []).forEach(f => f.open = false);
+                // recurse into children
+                (node.subcategories || []).forEach(closeBranch);
+            };
+
+            this.categories.forEach(cat => {
+                cat.open = false;
+                (cat.filters || []).forEach(f => f.open = false);
+                (cat.subcategories || []).forEach(closeBranch);
+            });
         },
 
         breadcrumb() {
