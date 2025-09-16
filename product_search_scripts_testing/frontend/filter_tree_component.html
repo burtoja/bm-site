@@ -147,19 +147,80 @@ Change: Render each filter group as its own <li> branch with a +/- hit,
                                             <li role="treeitem" :aria-expanded="subsub.open">
                                                 <div class="flex items-start gap-1.5">
                                                     <button class="bm-hit shrink-0"
-                                                            @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')"
+                                                            @click="
+                                                                    subsub.open = !subsub.open;
+                                                                    if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')
+                                                                  "
                                                             :aria-expanded="subsub.open">
                                                         <span x-text="subsub.open ? '–' : '+'"></span>
                                                     </button>
                                                     <button type="button"
-                                                            @click="subsub.open = !subsub.open; if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')"
+                                                            @click="
+                                                                    subsub.open = !subsub.open;
+                                                                    if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')
+                                                                  "
                                                             class="bm-node text-left"
                                                             :class="subsub.open ? 'bm-active' : ''">
                                                         <span x-text="subsub.name"></span>
                                                     </button>
                                                 </div>
+
+                                                <template x-if="subsub.open">
+                                                    <ul class="ml-2 mt-1 space-y-[2px]" role="group">
+                                                        <!-- Loading leaf -->
+                                                        <li x-show="subsub.loading">
+                                                            <div class="flex items-start gap-1.5">
+                                                                <span class="bm-hit shrink-0 opacity-30">•</span>
+                                                                <span class="text-xs text-gray-300">Loading…</span>
+                                                            </div>
+                                                        </li>
+
+                                                        <!-- SUB-SUBCATEGORY FILTERS -->
+                                                        <template x-for="(filter, i) in subsub.filters || []" :key="filter.id || i">
+                                                            <li role="treeitem" :aria-expanded="filter.open">
+                                                                <div class="flex items-start gap-1.5">
+                                                                    <button class="bm-hit shrink-0"
+                                                                            @click="filter.open = !filter.open"
+                                                                            :aria-expanded="filter.open">
+                                                                        <span x-text="filter.open ? '–' : '+'"></span>
+                                                                    </button>
+                                                                    <button @click="filter.open = !filter.open" class="bm-node text-left">
+                                                                        <span x-text="filter.name"></span>
+                                                                    </button>
+                                                                </div>
+
+                                                                <template x-if="filter.open">
+                                                                    <ul class="ml-2 mt-1 space-y-[2px]" role="group">
+                                                                        <template x-for="opt in filter.options" :key="opt.id">
+                                                                            <li>
+                                                                                <div class="flex items-start gap-1.5">
+                                                                                    <span class="bm-hit shrink-0 opacity-30">•</span>
+                                                                                    <label class="flex items-center gap-2">
+                                                                                        <input type="checkbox" :value="opt.id" x-model="selectedOptions" class="shrink-0">
+                                                                                        <span class="truncate" :title="opt.value" x-text="opt.value"></span>
+                                                                                    </label>
+                                                                                </div>
+                                                                            </li>
+                                                                        </template>
+                                                                    </ul>
+                                                                </template>
+                                                            </li>
+                                                        </template>
+
+                                                        <!-- No-filters leaf -->
+                                                        <li x-show="!subsub.loading && (!subsub.filters || !subsub.filters.length)">
+                                                            <div class="flex items-start gap-1.5">
+                                                                <span class="bm-hit shrink-0 opacity-30">•</span>
+                                                                <span class="text-xs text-gray-400">(No filters for this subcategory)</span>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </template>
                                             </li>
                                         </template>
+
+
+
                                     </ul>
                                 </template>
                             </li>
