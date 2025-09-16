@@ -20,6 +20,7 @@ if (!$category_id && !$subcategory_id && !$subsubcategory_id) {
 }
 
 // Determine scope
+//TODO:  Might want to reverse this logic to treat anything not fitting as a subsubcategory
 if ($subsubcategory_id) {
     $scope = 'subsubcategory';
     $scope_id = (int)$subsubcategory_id;
