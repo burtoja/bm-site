@@ -13,6 +13,12 @@ function filterTree() {
         },
         initialized: false,
 
+        // track active branch and options
+        activeSubcategoryId: null,
+        activeSubsubcategoryId: null,
+        optionIndex: {},
+        filterNameById: {},
+
         async init() {
             if (this.initialized) {
                 return;
@@ -28,6 +34,16 @@ function filterTree() {
             }
         },
 
+        // Called after any fetch of filters for a node
+        indexFilters(node) {
+            (node.filters || []).forEach(f => {
+                this.filterNameById[f.id] = f.name;
+                (f.options || []).forEach(o => {
+                    this.optionIndex[o.id] = { id: o.id, value: o.value, filterId: f.id, filterName: f.name };
+                });
+            });
+        },
+
         applyOpenFlags(nodes) {
             nodes.forEach(node => {
                 node.open = false;
@@ -40,6 +56,71 @@ function filterTree() {
                 }
             });
         },
+
+        /* Summary helpers to display selections */
+
+        hasAnySelection() {
+            return !!(this.selectedCategoryId || this.activeSubcategoryId || this.activeSubsubcategoryId || (this.selectedOptions?.length));
+        },
+
+        breadcrumb() {
+            const names = [];
+            const cat = this.categories.find(c => c.id === this.selectedCategoryId);
+            if (cat) names.push(cat.name);
+
+            const findSubcat = (id) => {
+                if (!id || !cat) return null;
+                // search depth-1
+                let sc = (cat.subcategories || []).find(s => s.id === id);
+                if (sc) return sc;
+                // or any child of those
+                for (const s of (cat.subcategories || [])) {
+                    const hit = (s.subcategories || []).find(ss => ss.id === id);
+                    if (hit) return hit;
+                }
+                return null;
+            };
+
+            const sub = findSubcat(this.activeSubcategoryId);
+            if (sub) names.push(sub.name);
+
+            const subsub = findSubcat(this.activeSubsubcategoryId);
+            if (subsub && (!sub || subsub.id !== sub.id)) names.push(subsub.name);
+
+            return names;
+        },
+
+        groupedSelections() {
+            // group selectedOptions by filterName using optionIndex
+            const groups = {};
+            (this.selectedOptions || []).forEach(id => {
+                const meta = this.optionIndex[id];
+                if (!meta) return;
+                const key = meta.filterName || this.filterNameById[meta.filterId] || 'Filter';
+                if (!groups[key]) groups[key] = [];
+                groups[key].push({ id, value: meta.value });
+            });
+            // sort options alphabetically inside each group (optional)
+            return Object.keys(groups).sort().map(name => ({
+                name,
+                options: groups[name].sort((a,b)=> a.value.localeCompare(b.value))
+            }));
+        },
+
+        removeOption(id) {
+            this.selectedOptions = this.selectedOptions.filter(v => v !== id);
+        },
+
+        clearAll() {
+            this.selectedOptions = [];
+            this.activeSubsubcategoryId = null;
+            this.activeSubcategoryId = null;
+            // keep selectedCategoryId so the user knows where they are,
+            // remove it too if you prefer:
+            // this.selectedCategoryId = null;
+        },
+
+        /* END Summary Helpers for current selections display */
 
         async toggleCategory(category) {
             if (this.selectedCategoryId !== category.id) {
@@ -93,6 +174,7 @@ function filterTree() {
                 } else {
                     subcat.filters = [];
                 }
+                this.indexFilters(subcat);
             } catch (e) {
                 console.error("Failed to load filters for " + level + ":", e);
                 subcat.filters = [];
