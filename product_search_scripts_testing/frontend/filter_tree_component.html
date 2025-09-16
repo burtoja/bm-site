@@ -34,8 +34,8 @@ Date: Sept 2025
         </button>
     </div>
 
-    <!-- Selected summary -->
-    <div x-show="true" class="bg-slate-800/60 border border-slate-600 rounded-xl p-3 space-y-2">
+    <!-- Selected summary (breadcrumb) -->
+    <div x-show="hasAnySelection()" class="bg-slate-800/60 border border-slate-600 rounded-xl p-3 space-y-2">
         <!-- Breadcrumb -->
         <div class="text-sm text-slate-200 flex flex-wrap items-center gap-1">
             <span class="font-semibold">Selected:</span>
