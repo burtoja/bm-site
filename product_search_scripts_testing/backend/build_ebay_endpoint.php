@@ -71,7 +71,7 @@ function extract_brands_from_response($response) {
  *                                         'Connection Diameter'  => 'Connection Size']
  * @param bool  $debugReturnArray   If true, return ['url'=>..., 'query'=>...] for debugging.
  */
-function construct_final_ebay_endpoint_fixed(
+function construct_final_ebay_endpoint(
     array $params,
     array $recognizedBrands = [],
     array $aspectMap = [],
