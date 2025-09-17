@@ -46,126 +46,119 @@ function extract_brands_from_response($response) {
 }
 
 /**
- * Build eBay Browse API endpoint:
- * - NO boolean operators in q (keywords only)
+ * Backward-compatible endpoint builder for eBay Browse API.
+ * - Returns a STRING URL (what most callers expect).
+ * - AND for category narrowing via category_ids.
  * - OR within a filter via aspect_filter: Aspect:{Val1|Val2|...}
- * - AND across different filters is natural (multiple aspect_filter aspects)
- * - Fallback: any filter that doesn’t map to an eBay aspect -> terms appended to q (implicit AND)
+ * - AND across different filters by repeating aspect_filter.
+ * - q = keywords only (no AND/OR parens).
  *
- * @param array $params
- *   [
- *     'keywords'    => 'electrical motor',
- *     'category_id' => 12345,                      // eBay category id (deepest)
- *     'filters'     => [ 'Manufacturer / Brand' => ['WIKA','Ashcroft'], 'Face Diameter' => ['2.5"','4"'] ],
- *     'condition'   => 'New'|'Used',
- *     'min_price'   => 10.00,
- *     'max_price'   => 200.00,
- *     'sort'        => 'price_asc'|'price_desc'|...,
- *     'limit'       => 50,
- *     'offset'      => 0,
- *   ]
- * @param array $recognizedBrands   e.g., ['Ashcroft','WIKA','Dwyer']
- * @param array $aspectMap          Map your UI filter names -> eBay aspect names
- *                                  e.g., ['Manufacturer / Brand' => 'Brand',
- *                                         'Face Diameter'        => 'Gauge Face Diameter',
- *                                         'Connection Diameter'  => 'Connection Size']
- * @param bool  $debugReturnArray   If true, return ['url'=>..., 'query'=>...] for debugging.
+ * If your app used a different function name (e.g., build_ebay_endpoint),
+ * you can alias it to construct_search_endpoint at the bottom.
  */
-function construct_final_ebay_endpoint(
-    array $params,
-    array $recognizedBrands = [],
-    array $aspectMap = [],
-    bool $debugReturnArray = false
-) {
-    $apiBase = 'https://api.ebay.com/buy/browse/v1/item_summary/search?';
-    $query   = [];
 
-    // 1) Category narrowing (AND): supply the deepest eBay category id
+function construct_final_ebay_endpoint(array $params): string {
+    $apiBase = 'https://api.ebay.com/buy/browse/v1/item_summary/search?';
+
+    // ---- 0) Mappings you can tweak per category
+    // Recognized brands for the current eBay category (optional)
+    $recognizedBrands = $params['recognized_brands'] ?? [];
+
+    // Map your UI filter names -> eBay aspect names
+    // Add or modify as needed for your categories.
+    $aspectMap = $params['aspect_map'] ?? [
+        'Manufacturer / Brand' => 'Brand',
+        'Brand'                => 'Brand',
+        'Face Diameter'        => 'Face Diameter',
+        'Connection Diameter'  => 'Connection Size',
+        'Mounting Position'    => 'Mounting Type',
+        // ...extend per your domain...
+    ];
+
+    $query   = [];
+    $extras  = []; // we’ll collect repeated aspect_filter params here and append manually
+
+    // ---- 1) Category narrowing (deepest eBay cat)
     if (!empty($params['category_id'])) {
         $query['category_ids'] = (string)$params['category_id'];
     }
 
-    // 2) Prepare q: keywords only (NO AND/OR/PARENS)
+    // ---- 2) q = keywords only
     $qTokens = [];
     if (!empty($params['keywords'])) {
         $qTokens[] = trim($params['keywords']);
     }
 
+    // ---- 3) Filters
     $filters = isset($params['filters']) && is_array($params['filters']) ? $params['filters'] : [];
 
-    // 3) Brand: recognized go to aspect_filter; unrecognized go to q as plain tokens
+    // (a) Brand handling: recognized -> aspect_filter Brand:{...}; others -> q tokens
     $recognizedSet = [];
     foreach ($recognizedBrands as $rb) {
         $recognizedSet[mb_strtolower(trim($rb))] = true;
     }
-    $brandKeys = ['Manufacturer', 'Manufacturer / Brand', 'Brand', 'Brand Name'];
     $brandKeyUsed = null;
-    foreach ($brandKeys as $bk) {
+    foreach (['Manufacturer / Brand','Brand','Manufacturer','Brand Name'] as $bk) {
         if (!empty($filters[$bk]) && is_array($filters[$bk])) { $brandKeyUsed = $bk; break; }
     }
-
-    $aspectFilters = []; // collect strings like "Brand:{Ashcroft|WIKA}"
     if ($brandKeyUsed !== null) {
-        $recVals = [];
-        $unrecQ  = [];
+        $rec = [];
+        $fallbackTokens = [];
         foreach ($filters[$brandKeyUsed] as $v) {
             $clean = trim($v);
-            if ($clean === '') { continue; }
+            if ($clean === '') continue;
             $key = mb_strtolower($clean);
             if (isset($recognizedSet[$key])) {
-                $recVals[$clean] = true; // dedupe
+                $rec[$clean] = true;
             } else {
-                // fallback: add to q as plain term (quoted to keep phrase together)
-                $unrecQ["\"{$clean}\""] = true;
+                // push to q as plain tokens (no quotes/booleans)
+                $fallbackTokens[$clean] = true;
             }
         }
-        if (!empty($recVals)) {
-            $aspectFilters[] = 'Brand:{' . implode('|', array_keys($recVals)) . '}';
+        if (!empty($rec)) {
+            $extras[] = 'aspect_filter=' . rawurlencode('Brand:{' . implode('|', array_keys($rec)) . '}');
         }
-        if (!empty($unrecQ)) {
-            $qTokens[] = implode(' ', array_keys($unrecQ)); // no AND/OR, just tokens
+        if (!empty($fallbackTokens)) {
+            $qTokens[] = implode(' ', array_keys($fallbackTokens));
         }
         unset($filters[$brandKeyUsed]);
     }
 
-    // 4) Map remaining filters to aspects when possible; otherwise push values into q (tokens)
+    // (b) Other filters -> aspects when mapped; else push tokens into q
     foreach ($filters as $uiName => $values) {
-        if (!is_array($values) || empty($values)) { continue; }
-        $aspectName = $aspectMap[$uiName] ?? null;
+        if (!is_array($values) || empty($values)) continue;
 
-        // Clean and dedupe
+        // Clean/dedupe
         $vals = [];
         foreach ($values as $v) {
             $v = trim($v);
-            if ($v !== '') { $vals[$v] = true; }
+            if ($v !== '') $vals[$v] = true;
         }
-        if (empty($vals)) { continue; }
+        if (empty($vals)) continue;
 
-        if ($aspectName) {
-            // eBay OR within this aspect via pipes
-            $aspectFilters[] = $aspectName . ':{' . implode('|', array_keys($vals)) . '}';
+        if (isset($aspectMap[$uiName])) {
+            $aspectName = $aspectMap[$uiName];
+
+            // eBay accepts inch marks in aspect values; no quotes needed.
+            // Just guard against braces which conflict with the syntax:
+            $safeVals = array_map(function($x){
+                return str_replace(['{','}'], '', $x);
+            }, array_keys($vals));
+
+            // Repeat aspect_filter per aspect (AND across aspects)
+            $extras[] = 'aspect_filter=' . rawurlencode($aspectName . ':{' . implode('|', $safeVals) . '}');
         } else {
-            // No aspect mapping: put them into q as plain quoted tokens (implicit AND)
-            // NOTE: This cannot express OR in a single call. If you *must* OR these, you’ll need
-            // to fan out multiple API calls and merge results client-side.
-            $quoted = array_map(fn($x) => "\"{$x}\"", array_keys($vals));
-            $qTokens[] = implode(' ', $quoted);
+            // No mapping: these become additional tokens in q (implicit AND).
+            $qTokens[] = implode(' ', array_keys($vals));
         }
     }
 
-    // 5) Finalize q
     if (!empty($qTokens)) {
-        // Join with spaces. No boolean operators.
+        // Join with spaces; NO boolean operators.
         $query['q'] = trim(implode(' ', $qTokens));
     }
 
-    // 6) aspect_filter
-    if (!empty($aspectFilters)) {
-        // Multiple aspects separated by commas are fine
-        $query['aspect_filter'] = implode(',', $aspectFilters);
-    }
-
-    // 7) Global filter (price & condition)
+    // ---- 4) Global filter (price & condition)
     $filterClauses = [];
     $hasMin = isset($params['min_price']) && $params['min_price'] !== '' && is_numeric($params['min_price']);
     $hasMax = isset($params['max_price']) && $params['max_price'] !== '' && is_numeric($params['max_price']);
@@ -176,34 +169,30 @@ function construct_final_ebay_endpoint(
     }
     if (!empty($params['condition'])) {
         $c = mb_strtolower(trim($params['condition']));
-        if ($c === 'new')  { $filterClauses[] = 'conditions:{NEW}'; }
-        if ($c === 'used') { $filterClauses[] = 'conditions:{USED}'; }
+        if ($c === 'new')  $filterClauses[] = 'conditions:{NEW}';
+        if ($c === 'used') $filterClauses[] = 'conditions:{USED}';
     }
     if (!empty($filterClauses)) {
         $query['filter'] = implode(',', $filterClauses);
     }
 
-    // 8) Sort
+    // ---- 5) Sort, limit, offset
     if (!empty($params['sort'])) {
         switch ($params['sort']) {
-            case 'price_asc':  $query['sort'] = 'price';             break;
-            case 'price_desc': $query['sort'] = 'priceDescending';   break;
-            // Optionally support your legacy UI tokens
-            case '-price':     $query['sort'] = 'priceDescending';   break;
-            case 'price':      $query['sort'] = 'price';             break;
-            // Add more mappings as needed
+            case 'price_asc':
+            case 'price':      $query['sort'] = 'price'; break;
+            case 'price_desc':
+            case '-price':     $query['sort'] = 'priceDescending'; break;
         }
     }
-
-    // 9) Pagination
     $query['limit']  = isset($params['limit'])  && (int)$params['limit']  > 0 ? (int)$params['limit']  : 50;
     $query['offset'] = isset($params['offset']) && (int)$params['offset'] >= 0 ? (int)$params['offset'] : 0;
 
-    // 10) Build URL
-    $url = $apiBase . http_build_query($query);
-
-    if ($debugReturnArray) {
-        return ['url' => $url, 'query' => $query];
+    // ---- 6) Build URL
+    // Use http_build_query for normal params, then append repeated aspect_filter params.
+    $base = $apiBase . http_build_query($query, '', '&', PHP_QUERY_RFC3986);
+    if (!empty($extras)) {
+        $base .= '&' . implode('&', $extras);
     }
-    return $url;
+    return $base;
 }
