@@ -20,6 +20,7 @@ if (!$category_id && !$subcategory_id && !$subsubcategory_id) {
 }
 
 // Determine scope
+//TODO:  Might want to reverse this logic to treat anything not fitting as a subsubcategory
 if ($subsubcategory_id) {
     $scope = 'subsubcategory';
     $scope_id = (int)$subsubcategory_id;
@@ -34,6 +35,7 @@ if ($subsubcategory_id) {
     $id_column = 'category_id';
 }
 
+
 // Step 1: Get filters
 $sql = "
     SELECT f.id AS filter_id, f.name AS filter_name
@@ -41,7 +43,7 @@ $sql = "
     JOIN {$scope}_filters cf ON cf.filter_id = f.id
     WHERE cf.{$id_column} = ?
 ";
-//    ORDER BY f.sort_order ASC, f.name ASC
+//ORDER BY f.sort_order ASC, f.name ASC
 
 $filters = [];
 $stmt = $conn->prepare($sql);

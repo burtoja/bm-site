@@ -38,7 +38,7 @@ function runSearchWithOffset(offset = 0) {
         .then(res => res.json())
         .then(data => {
             renderResults(data);
-            document.getElementById('search-results').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('search-results').scrollIntoView({behavior: 'smooth'});
             renderPagination(data.total, data.offset, 50);
         })
         .catch(error => {
