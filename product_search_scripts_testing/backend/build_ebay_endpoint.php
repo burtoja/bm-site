@@ -46,95 +46,164 @@ function extract_brands_from_response($response) {
 }
 
 /**
- * Builds the final eBay search endpoint based on parameters and recognized brands.
+ * Build eBay Browse API endpoint:
+ * - NO boolean operators in q (keywords only)
+ * - OR within a filter via aspect_filter: Aspect:{Val1|Val2|...}
+ * - AND across different filters is natural (multiple aspect_filter aspects)
+ * - Fallback: any filter that doesn’t map to an eBay aspect -> terms appended to q (implicit AND)
  *
- * @param array $params Flat array of filters (k, manufacturer, condition, min_price, etc)
- * @param array $recognizedBrands List of brands available in the category
- * @param int $categoryId
- * @return string
+ * @param array $params
+ *   [
+ *     'keywords'    => 'electrical motor',
+ *     'category_id' => 12345,                      // eBay category id (deepest)
+ *     'filters'     => [ 'Manufacturer / Brand' => ['WIKA','Ashcroft'], 'Face Diameter' => ['2.5"','4"'] ],
+ *     'condition'   => 'New'|'Used',
+ *     'min_price'   => 10.00,
+ *     'max_price'   => 200.00,
+ *     'sort'        => 'price_asc'|'price_desc'|...,
+ *     'limit'       => 50,
+ *     'offset'      => 0,
+ *   ]
+ * @param array $recognizedBrands   e.g., ['Ashcroft','WIKA','Dwyer']
+ * @param array $aspectMap          Map your UI filter names -> eBay aspect names
+ *                                  e.g., ['Manufacturer / Brand' => 'Brand',
+ *                                         'Face Diameter'        => 'Gauge Face Diameter',
+ *                                         'Connection Diameter'  => 'Connection Size']
+ * @param bool  $debugReturnArray   If true, return ['url'=>..., 'query'=>...] for debugging.
  */
-function construct_final_ebay_endpoint(array $params, array $recognizedBrands, int $categoryId) {
-    $api_base = "https://api.ebay.com/buy/browse/v1/item_summary/search?";
-    $query = [];
-    error_log("construct_final_ebay_endpoint() was called");
+function construct_final_ebay_endpoint_fixed(
+    array $params,
+    array $recognizedBrands = [],
+    array $aspectMap = [],
+    bool $debugReturnArray = false
+) {
+    $apiBase = 'https://api.ebay.com/buy/browse/v1/item_summary/search?';
+    $query   = [];
 
-    // Always set the base keyword (k becomes q in another place)
-    if (!isset($params['q'])) {
-        throw new Exception("Missing required keyword 'q'.");
-    }
-    $query['q'] = $params['q'];
-
-    // If misc_filters exist, append them
-    if (!empty($params['misc_filters']) && is_array($params['misc_filters'])) {
-        $miscKeywords = array_map('trim', $params['misc_filters']);
-        $query['q'] .= ' ' . implode(' ', $miscKeywords);
+    // 1) Category narrowing (AND): supply the deepest eBay category id
+    if (!empty($params['category_id'])) {
+        $query['category_ids'] = (string)$params['category_id'];
     }
 
-    // Always add category
-    $query['category_ids'] = $categoryId;
+    // 2) Prepare q: keywords only (NO AND/OR/PARENS)
+    $qTokens = [];
+    if (!empty($params['keywords'])) {
+        $qTokens[] = trim($params['keywords']);
+    }
 
-    // Handle manufacturer / brand logic
-    //$brandList = get_available_brands_in_category($categoryId);
-    if (!empty($params['manufacturer'])) {
-        $manufacturer = trim($params['manufacturer']);
-        if (in_array($manufacturer, $recognizedBrands)) {
-            $query['aspect_filter'] = "Brand:{{$manufacturer}}";
+    $filters = isset($params['filters']) && is_array($params['filters']) ? $params['filters'] : [];
+
+    // 3) Brand: recognized go to aspect_filter; unrecognized go to q as plain tokens
+    $recognizedSet = [];
+    foreach ($recognizedBrands as $rb) {
+        $recognizedSet[mb_strtolower(trim($rb))] = true;
+    }
+    $brandKeys = ['Manufacturer', 'Manufacturer / Brand', 'Brand', 'Brand Name'];
+    $brandKeyUsed = null;
+    foreach ($brandKeys as $bk) {
+        if (!empty($filters[$bk]) && is_array($filters[$bk])) { $brandKeyUsed = $bk; break; }
+    }
+
+    $aspectFilters = []; // collect strings like "Brand:{Ashcroft|WIKA}"
+    if ($brandKeyUsed !== null) {
+        $recVals = [];
+        $unrecQ  = [];
+        foreach ($filters[$brandKeyUsed] as $v) {
+            $clean = trim($v);
+            if ($clean === '') { continue; }
+            $key = mb_strtolower($clean);
+            if (isset($recognizedSet[$key])) {
+                $recVals[$clean] = true; // dedupe
+            } else {
+                // fallback: add to q as plain term (quoted to keep phrase together)
+                $unrecQ["\"{$clean}\""] = true;
+            }
+        }
+        if (!empty($recVals)) {
+            $aspectFilters[] = 'Brand:{' . implode('|', array_keys($recVals)) . '}';
+        }
+        if (!empty($unrecQ)) {
+            $qTokens[] = implode(' ', array_keys($unrecQ)); // no AND/OR, just tokens
+        }
+        unset($filters[$brandKeyUsed]);
+    }
+
+    // 4) Map remaining filters to aspects when possible; otherwise push values into q (tokens)
+    foreach ($filters as $uiName => $values) {
+        if (!is_array($values) || empty($values)) { continue; }
+        $aspectName = $aspectMap[$uiName] ?? null;
+
+        // Clean and dedupe
+        $vals = [];
+        foreach ($values as $v) {
+            $v = trim($v);
+            if ($v !== '') { $vals[$v] = true; }
+        }
+        if (empty($vals)) { continue; }
+
+        if ($aspectName) {
+            // eBay OR within this aspect via pipes
+            $aspectFilters[] = $aspectName . ':{' . implode('|', array_keys($vals)) . '}';
         } else {
-            $query['q'] .= ' ' . $manufacturer;
+            // No aspect mapping: put them into q as plain quoted tokens (implicit AND)
+            // NOTE: This cannot express OR in a single call. If you *must* OR these, you’ll need
+            // to fan out multiple API calls and merge results client-side.
+            $quoted = array_map(fn($x) => "\"{$x}\"", array_keys($vals));
+            $qTokens[] = implode(' ', $quoted);
         }
     }
 
-    // Handle filters separately
-    $filters = [];
+    // 5) Finalize q
+    if (!empty($qTokens)) {
+        // Join with spaces. No boolean operators.
+        $query['q'] = trim(implode(' ', $qTokens));
+    }
 
-    // Handle condition filter
+    // 6) aspect_filter
+    if (!empty($aspectFilters)) {
+        // Multiple aspects separated by commas are fine
+        $query['aspect_filter'] = implode(',', $aspectFilters);
+    }
+
+    // 7) Global filter (price & condition)
+    $filterClauses = [];
+    $hasMin = isset($params['min_price']) && $params['min_price'] !== '' && is_numeric($params['min_price']);
+    $hasMax = isset($params['max_price']) && $params['max_price'] !== '' && is_numeric($params['max_price']);
+    if ($hasMin || $hasMax) {
+        $min = $hasMin ? number_format((float)$params['min_price'], 2, '.', '') : '';
+        $max = $hasMax ? number_format((float)$params['max_price'], 2, '.', '') : '';
+        $filterClauses[] = 'price:[' . $min . '..' . $max . ']';
+    }
     if (!empty($params['condition'])) {
-        $cond = strtolower($params['condition']);
-        if ($cond === 'used') {
-            $filters[] = 'conditionIds:{3000}';
-        } elseif ($cond === 'new') {
-            $filters[] = 'conditionIds:{1000}';
-        }
+        $c = mb_strtolower(trim($params['condition']));
+        if ($c === 'new')  { $filterClauses[] = 'conditions:{NEW}'; }
+        if ($c === 'used') { $filterClauses[] = 'conditions:{USED}'; }
+    }
+    if (!empty($filterClauses)) {
+        $query['filter'] = implode(',', $filterClauses);
     }
 
-    // Handle price range filter --> price_range == Any  OR price_range == Under_100  OR price_range == Custom
-    if (!empty($params['price_range']) && $params['price_range'] !== 'Any' && $params['price_range'] !== 'Custom') {
-        if ($params['price_range'] === 'Under_100') {
-            $filters[] = "price%3A%5B..100%5D" . ",priceCurrency:USD";   // price:[..100] (colon and brackets encoded)
-        }
-    } elseif (!empty($params['custom_price_range_min']) || !empty($params['custom_price_range_max'])) {
-        // Handle custom price inputs
-        $min = $params['custom_price_range_min'] ?? '';
-        $max = $params['custom_price_range_max'] ?? '';
-        $filters[] = "price%3A%5B{$min}..{$max}%5D" . ",priceCurrency:USD";   // (colon and brackets encoded)
-    }
-
-    //Add filters to the query array
-    if (!empty($filters)) {
-        $query['filter'] = implode(',', $filters);
-    }
-
-    // Sorting
-    if (!empty($params['sort_order'])) {
-        $query['sort'] = ($params['sort_order'] === 'Low to High') ? 'price' : '-price';
-    } else {
-        $query['sort'] = '-price'; // default
-    }
-
+    // 8) Sort
     if (!empty($params['sort'])) {
-        $query['sort'] = $params['sort'];
+        switch ($params['sort']) {
+            case 'price_asc':  $query['sort'] = 'price';             break;
+            case 'price_desc': $query['sort'] = 'priceDescending';   break;
+            // Optionally support your legacy UI tokens
+            case '-price':     $query['sort'] = 'priceDescending';   break;
+            case 'price':      $query['sort'] = 'price';             break;
+            // Add more mappings as needed
+        }
     }
 
-    // Default result limit and offset
-    $query['limit'] = 50;
+    // 9) Pagination
+    $query['limit']  = isset($params['limit'])  && (int)$params['limit']  > 0 ? (int)$params['limit']  : 50;
+    $query['offset'] = isset($params['offset']) && (int)$params['offset'] >= 0 ? (int)$params['offset'] : 0;
 
+    // 10) Build URL
+    $url = $apiBase . http_build_query($query);
 
-    // Grab offset or set it to zero if none is present
-    $query['offset']  = isset($params['offset']) ? (int)$params['offset'] : 0;
-
-    // Build final query
-    $final_url = $api_base . http_build_query($query);
-    error_log("Final constructed endpoint: " . $final_url);
-
-    return $final_url;
+    if ($debugReturnArray) {
+        return ['url' => $url, 'query' => $query];
+    }
+    return $url;
 }
