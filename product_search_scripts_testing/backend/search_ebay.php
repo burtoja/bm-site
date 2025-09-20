@@ -27,11 +27,17 @@ error_log("START: search_ebay is executing");
 
 $categoryId = 12576; // Hardcoded category: Business & Industrial
 
-// Check if 'q' is set — NOT 'k'
-if (!isset($_GET['q']) || empty($_GET['q'])) {
-    echo json_encode(["error" => "Missing required keyword 'q'."]);
+// Allow searches that have either q, or any category id, or any structured filter
+$hasQ     = isset($_GET['q']) && trim($_GET['q']) !== '';
+$hasCat   = !empty($_GET['cat_id']) || !empty($_GET['subcat_id']) || !empty($_GET['subsub_id']);
+$hasFlt   = isset($_GET['flt']) && is_array($_GET['flt']) && count($_GET['flt']) > 0;
+
+if (!$hasQ && !$hasCat && !$hasFlt) {
+    echo json_encode(["error" => "Provide a keyword (q), a category id, or at least one filter."]);
     exit;
 }
+$q = $hasQ ? trim($_GET['q']) : '';
+
 
 $q = $_GET['q'];
 
