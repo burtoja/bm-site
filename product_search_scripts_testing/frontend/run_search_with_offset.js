@@ -33,7 +33,10 @@ function runSearchWithOffset(offset = 0) {
 // ensures the search auto-runs if the user refreshes the page or shares a link with query params
 window.addEventListener('DOMContentLoaded', () => {
     const url = new URLSearchParams(window.location.search);
-    if (url.has('q')) {
+    const hasQ = url.has('q');
+    const hasCat = url.has('cat_id') || url.has('subcat_id') || url.has('subsub_id');
+    const hasFilters = Array.from(url.keys()).some(k => k.startsWith('flt['));
+    if (hasQ || hasCat || hasFilters) {
         runSearchWithOffset();
     }
 });
