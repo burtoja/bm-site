@@ -1,7 +1,11 @@
 function filterTree() {
     return {
         categories: [],
-        selectedOptions: [],
+        //selectedOptions: [],
+        selected: {
+            categoryPath: { categoryId: null, subcategoryId: null, subsubcategoryId: null },
+            filters: {}, // e.g., { 'Manufacturer / Brand': { name:'Manufacturer / Brand', values:['WIKA','Ashcroft'] } }
+        },
         selectedCategoryId: null,
         isLoadingFilters: false,
         globalFilters: {
