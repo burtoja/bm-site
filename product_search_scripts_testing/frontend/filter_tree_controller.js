@@ -285,24 +285,23 @@ function filterTree() {
             await preloadFiltersForSelectedOptions.call(this, this.categories, 'category');
 
             // Build the query after all matching filters are loaded
-            const q = buildQueryFromSelections({
-                categories: this.categories,
-                selectedOptions: this.selectedOptions,
-                globalFilters: this.globalFilters
-            });
-
             const sort = this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price';
-            const query = new URLSearchParams();
-            query.set('q', q);
-            query.set('sort', sort);
-
             if (this.globalFilters.minPrice) query.set('min_price', this.globalFilters.minPrice);
             if (this.globalFilters.maxPrice) query.set('max_price', this.globalFilters.maxPrice);
             if (this.globalFilters.condition.length > 0) {
                 this.globalFilters.condition.forEach(c => query.append('condition', c));
             }
 
-            window.history.replaceState({}, '', `?${query.toString()}`);
+            const params = buildParamsFromSelections({
+                categories: this.categories,
+                selected: this.selected,      // <-- use the new structured state
+                globals:   this.globalFilters
+            });
+
+            // push to URL (so pagination/share works)
+            window.history.replaceState({}, '', `?${params.toString()}`);
+
+            // trigger the search
             runSearchWithOffset();
 
             if (window.innerWidth < 768) {
