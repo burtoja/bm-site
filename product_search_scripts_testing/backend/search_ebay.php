@@ -51,6 +51,16 @@ $maxPrice = isset($_GET['max_price']) ? $_GET['max_price'] : '';
 $aspectFilter = isset($_GET['aspect_filter']) ? $_GET['aspect_filter'] : '';
 $subcategoryId = isset($_GET['subcategory_id']) ? intval($_GET['subcategory_id']) : null;
 
+// Structured filters from URL: flt[Filter Name][]=Value
+$structuredFilters = [];
+if (isset($_GET['flt']) && is_array($_GET['flt'])) {
+    foreach ($_GET['flt'] as $fname => $vals) {
+        if (!is_array($vals)) $vals = [$vals];
+        $vals = array_values(array_unique(array_filter(array_map('trim', $vals))));
+        if (!empty($vals)) $structuredFilters[$fname] = $vals;
+    }
+}
+
 // Get OAuth token for eBay
 $token = getBasicOauthToken();
 
@@ -76,16 +86,6 @@ if (!$err && $brandResponse) {
     $recognizedBrands = extract_brands_from_response($brandResponse);
 }
 
-// --- Build aspect_filter from selected option IDs ---
-$selectedOptions = [];
-foreach ($_GET as $key => $value) {
-    if (strpos($key, 'filter_') === 0 && is_array($value)) {
-        $selectedOptions = array_merge($selectedOptions, $value);
-    }
-}
-
-$aspectMap = get_aspect_filter_map_from_option_ids($selectedOptions);
-
 // Build final search URL
 $params = [
     'q' => $q,
@@ -93,7 +93,6 @@ $params = [
     'condition' => $condition,
     'min_price' => $minPrice,
     'max_price' => $maxPrice,
-    'aspect_filter' => $aspectMap,
     'offset' => isset($_GET['offset']) ? (int)$_GET['offset'] : 0
 ];
 
