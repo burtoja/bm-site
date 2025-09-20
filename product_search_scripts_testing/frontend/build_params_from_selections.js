@@ -4,7 +4,7 @@
  * - filters keep their grouping (OR within a filter)
  * - globals preserved
  */
-(function () {
+//(function () {
     function buildParamsFromSelections({ selected, globals }) {
         const params = new URLSearchParams();
 
@@ -38,8 +38,8 @@
 
         return params;
     }
-
-    // 👇 expose globally
-    window.buildParamsFromSelections = buildParamsFromSelections;
-})();
+//
+//     // 👇 expose globally
+//     window.buildParamsFromSelections = buildParamsFromSelections;
+// })();
 
