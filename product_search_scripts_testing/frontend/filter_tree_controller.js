@@ -249,6 +249,38 @@ function filterTree() {
             }
         },
 
+        toggleFilter(filterName, optionValue, checked) {
+            if (!this.selected.filters[filterName]) {
+                this.selected.filters[filterName] = { name: filterName, values: [] };
+            }
+            const vals = this.selected.filters[filterName].values;
+
+            if (checked) {
+                if (!vals.includes(optionValue)) vals.push(optionValue);
+            } else {
+                this.selected.filters[filterName].values = vals.filter(v => v !== optionValue);
+                if (this.selected.filters[filterName].values.length === 0) {
+                    delete this.selected.filters[filterName];
+                }
+            }
+        },
+
+        isChecked(filterName, optionValue) {
+            const group = this.selected.filters[filterName];
+            return !!(group && group.values && group.values.includes(optionValue));
+        },
+
+        onSelectionChange() {
+            const params = buildParamsFromSelections({
+                categories: this.categories,
+                selected: this.selected,
+                globals:  this.globalFilters
+            });
+            window.history.replaceState({}, '', `?${params.toString()}`);
+            runSearchWithOffset(0);
+        },
+
+
         async submitFilters() {
             this.isLoadingFilters = true;
 
