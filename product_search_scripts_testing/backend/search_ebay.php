@@ -38,13 +38,8 @@ if (!$hasQ && !$hasCat && !$hasFlt) {
 }
 $q = $hasQ ? trim($_GET['q']) : '';
 
-
-$q = $_GET['q'];
-
-//Collect and condition sort parameter
+//Collect and condition incoming parameters
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'price';
-
-// Collect other incoming params
 $condition = isset($_GET['condition']) ? $_GET['condition'] : '';
 $minPrice = isset($_GET['min_price']) ? $_GET['min_price'] : '';
 $maxPrice = isset($_GET['max_price']) ? $_GET['max_price'] : '';
