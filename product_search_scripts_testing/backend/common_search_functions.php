@@ -60,4 +60,43 @@ function get_aspect_filter_map_from_option_ids($optionIds) {
     return $aspectMap;
 }
 
+/**
+ * Parses structured params for building ebay query
+ *
+ * @return array
+ */
+function get_structured_search_parameters() {
+    $params = [];
+
+    // category narrowing
+    $params['cat_id']    = $_GET['cat_id']    ?? null;
+    $params['subcat_id'] = $_GET['subcat_id'] ?? null;
+    $params['subsub_id'] = $_GET['subsub_id'] ?? null;
+
+    // free text keyword
+    $params['q'] = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+
+    // globals
+    $params['min_price'] = isset($_GET['min_price']) ? trim((string)$_GET['min_price']) : '';
+    $params['max_price'] = isset($_GET['max_price']) ? trim((string)$_GET['max_price']) : '';
+    $params['condition'] = isset($_GET['condition'])
+        ? (is_array($_GET['condition']) ? $_GET['condition'] : [$_GET['condition']])
+        : [];
+
+    // filters map: flt[Filter Name][]=Val
+    $params['filters'] = [];
+    if (isset($_GET['flt']) && is_array($_GET['flt'])) {
+        foreach ($_GET['flt'] as $fname => $vals) {
+            if (!is_array($vals)) $vals = [$vals];
+            $clean = array_values(array_unique(array_filter(array_map('trim', $vals))));
+            if (!empty($clean)) {
+                $params['filters'][$fname] = $clean;
+            }
+        }
+    }
+
+    return $params;
+}
+
+
 
