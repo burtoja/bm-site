@@ -137,6 +137,10 @@ function filterTree() {
             }
         },
 
+        setCategoryPath({ categoryId = null, subcategoryId = null, subsubcategoryId = null }) {
+            this.selected.categoryPath = { categoryId, subcategoryId, subsubcategoryId };
+        },
+
         collapseTree() {
             const closeBranch = (node) => {
                 if (!node) return;

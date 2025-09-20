@@ -89,7 +89,11 @@ Date: Sept 2025
                     <button class="bm-hit shrink-0" @click="toggleCategory(category)" :aria-expanded="category.open">
                         <span x-text="category.open ? '-' : '+'"></span>
                     </button>
-                    <button type="button" @click="toggleCategory(category)"
+                    <button type="button" @click="
+                                  setCategoryPath({ categoryId: category.id, subcategoryId: null, subsubcategoryId: null });
+                                  onSelectionChange();            // writes cat_id to URL & runs search
+                                  toggleCategory(category);       // (optional) also open/close it
+                                "
                             class="bm-node text-left"
                             :class="(selectedCategoryId === category.id && category.open) ? 'bm-active' : ''">
                         <span x-text="category.name"></span>
@@ -233,10 +237,9 @@ Date: Sept 2025
                                                     </button>
                                                     <button type="button"
                                                             @click="
-                                                                    subsub.open = !subsub.open;
-                                                                    setActiveBranch(subcat, subsub);
-                                                                    if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')
-                                                                  "
+                                                                    setCategoryPath({ categoryId: parentCat.id, subcategoryId: sub.id, subsubcategoryId: null });
+                                                                    onSelectionChange()
+                                                                   "
                                                             class="bm-node text-left"
                                                             :class="subsub.open ? 'bm-active' : ''">
                                                         <span x-text="subsub.name"></span>
@@ -262,7 +265,12 @@ Date: Sept 2025
                                                                             :aria-expanded="filter.open">
                                                                         <span x-text="filter.open ? '–' : '+'"></span>
                                                                     </button>
-                                                                    <button @click="filter.open = !filter.open" class="bm-node text-left">
+                                                                    <button @click="
+                                                                                    setCategoryPath({ categoryId: rootCat.id, subcategoryId: sub.id, subsubcategoryId: filter.id });
+                                                                                    onSelectionChange()
+                                                                                   "
+                                                                            class="bm-node text-left"
+                                                                    >
                                                                         <span x-text="filter.name"></span>
                                                                     </button>
                                                                 </div>
