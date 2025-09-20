@@ -42,6 +42,7 @@ function boilersa_search_block_shortcode_testing($atts) {
     // Add tailwind
     echo '<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>';
     echo '<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">';
+    echo '<script src="/product_search_scripts_testing/frontend/build_params_from_selections.js"></script>';
     echo '<script src="/product_search_scripts_testing/frontend/build_query_from_selections.js?v=' . $ver . '"></script>';
     echo '<script src="/product_search_scripts_testing/frontend/filter_tree_controller.js?v=' . $ver . '"></script>';
 
