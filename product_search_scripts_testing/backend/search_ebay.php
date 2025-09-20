@@ -38,6 +38,20 @@ if (!$hasQ && !$hasCat && !$hasFlt) {
 }
 $q = $hasQ ? trim($_GET['q']) : '';
 
+// Add internal category/subcategory names to q (if provided)
+$catName    = isset($_GET['cat_name'])    ? trim((string)$_GET['cat_name'])    : '';
+$subName    = isset($_GET['subcat_name']) ? trim((string)$_GET['subcat_name']) : '';
+$subsubName = isset($_GET['subsub_name']) ? trim((string)$_GET['subsub_name']) : '';
+
+$qTokens = [];
+if ($q !== '')          $qTokens[] = $q;
+if ($catName !== '')    $qTokens[] = $catName;
+if ($subName !== '')    $qTokens[] = $subName;
+if ($subsubName !== '') $qTokens[] = $subsubName;
+
+// Final q sent to eBay (space-joined; no AND/OR syntax)
+$q = trim(implode(' ', $qTokens));
+
 //Collect and condition incoming parameters
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'price';
 $condition = isset($_GET['condition']) ? $_GET['condition'] : '';

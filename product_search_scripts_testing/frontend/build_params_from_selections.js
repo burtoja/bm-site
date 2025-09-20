@@ -9,9 +9,16 @@ function buildParamsFromSelections({ selected, globals }) {
 
     // category path
     const cp = selected?.categoryPath || {};
-    if (cp.categoryId)      params.set('cat_id', cp.categoryId);
-    if (cp.subcategoryId)   params.set('subcat_id', cp.subcategoryId);
+
+    // Internal IDs (useful for your own app state; not used as eBay category)
+    if (cp.categoryId)       params.set('cat_id', cp.categoryId);
+    if (cp.subcategoryId)    params.set('subcat_id', cp.subcategoryId);
     if (cp.subsubcategoryId) params.set('subsub_id', cp.subsubcategoryId);
+
+    // Names (used to enrich q on the backend)
+    if (cp.categoryName)       params.set('cat_name', cp.categoryName);
+    if (cp.subcategoryName)    params.set('subcat_name', cp.subcategoryName);
+    if (cp.subsubcategoryName) params.set('subsub_name', cp.subsubcategoryName);
 
     // optional free text
     if (globals?.keywords) params.set('q', globals.keywords);
