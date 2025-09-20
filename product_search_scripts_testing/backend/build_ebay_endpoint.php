@@ -75,6 +75,64 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     // Always add category
     $query['category_ids'] = $categoryId;
 
+
+    // OR-within-filter via aspect_filter; AND-across-filters by repeating param ====
+
+    $extras = []; // we'll append repeated aspect_filter manually
+    $aspectMap = [
+        'Manufacturer / Brand' => 'Brand',
+        'Brand'                => 'Brand',
+        'Manufacturer'         => 'Brand'
+    ];
+
+    $recognizedSet = [];
+    foreach ($recognizedBrands as $rb) {
+        $recognizedSet[mb_strtolower(trim($rb))] = true;
+    }
+
+    if (!empty($params['filters']) && is_array($params['filters'])) {
+        foreach ($params['filters'] as $uiName => $values) {
+            if (!is_array($values) || empty($values)) continue;
+
+            // clean/dedupe & strip braces (conflict with { })
+            $vals = [];
+            foreach ($values as $v) {
+                $v = str_replace(['{','}'], '', trim((string)$v));
+                if ($v !== '') $vals[$v] = true;
+            }
+            if (empty($vals)) continue;
+
+            // Brand special-case: recognized -> aspect_filter; unrecognized -> keywords
+            if (isset($aspectMap[$uiName]) && $aspectMap[$uiName] === 'Brand') {
+                $rec = [];
+                $fallback = [];
+                foreach (array_keys($vals) as $v) {
+                    $key = mb_strtolower($v);
+                    if (isset($recognizedSet[$key])) $rec[$v] = true; else $fallback[$v] = true;
+                }
+                if (!empty($rec)) {
+                    $extras[] = 'aspect_filter=' . rawurlencode('Brand:{' . implode('|', array_keys($rec)) . '}');
+                }
+                if (!empty($fallback)) {
+                    // push unrecognized brand tokens into q
+                    $query['q'] = trim(($query['q'] ?? '') . ' ' . implode(' ', array_keys($fallback)));
+                }
+                continue;
+            }
+
+            // regular mapped aspect
+            if (isset($aspectMap[$uiName])) {
+                $aspectName = $aspectMap[$uiName];
+                $extras[] = 'aspect_filter=' . rawurlencode($aspectName . ':{' . implode('|', array_keys($vals)) . '}');
+            } else {
+                // no mapping: add tokens to q (cannot express OR without fan-out)
+                $query['q'] = trim(($query['q'] ?? '') . ' ' . implode(' ', array_keys($vals)));
+            }
+        }
+    }
+
+
+
     // Handle manufacturer / brand logic
     //$brandList = get_available_brands_in_category($categoryId);
     if (!empty($params['manufacturer'])) {
@@ -135,7 +193,11 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
     $query['offset']  = isset($params['offset']) ? (int)$params['offset'] : 0;
 
     // Build final query
-    $final_url = $api_base . http_build_query($query);
+    $final_url = $api_base . http_build_query($query, '', '&', PHP_QUERY_RFC3986);
+    if (!empty($extras)) {
+        $final_url .= '&' . implode('&', $extras);
+    }
+
     error_log("Final constructed endpoint: " . $final_url);
 
     return $final_url;
