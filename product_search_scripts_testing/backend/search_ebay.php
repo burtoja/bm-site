@@ -93,6 +93,7 @@ $params = [
     'condition' => $condition,
     'min_price' => $minPrice,
     'max_price' => $maxPrice,
+    'filters'      => $structuredFilters,
     'offset' => isset($_GET['offset']) ? (int)$_GET['offset'] : 0
 ];
 
