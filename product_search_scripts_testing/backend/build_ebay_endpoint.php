@@ -60,7 +60,9 @@ function construct_final_ebay_endpoint(array $params, array $recognizedBrands, i
 
     // Always set the base keyword (k becomes q in another place)
     if (!isset($params['q'])) {
-        throw new Exception("Missing required keyword 'q'.");
+        if (!empty($params['q'])) {
+            $query['q'] = trim($params['q']);
+        }
     }
     $query['q'] = $params['q'];
 
