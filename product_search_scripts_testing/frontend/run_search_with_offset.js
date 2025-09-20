@@ -5,27 +5,10 @@
  * @returns {Promise<void>}
  */
 function runSearchWithOffset(offset = 0) {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('q');
-    const sort = params.get('sort');
-    const minPrice = params.get('min_price');
-    const maxPrice = params.get('max_price');
-    const conditions = params.getAll('condition');
+    const url = new URLSearchParams(window.location.search);
+    url.set('offset', offset);
 
-    if (!q) {
-        console.warn("Missing 'q' parameter in URL. Cannot run search.");
-        return;
-    }
-
-    const searchParams = new URLSearchParams();
-    searchParams.set('q', q);
-    if (sort) searchParams.set('sort', sort);
-    if (minPrice) searchParams.set('min_price', minPrice);
-    if (maxPrice) searchParams.set('max_price', maxPrice);
-    conditions.forEach(c => searchParams.append('condition', c));
-    searchParams.set('offset', offset);
-
-    const endpoint = `/product_search_scripts_testing/backend/search_ebay.php?${searchParams.toString()}`;
+    const endpoint = `/product_search_scripts_testing/backend/search_ebay.php?${url.toString()}`;
 
     document.getElementById("search-results").innerHTML = '' +
         '<div class="result-card flex flex-col items-center justify-center text-center"><div class="result-image"></div><div class="animate-pulse">Loading...</div></div> ' +
