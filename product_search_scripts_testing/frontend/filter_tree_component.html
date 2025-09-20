@@ -90,7 +90,11 @@ Date: Sept 2025
                         <span x-text="category.open ? '-' : '+'"></span>
                     </button>
                     <button type="button" @click="
-                                  setCategoryPath({ categoryId: category.id, subcategoryId: null, subsubcategoryId: null });
+                                  setCategoryPath({
+                                      categoryId: category.id, categoryName: category.name,
+                                      subcategoryId: null, subcategoryName: null,
+                                      subsubcategoryId: null, subsubcategoryName: null
+                                    });
                                   onSelectionChange();            // writes cat_id to URL & runs search
                                   toggleCategory(category);       // (optional) also open/close it
                                 "
@@ -237,7 +241,11 @@ Date: Sept 2025
                                                     </button>
                                                     <button type="button"
                                                             @click="
-                                                                    setCategoryPath({ categoryId: parentCat.id, subcategoryId: sub.id, subsubcategoryId: null });
+                                                                    setCategoryPath({
+                                                                      categoryId: category.id, categoryName: category.name,
+                                                                      subcategoryId: sub.id, subcategoryName: sub.name,
+                                                                      subsubcategoryId: null, subsubcategoryName: null
+                                                                    });
                                                                     onSelectionChange()
                                                                    "
                                                             class="bm-node text-left"
@@ -267,6 +275,11 @@ Date: Sept 2025
                                                                     </button>
                                                                     <button @click="
                                                                                     setCategoryPath({ categoryId: rootCat.id, subcategoryId: sub.id, subsubcategoryId: filter.id });
+                                                                                    setCategoryPath({
+                                                                                      categoryId: category.id, categoryName: category.name,
+                                                                                      subcategoryId: sub.id, subcategoryName: sub.name,
+                                                                                      subsubcategoryId: subsub.id, subsubcategoryName: subsub.name
+                                                                                    });
                                                                                     onSelectionChange()
                                                                                    "
                                                                             class="bm-node text-left"

@@ -137,9 +137,18 @@ function filterTree() {
             }
         },
 
-        setCategoryPath({ categoryId = null, subcategoryId = null, subsubcategoryId = null }) {
-            this.selected.categoryPath = { categoryId, subcategoryId, subsubcategoryId };
-        },
+        setCategoryPath({
+                categoryId = null, categoryName = null,
+                subcategoryId = null, subcategoryName = null,
+                subsubcategoryId = null, subsubcategoryName = null
+            }) {
+            this.selected.categoryPath = {
+                categoryId, categoryName,
+                subcategoryId, subcategoryName,
+                subsubcategoryId, subsubcategoryName
+            };
+        }
+        ,
 
         collapseTree() {
             const closeBranch = (node) => {
