@@ -3,9 +3,14 @@ function filterTree() {
         categories: [],
         //selectedOptions: [],
         selected: {
-            categoryPath: { categoryId: null, subcategoryId: null, subsubcategoryId: null },
-            filters: {}, // e.g., { 'Manufacturer / Brand': { name:'Manufacturer / Brand', values:['WIKA','Ashcroft'] } }
+            categoryPath: {
+                categoryId: null, categoryName: null,
+                subcategoryId: null, subcategoryName: null,
+                subsubcategoryId: null, subsubcategoryName: null
+            },
+            filters: {},
         },
+
         selectedCategoryId: null,
         isLoadingFilters: false,
         globalFilters: {
@@ -88,67 +93,96 @@ function filterTree() {
             });
         },
 
-        /* Summary helpers to display selections */
-
-        hasAnySelection() {
-            return !!(this.selectedCategoryId || this.activeSubcategoryId || this.activeSubsubcategoryId || (this.selectedOptions?.length));
-        },
-
+        /* =========================
+ * BREADCRUMB (uses structured categoryPath)
+ * ========================= */
         breadcrumb() {
-            const names = [];
-            const cat = this.categories.find(c => c.id === this.selectedCategoryId);
-            if (cat) names.push(cat.name);
-
-            const findSubcat = (id) => {
-                if (!id || !cat) return null;
-                // search depth-1
-                let sc = (cat.subcategories || []).find(s => s.id === id);
-                if (sc) return sc;
-                // or any child of those
-                for (const s of (cat.subcategories || [])) {
-                    const hit = (s.subcategories || []).find(ss => ss.id === id);
-                    if (hit) return hit;
-                }
-                return null;
-            };
-
-            const sub = findSubcat(this.activeSubcategoryId);
-            if (sub) names.push(sub.name);
-
-            const subsub = findSubcat(this.activeSubsubcategoryId);
-            if (subsub && (!sub || subsub.id !== sub.id)) names.push(subsub.name);
-
-            return names;
+            const trail = [];
+            const cp = this.selected?.categoryPath || {};
+            if (cp.categoryName)       trail.push(cp.categoryName);
+            if (cp.subcategoryName)    trail.push(cp.subcategoryName);
+            if (cp.subsubcategoryName) trail.push(cp.subsubcategoryName);
+            return trail;
         },
 
+        /* =======================================
+         * GROUPED SELECTIONS (for your chips block)
+         * Returns: [{ name, options: [{id, value}] }]
+         * ======================================= */
         groupedSelections() {
-            // group selectedOptions by filterName using optionIndex
-            const groups = {};
-            (this.selectedOptions || []).forEach(id => {
-                const meta = this.optionIndex[id];
-                if (!meta) return;
-                const key = meta.filterName || this.filterNameById[meta.filterId] || 'Filter';
-                if (!groups[key]) groups[key] = [];
-                groups[key].push({ id, value: meta.value });
+            const groups = [];
+            const src = this.selected?.filters || {};
+            Object.keys(src).forEach((name) => {
+                const vals = Array.isArray(src[name]?.values) ? src[name].values : [];
+                if (vals.length) {
+                    groups.push({
+                        name,
+                        options: vals
+                            .slice()
+                            .sort((a, b) => a.localeCompare(b))
+                            .map(v => ({ id: `${name}::${v}`, value: v }))
+                    });
+                }
             });
-            // sort options alphabetically inside each group (optional)
-            return Object.keys(groups).sort().map(name => ({
-                name,
-                options: groups[name].sort((a,b)=> a.value.localeCompare(b.value))
-            }));
+            // sort groups by name (optional)
+            return groups.sort((a, b) => a.name.localeCompare(b.name));
         },
 
+        /* ==========================================
+         * REMOVE ONE CHIP (id looks like "Filter Name::Value")
+         * ========================================== */
         removeOption(id) {
-            this.selectedOptions = this.selectedOptions.filter(v => v !== id);
+            const pos = id.indexOf('::');
+            if (pos === -1) return;
+            const filterName = id.slice(0, pos);
+            const value = id.slice(pos + 2);
+
+            if (!this.selected.filters[filterName]) return;
+
+            this.selected.filters[filterName].values =
+                this.selected.filters[filterName].values.filter(v => v !== value);
+
+            if (this.selected.filters[filterName].values.length === 0) {
+                delete this.selected.filters[filterName];
+            }
+
+            // reflect in URL + re-run search
+            this.onSelectionChange();
         },
 
-        clearAll() {
-            this.selectedOptions = [];
-            this.activeSubsubcategoryId = null;
-            this.activeSubcategoryId = null;
-            this.selectedCategoryId = null;
-            this.collapseTree();
+        /* ==========================================
+         * Any selection? (drives x-show on the block)
+         * ========================================== */
+        hasAnySelection() {
+            const cp = this.selected?.categoryPath || {};
+            const hasTrail = !!(cp.categoryName || cp.subcategoryName || cp.subsubcategoryName);
+            const hasFilters = Object.values(this.selected?.filters || {})
+                .some(g => Array.isArray(g.values) && g.values.length > 0);
+            return hasTrail || hasFilters;
         },
+
+        /* ==========================================
+         * Clear everything and refresh
+         * ========================================== */
+        clearAll() {
+            this.selected.categoryPath = {
+                categoryId: null, categoryName: null,
+                subcategoryId: null, subcategoryName: null,
+                subsubcategoryId: null, subsubcategoryName: null
+            };
+            this.selected.filters = {};
+            this.globalFilters = { ...this.globalFilters, keywords: '', minPrice: '', maxPrice: '' };
+
+            // wipe URL; keep sort if you like
+            const params = new URLSearchParams();
+            params.set('sort', this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price');
+
+            window.history.replaceState({}, '', `?${params.toString()}`);
+            runSearchWithOffset(0);
+        },
+
+
+        /* Summary helpers to display selections */
 
         setActiveBranch(subcat, subsub = null) {
             this.activeSubcategoryId = subcat ? subcat.id : null;
@@ -194,23 +228,7 @@ function filterTree() {
             });
         },
 
-        breadcrumb() {
-            const names = [];
-            const cat = this.categories.find(c => c.id === this.selectedCategoryId);
-            if (!cat) return names;
-            names.push(cat.name);
 
-            const lvl1 = cat.subcategories || [];
-            const sub = lvl1.find(s => s.id === this.activeSubcategoryId) ||
-                lvl1.find(s => (s.subcategories || []).some(ss => ss.id === this.activeSubcategoryId));
-            if (sub) names.push(sub.name);
-
-            const lvl2 = lvl1.flatMap(s => s.subcategories || []);
-            const subsub = lvl2.find(ss => ss.id === this.activeSubsubcategoryId);
-            if (subsub) names.push(subsub.name);
-
-            return names;
-        },
 
 
 
@@ -320,74 +338,34 @@ function filterTree() {
             runSearchWithOffset(0);
         },
 
-
         async submitFilters() {
             this.isLoadingFilters = true;
 
-            // Normalize selected option IDs to string for matching
-            const selectedSet = new Set(this.selectedOptions.map(id => String(id)));
+            // If you want to lazy-load filters for the currently open node(s),
+            // you can keep that logic here. Otherwise we can keep it simple.
 
-            // Recursively walk the tree and ensure filters are loaded where needed
-            async function preloadFiltersForSelectedOptions(nodes, context) {
-                for (const node of nodes) {
-                    // If node has filters and is not loaded, load them
-                    if (!node.loaded && node.filters === undefined) {
-                        if (context === 'subsub') {
-                            await this.loadSubcategoryFilters(node, 'subsub');
-                        } else if (context === 'subcat') {
-                            await this.loadSubcategoryFilters(node);
-                        } else {
-                            await this.loadCategoryFilters(node);
-                        }
-                    }
-
-                    // If filters are now loaded, check if they include a selected option
-                    if (node.filters) {
-                        const found = node.filters.some(filter =>
-                            filter.options?.some(opt => selectedSet.has(String(opt.id)))
-                        );
-
-                        if (found) continue; // already has the match
-                    }
-
-                    // Recurse into subcategories
-                    if (Array.isArray(node.subcategories)) {
-                        const level = context === 'category' ? 'subcat' : 'subsub';
-                        await preloadFiltersForSelectedOptions.call(this, node.subcategories, level);
-                    }
-                }
-            }
-
-            await preloadFiltersForSelectedOptions.call(this, this.categories, 'category');
-
-            // Build the query after all matching filters are loaded
-            const sort = this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price';
-            if (this.globalFilters.minPrice) query.set('min_price', this.globalFilters.minPrice);
-            if (this.globalFilters.maxPrice) query.set('max_price', this.globalFilters.maxPrice);
-            if (this.globalFilters.condition.length > 0) {
-                this.globalFilters.condition.forEach(c => query.append('condition', c));
-            }
-
+            // Build params from the structured state
             const params = buildParamsFromSelections({
                 categories: this.categories,
-                selected: this.selected,      // <-- use the new structured state
+                selected: this.selected,
                 globals:   this.globalFilters
             });
 
-            // push to URL (so pagination/share works)
+            // Push to URL so pagination/share works, then search
             window.history.replaceState({}, '', `?${params.toString()}`);
+            runSearchWithOffset(0);
 
-            // trigger the search
-            runSearchWithOffset();
-
+            // Close drawer on mobile
             if (window.innerWidth < 768) {
-                const outerScope = document.querySelector('[x-data]').__x.$data;
-                outerScope.showFilters = false;
+                const outer = document.querySelector('[x-data]')?.__x?.$data;
+                if (outer && typeof outer.showFilters !== 'undefined') {
+                    outer.showFilters = false;
+                }
             }
-
 
             this.isLoadingFilters = false;
         }
+
 
     };
 }
