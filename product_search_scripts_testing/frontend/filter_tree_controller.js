@@ -24,6 +24,33 @@ function filterTree() {
         filterNameById: {},
 
         async init() {
+            const url = new URLSearchParams(window.location.search);
+
+            // Category path names (for breadcrumb)
+            this.selected.categoryPath = {
+                categoryId:       url.get('cat_id')       || null,
+                categoryName:     url.get('cat_name')     || null,
+                subcategoryId:    url.get('subcat_id')    || null,
+                subcategoryName:  url.get('subcat_name')  || null,
+                subsubcategoryId: url.get('subsub_id')    || null,
+                subsubcategoryName: url.get('subsub_name')|| null
+            };
+
+            // Filters (flt[Name][]=Val)
+            const entries = Array.from(url.keys()).filter(k => k.startsWith('flt['));
+            entries.forEach(key => {
+                // key looks like: flt[Filter Name][]
+                const name = decodeURIComponent(key).slice(4, -2); // strip 'flt[' and ']'
+                const vals = url.getAll(key);
+                if (!this.selected.filters[name]) {
+                    this.selected.filters[name] = { name, values: [] };
+                }
+                // merge + dedupe
+                this.selected.filters[name].values = Array.from(new Set([
+                    ...this.selected.filters[name].values, ...vals
+                ]));
+            });
+
             if (this.initialized) {
                 return;
             }

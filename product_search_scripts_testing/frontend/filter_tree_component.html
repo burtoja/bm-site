@@ -155,11 +155,14 @@ Date: Sept 2025
                                     </button>
                                     <button type="button"
                                             @click="
+                                                setCategoryPath({
+                                                  categoryId: category.id,     categoryName: category.name,
+                                                  subcategoryId: sub.id,       subcategoryName: sub.name,
+                                                  subsubcategoryId: null,      subsubcategoryName: null
+                                                });
                                                 subcat.open = !subcat.open;
-                                                activeSubcategoryId = subcat.id;
-                                                activeSubsubcategoryId = null;
-                                                setActiveBranch(subcat);
-                                                if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
+                                                onSelectionChange();
+                                                "
                                             class="bm-node text-left"
                                             :class="subcat.open ? 'bm-active' : ''">
                                         <span x-text="subcat.name"></span>
