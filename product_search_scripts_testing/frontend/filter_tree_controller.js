@@ -341,9 +341,6 @@ function filterTree() {
         async submitFilters() {
             this.isLoadingFilters = true;
 
-            // If you want to lazy-load filters for the currently open node(s),
-            // you can keep that logic here. Otherwise we can keep it simple.
-
             // Build params from the structured state
             const params = buildParamsFromSelections({
                 categories: this.categories,
