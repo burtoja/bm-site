@@ -86,7 +86,17 @@ Date: Sept 2025
         <template x-for="category in categories" :key="category.id">
             <li role="treeitem" :aria-expanded="category.open">
                 <div class="flex items-start gap-1.5">
-                    <button class="bm-hit shrink-0" @click="toggleCategory(category)" :aria-expanded="category.open">
+                    <button class="bm-hit shrink-0"
+                            @click="
+                                setCategoryPath({
+                                  categoryId: category.id, categoryName: category.name,
+                                  subcategoryId: null, subcategoryName: null,
+                                  subsubcategoryId: null, subsubcategoryName: null
+                                });
+                                onSelectionChange();          // keeps URL in sync
+                                toggleCategory(category);
+                              "
+                            :aria-expanded="category.open">
                         <span x-text="category.open ? '-' : '+'"></span>
                     </button>
                     <button type="button" @click="
@@ -149,7 +159,14 @@ Date: Sept 2025
                                             @click="
                                                 subcat.open = !subcat.open;
                                                 setActiveBranch(subcat);
-                                                if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat)"
+                                                setCategoryPath({
+                                                  categoryId: category.id, categoryName: category.name,
+                                                  subcategoryId: subcat.id,  subcategoryName: subcat.name,
+                                                  subsubcategoryId: null,    subsubcategoryName: null
+                                                });
+                                                onSelectionChange();
+                                                if (subcat.open && !subcat.loaded) loadSubcategoryFilters(subcat);
+                                              "
                                             :aria-expanded="subcat.open">
                                         <span x-text="subcat.open ? '–' : '+'"></span>
                                     </button>
@@ -235,10 +252,16 @@ Date: Sept 2025
                                                 <div class="flex items-start gap-1.5">
                                                     <button class="bm-hit shrink-0"
                                                             @click="
-                                                                    subsub.open = !subsub.open;
-                                                                    setActiveBranch(subcat, subsub);
-                                                                    if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub')
-                                                                  "
+                                                                subsub.open = !subsub.open;
+                                                                setActiveBranch(subcat, subsub);
+                                                                setCategoryPath({
+                                                                  categoryId: category.id, categoryName: category.name,
+                                                                  subcategoryId: subcat.id, subcategoryName: subcat.name,
+                                                                  subsubcategoryId: subsub.id, subsubcategoryName: subsub.name
+                                                                });
+                                                                onSelectionChange();
+                                                                if (subsub.open && !subsub.loaded) loadSubcategoryFilters(subsub, 'subsub');
+                                                              "
                                                             :aria-expanded="subsub.open">
                                                         <span x-text="subsub.open ? '–' : '+'"></span>
                                                     </button>
