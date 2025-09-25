@@ -138,7 +138,19 @@ Date: Sept 2025
                                                         <input
                                                                 type="checkbox"
                                                                 :checked="isChecked(filter.name, opt.value)"
-                                                                @change="toggleFilter(filter.name, opt.value, $event.target.checked); onSelectionChange()"
+                                                                @change="
+                                                                    if (!selected.categoryPath.categoryId) {
+                                                                      setCategoryPath({
+                                                                        categoryId: category.id, categoryName: category.name,
+                                                                        subcategoryId: (typeof subcat !== 'undefined' ? subcat.id : null),
+                                                                        subcategoryName: (typeof subcat !== 'undefined' ? subcat.name : null),
+                                                                        subsubcategoryId: (typeof subsub !== 'undefined' ? subsub.id : null),
+                                                                        subsubcategoryName: (typeof subsub !== 'undefined' ? subsub.name : null)
+                                                                      });
+                                                                    }
+                                                                    toggleFilter(filter.name, opt.value, $event.target.checked);
+                                                                    onSelectionChange();
+                                                                  "
                                                                 class="shrink-0"
                                                         />
                                                         <span class="truncate" :title="opt.value" x-text="opt.value"></span>
@@ -220,7 +232,18 @@ Date: Sept 2025
                                                                         <input
                                                                                 type="checkbox"
                                                                                 :checked="isChecked(filter.name, opt.value)"
-                                                                                @change="toggleFilter(filter.name, opt.value, $event.target.checked); onSelectionChange()"
+                                                                                @change="
+                                                                                    if (!selected.categoryPath.categoryId) {
+                                                                                      setCategoryPath({
+                                                                                        categoryId: category.id, categoryName: category.name,
+                                                                                        subcategoryId: subcat.id, subcategoryName: subcat.name,
+                                                                                        subsubcategoryId: (typeof subsub !== 'undefined' ? subsub.id : null),
+                                                                                        subsubcategoryName: (typeof subsub !== 'undefined' ? subsub.name : null)
+                                                                                      });
+                                                                                    }
+                                                                                    toggleFilter(filter.name, opt.value, $event.target.checked);
+                                                                                    onSelectionChange();
+                                                                                  "
                                                                                 class="shrink-0"
                                                                         />
                                                                         <span class="truncate" :title="opt.value" x-text="opt.value"></span>
@@ -324,7 +347,17 @@ Date: Sept 2025
                                                                                         <input
                                                                                                 type="checkbox"
                                                                                                 :checked="isChecked(filter.name, opt.value)"
-                                                                                                @change="toggleFilter(filter.name, opt.value, $event.target.checked); onSelectionChange()"
+                                                                                                @change="
+                                                                                                    if (!selected.categoryPath.categoryId) {
+                                                                                                      setCategoryPath({
+                                                                                                        categoryId: category.id, categoryName: category.name,
+                                                                                                        subcategoryId: subcat.id, subcategoryName: subcat.name,
+                                                                                                        subsubcategoryId: subsub.id, subsubcategoryName: subsub.name
+                                                                                                      });
+                                                                                                    }
+                                                                                                    toggleFilter(filter.name, opt.value, $event.target.checked);
+                                                                                                    onSelectionChange();
+                                                                                                  "
                                                                                                 class="shrink-0"
                                                                                         />
                                                                                         <span class="truncate" :title="opt.value" x-text="opt.value"></span>
