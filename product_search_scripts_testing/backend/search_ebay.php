@@ -43,6 +43,14 @@ $catName    = isset($_GET['cat_name'])    ? trim((string)$_GET['cat_name'])    :
 $subName    = isset($_GET['subcat_name']) ? trim((string)$_GET['subcat_name']) : '';
 $subsubName = isset($_GET['subsub_name']) ? trim((string)$_GET['subsub_name']) : '';
 
+// Function to group phrase words together for searches
+function quote_if_phrase($s) {
+    $s = trim($s);
+    if ($s === '') return '';
+    $s = str_replace('"', '\"', $s);
+    return (strpos($s, ' ') !== false) ? "\"$s\"" : $s;
+}
+
 $qTokens = [];
 if ($q !== '')          $qTokens[] = $q;
 //if ($catName !== '')    $qTokens[] = $catName;  //Leave out category in search
