@@ -145,6 +145,6 @@ $data['total'] = isset($data['total']) ? (int)$data['total'] : 0;
 
 // Debug output
 error_log("eBay response total: " . print_r($data['total'], true));
-error_log("Full decoded eBay response: " . print_r($data, true));
+error_log("Full decoded eBay response: (TURNED OFF)"; // . print_r($data, true));
 
 echo json_encode($data);
