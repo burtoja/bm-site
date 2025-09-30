@@ -46,8 +46,8 @@ $subsubName = isset($_GET['subsub_name']) ? trim((string)$_GET['subsub_name']) :
 $qTokens = [];
 if ($q !== '')          $qTokens[] = $q;
 //if ($catName !== '')    $qTokens[] = $catName;  //Leave out category in search
-if ($subName !== '')    $qTokens[] = $subName;
-if ($subsubName !== '') $qTokens[] = $subsubName;
+if ($subName !== '')    $qTokens[] = quote_if_phrase($subName);
+if ($subsubName !== '') $qTokens[] = quote_if_phrase($subsubName);
 
 // Final q sent to eBay (space-joined; no AND/OR syntax)
 $q = trim(implode(' ', $qTokens));
