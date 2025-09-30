@@ -27,6 +27,7 @@ Date: Sept 2025
 
 <div x-data="filterTree()" x-init="init()" class="space-y-3 max-w-3xl text-white">
 
+    <!-- SECTION - Search Button -->
     <div id="search-button-wrapper" class="sticky top-4 z-20 space-y-3">
         <button @click="submitFilters()"
                 :disabled="isLoadingFilters"
@@ -34,7 +35,7 @@ Date: Sept 2025
             Search Products
         </button>
 
-        <!-- Selected summary (breadcrumb) -->
+        <!-- SECTION - Selected Summary (Breadcrumb) -->
         <div x-show="hasAnySelection()" class="bg-slate-800/60 border border-slate-600 rounded-xl p-3 space-y-2">
             <!-- Breadcrumb -->
             <div class="text-sm text-slate-200 flex flex-wrap items-center gap-1">
@@ -82,7 +83,7 @@ Date: Sept 2025
 
 
     <ul class="bm-tree text-white space-y-1" role="tree">
-        <!-- CATEGORIES -->
+        <!-- SECTION 1 - Categories and category filters -->
         <template x-for="category in categories" :key="category.id">
             <li role="treeitem" :aria-expanded="category.open">
                 <div class="flex items-start gap-1.5">
@@ -93,7 +94,7 @@ Date: Sept 2025
                                   subcategoryId: null, subcategoryName: null,
                                   subsubcategoryId: null, subsubcategoryName: null
                                 });
-                                onSelectionChange();          // keeps URL in sync
+                                //onSelectionChange();          // keeps URL in sync
                                 toggleCategory(category);
                               "
                             :aria-expanded="category.open">
@@ -105,7 +106,7 @@ Date: Sept 2025
                                       subcategoryId: null, subcategoryName: null,
                                       subsubcategoryId: null, subsubcategoryName: null
                                     });
-                                  onSelectionChange();            // writes cat_id to URL & runs search
+                                  //onSelectionChange();            // writes cat_id to URL & runs search
                                   toggleCategory(category);       // (optional) also open/close it
                                 "
                             class="bm-node text-left"
@@ -163,7 +164,7 @@ Date: Sept 2025
                             </li>
                         </template>
 
-                        <!-- SUBCATEGORIES -->
+                        <!-- SECTION 2 - Subcategory and subcategory filters -->
                         <template x-for="subcat in category.subcategories" :key="subcat.id">
                             <li role="treeitem" :aria-expanded="subcat.open">
                                 <div class="flex items-start gap-1.5">
@@ -269,7 +270,7 @@ Date: Sept 2025
                                             </div>
                                         </li>
 
-                                        <!-- SUB-SUBCATEGORIES -->
+                                        <!-- SECTION 3 - Sub-subcategories and filters -->
                                         <template x-for="subsub in subcat.subcategories" :key="subsub.id">
                                             <li role="treeitem" :aria-expanded="subsub.open">
                                                 <div class="flex items-start gap-1.5">
