@@ -45,7 +45,7 @@ $subsubName = isset($_GET['subsub_name']) ? trim((string)$_GET['subsub_name']) :
 
 $qTokens = [];
 if ($q !== '')          $qTokens[] = $q;
-if ($catName !== '')    $qTokens[] = $catName;
+//if ($catName !== '')    $qTokens[] = $catName;  //Leave out category in search
 if ($subName !== '')    $qTokens[] = $subName;
 if ($subsubName !== '') $qTokens[] = $subsubName;
 
