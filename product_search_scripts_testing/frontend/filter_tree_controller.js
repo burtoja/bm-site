@@ -1,369 +1,441 @@
+// filter_tree_controller.js
+// Alpine.js data controller for the Boilers & Machinery filter tree
+// IMPORTANT behavioral rules implemented here:
+// - Opening any node closes siblings and purges their selections (filters + values)
+// - Changing category clears subcategory/sub-subcategory and filter values
+// - Opening a FILTER heading does NOT write anything to the URL; only value changes do
+// - URL is the single source of truth for deep links; POPSTATE restores UI + triggers fetch
+// - Debounced querying with AbortController to avoid race conditions
+// - "Clear All" returns the page to the initial empty state (sort can optionally persist)
+
 function filterTree() {
     return {
-        categories: [],
-        //selectedOptions: [],
+        // ---------- STATE ----------
+        categories: [],            // loaded elsewhere (or via init)
+        selectedCategoryId: null,  // currently opened/active top-level category id
+        isLoadingFilters: false,   // spinner for the results pane / UI
+
+        // Other modules read this shape
         selected: {
             categoryPath: {
                 categoryId: null, categoryName: null,
                 subcategoryId: null, subcategoryName: null,
                 subsubcategoryId: null, subsubcategoryName: null
             },
-            filters: {},
+            // filters: { [filterName]: { name: string, values: string[] } }
+            filters: {}
         },
 
-        selectedCategoryId: null,
-        isLoadingFilters: false,
+        // Global (non-hierarchical) filters
         globalFilters: {
+            keywords: '',
+            minPrice: '',
+            maxPrice: '',
+            // e.g. ["new", "used"]
             condition: [],
-            priceRange: "any",
-            minPrice: "",
-            maxPrice: "",
-            sortOrder: "high_to_low"
+            // 'high_to_low'|'low_to_high'
+            sortOrder: 'high_to_low'
         },
-        initialized: false,
 
-        // track active branch and options
-        activeSubcategoryId: null,
-        activeSubsubcategoryId: null,
-        optionIndex: {},
-        filterNameById: {},
+        // Debounce & cancelation
+        debounceTimer: null,
+        currentAbort: null,
 
+        // ---------- LIFECYCLE ----------
         async init() {
-            const url = new URLSearchParams(window.location.search);
+            // Hydrate state from URL on first load
+            this.hydrateFromUrl(new URLSearchParams(window.location.search));
 
-            // Category path names (for breadcrumb)
+            // Open branches to match the selected path
+            this.expandPathFromSelected();
+
+            // Kick an initial fetch if we have enough context (subcategory or filters)
+            if (
+                this.selected.categoryPath.subcategoryId ||
+                this.selected.categoryPath.subsubcategoryId ||
+                Object.keys(this.selected.filters).length > 0
+            ) {
+                this.refreshResults(0);
+            }
+
+            // Keep deep links in sync with back/forward navigation
+            window.addEventListener('popstate', () => {
+                const url = new URLSearchParams(window.location.search);
+                this.hydrateFromUrl(url);
+                this.expandPathFromSelected();
+                this.refreshResults(0);
+            });
+        },
+
+        // ---------- URL <-> STATE ----------
+        hydrateFromUrl(url) {
+            // Path
             this.selected.categoryPath = {
-                categoryId:       url.get('cat_id')       || null,
-                categoryName:     url.get('cat_name')     || null,
-                subcategoryId:    url.get('subcat_id')    || null,
-                subcategoryName:  url.get('subcat_name')  || null,
-                subsubcategoryId: url.get('subsub_id')    || null,
-                subsubcategoryName: url.get('subsub_name')|| null
+                categoryId: url.get('cat_id') || null,
+                categoryName: url.get('cat_name') || null,
+                subcategoryId: url.get('subcat_id') || null,
+                subcategoryName: url.get('subcat_name') || null,
+                subsubcategoryId: url.get('subsub_id') || null,
+                subsubcategoryName: url.get('subsub_name') || null
             };
 
-            // Filters (flt[Name][]=Val)
-            const entries = Array.from(url.keys()).filter(k => k.startsWith('flt['));
-            entries.forEach(key => {
-                // key looks like: flt[Filter Name][]
-                const name = decodeURIComponent(key).slice(4, -2); // strip 'flt[' and ']'
-                const vals = url.getAll(key);
-                if (!this.selected.filters[name]) {
-                    this.selected.filters[name] = { name, values: [] };
+            // Filters (clear then repopulate)
+            this.selected.filters = {};
+            url.forEach((v, k) => {
+                // Skip known non-filter keys
+                if ([
+                    'k','min_price','max_price','condition','sort',
+                    'cat_id','cat_name','subcat_id','subcat_name','subsub_id','subsub_name'
+                ].includes(k)) return;
+
+                if (!this.selected.filters[k]) {
+                    this.selected.filters[k] = { name: k, values: [] };
                 }
-                // merge + dedupe
-                this.selected.filters[name].values = Array.from(new Set([
-                    ...this.selected.filters[name].values, ...vals
-                ]));
+                if (!this.selected.filters[k].values.includes(v)) {
+                    this.selected.filters[k].values.push(v);
+                }
             });
 
-            if (this.initialized) {
-                return;
-            }
-            this.initialized = true;
-            try {
-                const res = await fetch('/product_search_scripts_testing/backend/filter_data.php');
-                if (!res.ok) throw new Error('Failed to load filters.');
-                this.categories = await res.json();
-                this.applyOpenFlags(this.categories);
-            } catch (error) {
-                console.error('Filter tree load error:', error);
-            }
+            // Globals
+            this.globalFilters.keywords  = url.get('k') || '';
+            this.globalFilters.minPrice  = url.get('min_price') || '';
+            this.globalFilters.maxPrice  = url.get('max_price') || '';
+            const conds = url.getAll('condition');
+            this.globalFilters.condition = conds && conds.length ? conds : [];
+            this.globalFilters.sortOrder = (url.get('sort') === 'price') ? 'low_to_high' : 'high_to_low';
         },
 
-        // Called after any fetch of filters for a node
-        indexFilters(node) {
-            (node.filters || []).forEach(f => {
-                this.filterNameById[f.id] = f.name;
-                (f.options || []).forEach(o => {
-                    this.optionIndex[o.id] = { id: o.id, value: o.value, filterId: f.id, filterName: f.name };
+        expandPathFromSelected() {
+            const cp = this.selected.categoryPath || {};
+
+            // Reset open flags (do not purge here — we’re restoring)
+            this.categories.forEach(cat => {
+                cat.open = false;
+                (cat.subcategories || []).forEach(sc => {
+                    sc.open = false;
+                    (sc.subcategories || []).forEach(ssc => ssc.open = false);
                 });
             });
+
+            if (!cp.categoryId) return;
+
+            const cat = this.categories.find(c => String(c.id) === String(cp.categoryId));
+            if (!cat) return;
+
+            cat.open = true;
+            this.selectedCategoryId = cat.id;
+
+            if (cp.subcategoryId && Array.isArray(cat.subcategories)) {
+                const sub = cat.subcategories.find(s => String(s.id) === String(cp.subcategoryId));
+                if (sub) {
+                    sub.open = true;
+                    if (cp.subsubcategoryId && Array.isArray(sub.subcategories)) {
+                        const subsub = sub.subcategories.find(s => String(s.id) === String(cp.subsubcategoryId));
+                        if (subsub) subsub.open = true;
+                    }
+                }
+            }
         },
 
-        applyOpenFlags(nodes) {
-            nodes.forEach(node => {
-                node.open = false;
-                node.loaded = false; // for lazy-loading
-                if (node.filters) {
-                    node.filters.forEach(f => f.open = false);
-                }
-                if (node.subcategories) {
-                    this.applyOpenFlags(node.subcategories);
-                }
+        setCategoryPath({ categoryId, categoryName, subcategoryId, subcategoryName, subsubcategoryId, subsubcategoryName }) {
+            this.selected.categoryPath = {
+                categoryId, categoryName,
+                subcategoryId, subcategoryName,
+                subsubcategoryId, subsubcategoryName
+            };
+        },
+
+        // ---------- PURGE HELPERS (close + clear selections under closed branches) ----------
+        clearFilterValuesOwnedBy(node) {
+            if (!node) return;
+            const ownedNames = new Set((node.filters || []).map(f => f.name));
+            if (!ownedNames.size) return;
+
+            Object.keys(this.selected.filters).forEach(name => {
+                if (ownedNames.has(name)) delete this.selected.filters[name];
             });
         },
 
-        /* =========================
- * BREADCRUMB (uses structured categoryPath)
- * ========================= */
-        breadcrumb() {
-            const trail = [];
-            const cp = this.selected?.categoryPath || {};
-            if (cp.categoryName)       trail.push(cp.categoryName);
-            if (cp.subcategoryName)    trail.push(cp.subcategoryName);
-            if (cp.subsubcategoryName) trail.push(cp.subsubcategoryName);
-            return trail;
+        closeBranchDeep(node) {
+            if (!node) return;
+            node.open = false;
+            (node.filters || []).forEach(f => f.open = false);
+            this.clearFilterValuesOwnedBy(node);
+            (node.subcategories || []).forEach(child => this.closeBranchDeep(child));
         },
 
-        /* =======================================
-         * GROUPED SELECTIONS (for chips block)
-         * Returns: [{ name, options: [{id, value}] }]
-         * ======================================= */
-        groupedSelections() {
-            const groups = [];
-            const src = this.selected?.filters || {};
-            Object.keys(src).forEach((name) => {
-                const vals = Array.isArray(src[name]?.values) ? src[name].values : [];
-                if (vals.length) {
-                    groups.push({
-                        name,
-                        options: vals
-                            .slice()
-                            .sort((a, b) => a.localeCompare(b))
-                            .map(v => ({ id: `${name}::${v}`, value: v }))
+        closeSiblingsAndPurge(parent, node) {
+            if (!parent || !Array.isArray(parent.subcategories)) return;
+            for (const sib of parent.subcategories) {
+                if (sib !== node && sib.open) this.closeBranchDeep(sib);
+            }
+        },
+
+        closeOtherCategoriesAndPurge(current) {
+            for (const cat of this.categories) {
+                if (cat !== current) this.closeBranchDeep(cat);
+            }
+        },
+
+        // ---------- NODE TOGGLES ----------
+        async toggleCategory(category) {
+            const isNew = String(this.selectedCategoryId) !== String(category.id);
+
+            if (isNew) {
+                // Switching to a new category clears everything downstream
+                this.closeOtherCategoriesAndPurge(category);
+                category.open = true;
+                this.selectedCategoryId = category.id;
+
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: null, subcategoryName: null,
+                    subsubcategoryId: null, subsubcategoryName: null
+                });
+                this.selected.filters = {};
+
+                if (!category.loaded) {
+                    category.loaded = true; // guard double-load
+                    await this.loadCategoryFilters(category);
+                }
+
+                // On category only: update URL but do not fetch (no subcategory yet)
+                this.refreshResults(0, { skipFetchIfNoSubcat: true });
+
+            } else {
+                // Same category → toggle open/close
+                category.open = !category.open;
+                if (!category.open) {
+                    // Closing a category nukes everything beneath it
+                    this.closeBranchDeep(category);
+                    this.selectedCategoryId = null;
+                    this.setCategoryPath({
+                        categoryId: null, categoryName: null,
+                        subcategoryId: null, subcategoryName: null,
+                        subsubcategoryId: null, subsubcategoryName: null
                     });
+                    this.selected.filters = {};
+                    this.refreshResults(0); // will collapse to empty state
                 }
-            });
-            // sort groups by name (optional)
-            return groups.sort((a, b) => a.name.localeCompare(b.name));
+            }
         },
 
-        /* ==========================================
-         * REMOVE ONE CHIP (id looks like "Filter Name::Value")
-         * ========================================== */
-        removeOption(id) {
-            const pos = id.indexOf('::');
-            if (pos === -1) return;
-            const filterName = id.slice(0, pos);
-            const value = id.slice(pos + 2);
+        async toggleSubcategory(category, subcat) {
+            subcat.open = !subcat.open;
 
-            if (!this.selected.filters[filterName]) return;
+            if (subcat.open) {
+                // Close siblings and purge them
+                this.closeSiblingsAndPurge(category, subcat);
 
-            this.selected.filters[filterName].values =
-                this.selected.filters[filterName].values.filter(v => v !== value);
+                // Reset deeper path (clear sub-sub + filters)
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: subcat.id, subcategoryName: subcat.name,
+                    subsubcategoryId: null, subsubcategoryName: null
+                });
+                this.selected.filters = {};
 
-            if (this.selected.filters[filterName].values.length === 0) {
-                delete this.selected.filters[filterName];
+                if (!subcat.loaded) {
+                    subcat.loaded = true;
+                    await this.loadSubcategoryFilters(subcat);
+                }
+                this.refreshResults(0);
+
+            } else {
+                // Closing the subcategory: purge contents and update URL/UI
+                this.closeBranchDeep(subcat);
+
+                // Remove subcat + deeper from path
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: null, subcategoryName: null,
+                    subsubcategoryId: null, subsubcategoryName: null
+                });
+                this.selected.filters = {};
+
+                this.refreshResults(0);
+            }
+        },
+
+        async toggleSubsubcategory(category, subcat, subsub) {
+            subsub.open = !subsub.open;
+
+            if (subsub.open) {
+                // Close siblings and purge
+                this.closeSiblingsAndPurge(subcat, subsub);
+
+                // Set full path; clear filters when switching leaf node
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: subcat.id, subcategoryName: subcat.name,
+                    subsubcategoryId: subsub.id, subsubcategoryName: subsub.name
+                });
+                this.selected.filters = {};
+
+                if (!subsub.loaded) {
+                    subsub.loaded = true;
+                    await this.loadSubcategoryFilters(subsub, 'subsub');
+                }
+
+                this.refreshResults(0);
+
+            } else {
+                // Closing subsub: purge its content and clear only subsub path
+                this.closeBranchDeep(subsub);
+
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: subcat.id, subcategoryName: subcat.name,
+                    subsubcategoryId: null, subsubcategoryName: null
+                });
+                this.selected.filters = {};
+
+                this.refreshResults(0);
+            }
+        },
+
+        // FILTER heading (e.g., "Manufacturer") — opening should NOT touch URL
+        toggleFilterHeading(filterGroup /* { name, open, options... } */) {
+            filterGroup.open = !filterGroup.open;
+            // No URL changes here; breadcrumb “chip” appears only when values exist
+        },
+
+        // FILTER VALUE checkbox
+        toggleFilterValue(filterName, value) {
+            if (!this.selected.filters[filterName]) {
+                this.selected.filters[filterName] = { name: filterName, values: [] };
+            }
+            const arr = this.selected.filters[filterName].values;
+            const idx = arr.indexOf(value);
+
+            if (idx === -1) {
+                arr.push(value); // checking
+            } else {
+                arr.splice(idx, 1); // unchecking
+                if (arr.length === 0) delete this.selected.filters[filterName]; // drop empty group
             }
 
-            // reflect in URL + re-run search
             this.onSelectionChange();
         },
 
-        /* ==========================================
-         * Any selection? (drives x-show on the block)
-         * ========================================== */
-        hasAnySelection() {
-            const cp = this.selected?.categoryPath || {};
-            const hasTrail = !!(cp.categoryName || cp.subcategoryName || cp.subsubcategoryName);
-            const hasFilters = Object.values(this.selected?.filters || {})
-                .some(g => Array.isArray(g.values) && g.values.length > 0);
-            return hasTrail || hasFilters;
+        // ---------- SELECTION CHANGES ----------
+        onSelectionChange() {
+            this.refreshResults(0);
         },
 
-        /* ==========================================
-         * Clear everything and refresh
-         * ========================================== */
+        // Debounced fetch + URL sync
+        refreshResults(offset = 0, opts = {}) {
+            const { skipFetchIfNoSubcat = false } = opts;
+
+            // Cancel in-flight
+            if (this.currentAbort) {
+                try { this.currentAbort.abort(); } catch {}
+                this.currentAbort = null;
+            }
+            if (this.debounceTimer) {
+                clearTimeout(this.debounceTimer);
+                this.debounceTimer = null;
+            }
+
+            // Always sync URL first
+            const params = buildParamsFromSelections({
+                categories: this.categories,
+                selected:  this.selected,
+                globals:   this.globalFilters
+            });
+            window.history.replaceState({}, '', `?${params.toString()}`);
+
+            // If the user has only picked a category (no subcat), keep results empty
+            const cp = this.selected.categoryPath || {};
+            const hasBrowseContext = !!(cp.subcategoryId || cp.subsubcategoryId);
+
+            if (skipFetchIfNoSubcat && !hasBrowseContext && Object.keys(this.selected.filters).length === 0) {
+                // show empty-state hint in your results pane (no fetch)
+                return;
+            }
+
+            // Debounce and fetch
+            this.isLoadingFilters = true;
+            this.debounceTimer = setTimeout(() => {
+                runSearchWithOffset(offset); // keep your existing signature
+                this.isLoadingFilters = false;
+            }, 250);
+        },
+
+        // Called by “Search” button (desktop/mobile)
+        submitFilters() {
+            this.refreshResults(0);
+            // If you close the drawer on mobile, do it here.
+        },
+
+        // ---------- CLEAR ALL ----------
         clearAll() {
+            // Nuke selections
+            this.selectedCategoryId = null;
             this.selected.categoryPath = {
                 categoryId: null, categoryName: null,
                 subcategoryId: null, subcategoryName: null,
                 subsubcategoryId: null, subsubcategoryName: null
             };
             this.selected.filters = {};
-            this.globalFilters = { ...this.globalFilters, keywords: '', minPrice: '', maxPrice: '' };
 
-            // wipe URL; keep sort if you like
+            // Optionally keep sort; wipe others
+            this.globalFilters = {
+                keywords: '',
+                minPrice: '',
+                maxPrice: '',
+                condition: [],
+                sortOrder: this.globalFilters.sortOrder // persist sort
+            };
+
+            // Close everything and purge
+            this.categories.forEach(cat => this.closeBranchDeep(cat));
+
+            // Sync URL with only sort (optional)
             const params = new URLSearchParams();
             params.set('sort', this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price');
-
             window.history.replaceState({}, '', `?${params.toString()}`);
-            runSearchWithOffset(0);
+
+            this.refreshResults(0);
         },
 
-
-        /* Summary helpers to display selections */
-
-        setActiveBranch(subcat, subsub = null) {
-            this.activeSubcategoryId = subcat ? subcat.id : null;
-            this.activeSubsubcategoryId = subsub ? subsub.id : null;
-            // ensure we know the owning category (usually already set by toggleCategory)
-            if (!this.selectedCategoryId) {
-                const owner = this.categories.find(c =>
-                    (c.subcategories || []).some(s =>
-                        s.id === (subsub ? subcat.id : subcat?.id)
-                    )
-                );
-                if (owner) this.selectedCategoryId = owner.id;
-            }
-        },
-
-        setCategoryPath({
-                categoryId = null, categoryName = null,
-                subcategoryId = null, subcategoryName = null,
-                subsubcategoryId = null, subsubcategoryName = null
-            }) {
-            this.selected.categoryPath = {
-                categoryId, categoryName,
-                subcategoryId, subcategoryName,
-                subsubcategoryId, subsubcategoryName
-            };
-        }
-        ,
-
-        collapseTree() {
-            const closeBranch = (node) => {
-                if (!node) return;
-                node.open = false;
-                // close any filter accordions at this node
-                (node.filters || []).forEach(f => f.open = false);
-                // recurse into children
-                (node.subcategories || []).forEach(closeBranch);
-            };
-
-            this.categories.forEach(cat => {
-                cat.open = false;
-                (cat.filters || []).forEach(f => f.open = false);
-                (cat.subcategories || []).forEach(closeBranch);
-            });
-        },
-
-
-
-
-
-        /* END Summary Helpers for current selections display */
-
-        async toggleCategory(category) {
-            if (this.selectedCategoryId !== category.id) {
-                // A new category is selected
-                this.categories.forEach(cat => {
-                    if (cat.id !== category.id) {
-                        cat.open = false;
-                    }
-                });
-
-                category.open = true;
-                this.selectedCategoryId = category.id;
-
-                if (!category.loaded) {
-                    category.loaded = true;  // Set this BEFORE the await to avoid race condition
-                    await this.loadCategoryFilters(category);
-                }
-            } else {
-                // Toggling same category closed
-                category.open = !category.open;
-                if (!category.open) {
-                    this.selectedCategoryId = null;
-                }
-            }
-        },
-
-
+        // ---------- DATA LOADING (stubs to match your wiring) ----------
         async loadCategoryFilters(category) {
-            try {
-                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?category_id=${category.id}`);
-                const data = await res.json();
-                category.filters = data.filters;
-            } catch (error) {
-                category.loaded = false; // allow retry if it fails
-            }
-        }
-        ,
-
-        async loadSubcategoryFilters(subcat, level = 'subcategory') {
-            subcat.loaded = true;
-
-            let paramName = 'subcategory_id';
-            if (level === 'subsub') paramName = 'subcategory_id';
-
-            try {
-                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${subcat.id}`);
-                const data = await res.json();
-
-                if (data.filters) {
-                    subcat.filters = data.filters;
-                } else {
-                    subcat.filters = [];
-                }
-                this.indexFilters(subcat);
-            } catch (e) {
-                console.error("Failed to load filters for " + level + ":", e);
-                subcat.filters = [];
-            }
+            // If API returns filters at category level, fetch & attach:
+            // const data = await fetch(...).then(r => r.json());
+            // category.filters = data.filters || [];
+            // category.subcategories = data.subcategories || category.subcategories;
         },
 
-
-
-        async loadFiltersForNode(node, paramName, id) {
-            if (node.loaded) return;
-            try {
-                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${id}`);
-                const data = await res.json();
-                node.filters = data.filters;
-                node.loaded = true;
-            } catch (error) {
-                console.error(`Failed to load filters for ${paramName}=${id}:`, error);
-            }
+        async loadSubcategoryFilters(node /* subcat or subsub */, level = 'subcat') {
+            // Fetch filters/options for this node if you lazy-load them
+            // const data = await fetch(...).then(r => r.json());
+            // node.filters = data.filters || node.filters;
+            // node.subcategories = data.subcategories || node.subcategories;
         },
 
-        toggleFilter(filterName, optionValue, checked) {
-            if (!this.selected.filters[filterName]) {
-                this.selected.filters[filterName] = { name: filterName, values: [] };
-            }
-            const vals = this.selected.filters[filterName].values;
-
-            if (checked) {
-                if (!vals.includes(optionValue)) vals.push(optionValue);
-            } else {
-                this.selected.filters[filterName].values = vals.filter(v => v !== optionValue);
-                if (this.selected.filters[filterName].values.length === 0) {
-                    delete this.selected.filters[filterName];
-                }
-            }
+        // ---------- UTILITIES YOU MAY ALREADY HAVE IN TEMPLATE ----------
+        isValueChecked(filterName, value) {
+            return !!(this.selected.filters[filterName] &&
+                this.selected.filters[filterName].values.includes(value));
         },
 
-        isChecked(filterName, optionValue) {
-            const group = this.selected.filters[filterName];
-            return !!(group && group.values && group.values.includes(optionValue));
+        filterHasSelections(filterName) {
+            return !!(this.selected.filters[filterName] &&
+                this.selected.filters[filterName].values.length);
         },
 
-        onSelectionChange() {
-            const params = buildParamsFromSelections({
-                categories: this.categories,
-                selected: this.selected,
-                globals:  this.globalFilters
+        // Example: called from template label clicks to set path quickly
+        setCategoryNodePath(category, subcat = null, subsub = null) {
+            this.setCategoryPath({
+                categoryId: category ? category.id : null,
+                categoryName: category ? category.name : null,
+                subcategoryId: subcat ? subcat.id : null,
+                subcategoryName: subcat ? subcat.name : null,
+                subsubcategoryId: subsub ? subsub.id : null,
+                subsubcategoryName: subsub ? subsub.name : null
             });
-            window.history.replaceState({}, '', `?${params.toString()}`);
-            runSearchWithOffset(0);
-        },
-
-        async submitFilters() {
-            this.isLoadingFilters = true;
-
-            // Build params from the structured state
-            const params = buildParamsFromSelections({
-                categories: this.categories,
-                selected: this.selected,
-                globals:   this.globalFilters
-            });
-
-            // Push to URL so pagination/share works, then search
-            window.history.replaceState({}, '', `?${params.toString()}`);
-            runSearchWithOffset(0);
-
-            // Close drawer on mobile
-            if (window.innerWidth < 768) {
-                const outer = document.querySelector('[x-data]')?.__x?.$data;
-                if (outer && typeof outer.showFilters !== 'undefined') {
-                    outer.showFilters = false;
-                }
-            }
-
-            this.isLoadingFilters = false;
         }
-
-
     };
 }
 
