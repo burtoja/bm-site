@@ -42,14 +42,53 @@ function filterTree() {
         currentAbort: null,
 
         // ---------- LIFECYCLE ----------
+        // fetch categories on page load ---
+        async loadAllCategories() {
+            // Adjust endpoint if needed. You’ve shown filter_data.php responses before,
+            // so we’ll default to that.
+            const res = await fetch('filter_data.php', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) throw new Error(`Failed to load categories: ${res.status}`);
+            const data = await res.json();
+            // Expecting: [{ id, name, open:false, loaded:false, filters:[], subcategories:[...] }, ...]
+            this.categories = Array.isArray(data) ? data : [];
+        },
+
+        // after expanding from URL, ensure open nodes have their filters
+        async ensureFiltersForOpenPath() {
+            const cp = this.selected.categoryPath || {};
+            if (!cp.categoryId) return;
+
+            const cat = this.categories.find(c => String(c.id) === String(cp.categoryId));
+            if (!cat) return;
+            if (!cat.loaded) { cat.loaded = true; await this.loadCategoryFilters(cat).catch(()=>{}); }
+
+            if (cp.subcategoryId && Array.isArray(cat.subcategories)) {
+                const sub = cat.subcategories.find(s => String(s.id) === String(cp.subcategoryId));
+                if (sub && !sub.loaded) { sub.loaded = true; await this.loadSubcategoryFilters(sub).catch(()=>{}); }
+
+                if (cp.subsubcategoryId && Array.isArray(sub?.subcategories)) {
+                    const subsub = sub.subcategories.find(s => String(s.id) === String(cp.subsubcategoryId));
+                    if (subsub && !subsub.loaded) { subsub.loaded = true; await this.loadSubcategoryFilters(subsub, 'subsub').catch(()=>{}); }
+                }
+            }
+        },
+
         async init() {
-            // Hydrate state from URL on first load
+            try {
+                await this.loadAllCategories();
+            } catch (e) {
+                console.error(e);
+                this.categories = []; // keep UI stable
+            }
+
             this.hydrateFromUrl(new URLSearchParams(window.location.search));
-
-            // Open branches to match the selected path
             this.expandPathFromSelected();
+            await this.ensureFiltersForOpenPath();
 
-            // Kick an initial fetch if we have enough context (subcategory or filters)
             if (
                 this.selected.categoryPath.subcategoryId ||
                 this.selected.categoryPath.subsubcategoryId ||
@@ -58,14 +97,15 @@ function filterTree() {
                 this.refreshResults(0);
             }
 
-            // Keep deep links in sync with back/forward navigation
-            window.addEventListener('popstate', () => {
+            window.addEventListener('popstate', async () => {
                 const url = new URLSearchParams(window.location.search);
                 this.hydrateFromUrl(url);
                 this.expandPathFromSelected();
+                await this.ensureFiltersForOpenPath();
                 this.refreshResults(0);
             });
         },
+
 
         // ---------- URL <-> STATE ----------
         hydrateFromUrl(url) {
