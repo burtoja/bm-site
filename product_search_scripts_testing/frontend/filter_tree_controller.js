@@ -1,369 +1,358 @@
+// filter_tree_controller.js — SIMPLE, CLEAN IMPLEMENTATION
+
 function filterTree() {
     return {
+        // ---- state ----
         categories: [],
-        //selectedOptions: [],
+        selectedCategoryId: null,
+        isLoadingFilters: false,
+
         selected: {
             categoryPath: {
                 categoryId: null, categoryName: null,
                 subcategoryId: null, subcategoryName: null,
                 subsubcategoryId: null, subsubcategoryName: null
             },
-            filters: {},
+            // { [filterName]: { name, values: [string] } }
+            filters: {}
         },
 
-        selectedCategoryId: null,
-        isLoadingFilters: false,
         globalFilters: {
+            keywords: '',
+            minPrice: '',
+            maxPrice: '',
             condition: [],
-            priceRange: "any",
-            minPrice: "",
-            maxPrice: "",
-            sortOrder: "high_to_low"
+            sortOrder: 'high_to_low'
         },
-        initialized: false,
 
-        //track active branch and options
-        activeSubcategoryId: null,
-        activeSubsubcategoryId: null,
-        optionIndex: {},
-        filterNameById: {},
-
+        // ---- lifecycle ----
         async init() {
-            const url = new URLSearchParams(window.location.search);
+            await this.loadAllCategories();
+            // Optional: hydrate from URL if you want deep-link restore on day 1.
+            this.hydrateFromUrl(new URLSearchParams(window.location.search));
+            this.expandPathFromSelected();
 
-            // Category path names (for breadcrumb)
-            this.selected.categoryPath = {
-                categoryId:       url.get('cat_id')       || null,
-                categoryName:     url.get('cat_name')     || null,
-                subcategoryId:    url.get('subcat_id')    || null,
-                subcategoryName:  url.get('subcat_name')  || null,
-                subsubcategoryId: url.get('subsub_id')    || null,
-                subsubcategoryName: url.get('subsub_name')|| null
-            };
-
-            // Filters (flt[Name][]=Val)
-            const entries = Array.from(url.keys()).filter(k => k.startsWith('flt['));
-            entries.forEach(key => {
-                // key looks like: flt[Filter Name][]
-                const name = decodeURIComponent(key).slice(4, -2); // strip 'flt[' and ']'
-                const vals = url.getAll(key);
-                if (!this.selected.filters[name]) {
-                    this.selected.filters[name] = { name, values: [] };
-                }
-                // merge + dedupe
-                this.selected.filters[name].values = Array.from(new Set([
-                    ...this.selected.filters[name].values, ...vals
-                ]));
-            });
-
-            if (this.initialized) {
-                return;
+            // Initial fetch only if we have a subcategory (or sub-sub) selected
+            const cp = this.selected.categoryPath;
+            if (cp.subcategoryId || cp.subsubcategoryId) {
+                this.syncUrl(); this.runSearch(0);
             }
-            this.initialized = true;
+
+            window.addEventListener('popstate', () => {
+                this.hydrateFromUrl(new URLSearchParams(window.location.search));
+                this.expandPathFromSelected();
+                const cp2 = this.selected.categoryPath;
+                if (cp2.subcategoryId || cp2.subsubcategoryId) this.runSearch(0);
+            });
+        },
+
+        async loadAllCategories() {
             try {
-                const res = await fetch('/product_search_scripts_testing/backend/filter_data.php');
-                if (!res.ok) throw new Error('Failed to load filters.');
-                this.categories = await res.json();
-                this.applyOpenFlags(this.categories);
-            } catch (error) {
-                console.error('Filter tree load error:', error);
+                const res = await fetch('filter_data.php', { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) throw new Error('Failed to load categories');
+                const data = await res.json();
+                // Normalize flags
+                this.categories = (Array.isArray(data) ? data : []).map(cat => ({
+                    ...cat, open: !!cat.open,
+                    filters: (cat.filters || []).map(f => ({ ...f, open: !!f.open })),
+                    subcategories: (cat.subcategories || []).map(sc => ({
+                        ...sc, open: !!sc.open,
+                        filters: (sc.filters || []).map(f => ({ ...f, open: !!f.open })),
+                        subcategories: (sc.subcategories || []).map(ssc => ({
+                            ...ssc, open: !!ssc.open,
+                            filters: (ssc.filters || []).map(f => ({ ...f, open: !!f.open }))
+                        }))
+                    }))
+                }));
+            } catch (e) {
+                console.error(e);
+                this.categories = [];
             }
         },
 
-        // Called after any fetch of filters for a node
-        indexFilters(node) {
-            (node.filters || []).forEach(f => {
-                this.filterNameById[f.id] = f.name;
-                (f.options || []).forEach(o => {
-                    this.optionIndex[o.id] = { id: o.id, value: o.value, filterId: f.id, filterName: f.name };
-                });
-            });
+        // ---- path helpers ----
+        setCategoryPath({ categoryId, categoryName, subcategoryId, subcategoryName, subsubcategoryId, subsubcategoryName }) {
+            this.selected.categoryPath = { categoryId, categoryName, subcategoryId, subcategoryName, subsubcategoryId, subsubcategoryName };
         },
 
-        applyOpenFlags(nodes) {
-            nodes.forEach(node => {
-                node.open = false;
-                node.loaded = false; // for lazy-loading
-                if (node.filters) {
-                    node.filters.forEach(f => f.open = false);
-                }
-                if (node.subcategories) {
-                    this.applyOpenFlags(node.subcategories);
-                }
-            });
-        },
-
-        /* =========================
- * BREADCRUMB (uses structured categoryPath)
- * ========================= */
-        breadcrumb() {
-            const trail = [];
-            const cp = this.selected?.categoryPath || {};
-            if (cp.categoryName)       trail.push(cp.categoryName);
-            if (cp.subcategoryName)    trail.push(cp.subcategoryName);
-            if (cp.subsubcategoryName) trail.push(cp.subsubcategoryName);
-            return trail;
-        },
-
-        /* =======================================
-         * GROUPED SELECTIONS (for chips block)
-         * Returns: [{ name, options: [{id, value}] }]
-         * ======================================= */
-        groupedSelections() {
-            const groups = [];
-            const src = this.selected?.filters || {};
-            Object.keys(src).forEach((name) => {
-                const vals = Array.isArray(src[name]?.values) ? src[name].values : [];
-                if (vals.length) {
-                    groups.push({
-                        name,
-                        options: vals
-                            .slice()
-                            .sort((a, b) => a.localeCompare(b))
-                            .map(v => ({ id: `${name}::${v}`, value: v }))
+        expandPathFromSelected() {
+            const cp = this.selected.categoryPath;
+            this.categories.forEach(c => {
+                c.open = (String(c.id) === String(cp.categoryId));
+                (c.subcategories || []).forEach(sc => {
+                    sc.open = c.open && (String(sc.id) === String(cp.subcategoryId));
+                    (sc.subcategories || []).forEach(ssc => {
+                        ssc.open = sc.open && (String(ssc.id) === String(cp.subsubcategoryId));
                     });
-                }
-            });
-            // sort groups by name (optional)
-            return groups.sort((a, b) => a.name.localeCompare(b.name));
-        },
-
-        /* ==========================================
-         * REMOVE ONE CHIP (id looks like "Filter Name::Value")
-         * ========================================== */
-        removeOption(id) {
-            const pos = id.indexOf('::');
-            if (pos === -1) return;
-            const filterName = id.slice(0, pos);
-            const value = id.slice(pos + 2);
-
-            if (!this.selected.filters[filterName]) return;
-
-            this.selected.filters[filterName].values =
-                this.selected.filters[filterName].values.filter(v => v !== value);
-
-            if (this.selected.filters[filterName].values.length === 0) {
-                delete this.selected.filters[filterName];
-            }
-
-            // reflect in URL + re-run search
-            this.onSelectionChange();
-        },
-
-        /* ==========================================
-         * Any selection? (drives x-show on the block)
-         * ========================================== */
-        hasAnySelection() {
-            const cp = this.selected?.categoryPath || {};
-            const hasTrail = !!(cp.categoryName || cp.subcategoryName || cp.subsubcategoryName);
-            const hasFilters = Object.values(this.selected?.filters || {})
-                .some(g => Array.isArray(g.values) && g.values.length > 0);
-            return hasTrail || hasFilters;
-        },
-
-        /* ==========================================
-         * Clear everything and refresh
-         * ========================================== */
-        clearAll() {
-            this.selected.categoryPath = {
-                categoryId: null, categoryName: null,
-                subcategoryId: null, subcategoryName: null,
-                subsubcategoryId: null, subsubcategoryName: null
-            };
-            this.selected.filters = {};
-            this.globalFilters = { ...this.globalFilters, keywords: '', minPrice: '', maxPrice: '' };
-
-            // wipe URL; keep sort if you like
-            const params = new URLSearchParams();
-            params.set('sort', this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price');
-
-            window.history.replaceState({}, '', `?${params.toString()}`);
-            runSearchWithOffset(0);
-        },
-
-
-        /* Summary helpers to display selections */
-
-        setActiveBranch(subcat, subsub = null) {
-            this.activeSubcategoryId = subcat ? subcat.id : null;
-            this.activeSubsubcategoryId = subsub ? subsub.id : null;
-            // ensure we know the owning category (usually already set by toggleCategory)
-            if (!this.selectedCategoryId) {
-                const owner = this.categories.find(c =>
-                    (c.subcategories || []).some(s =>
-                        s.id === (subsub ? subcat.id : subcat?.id)
-                    )
-                );
-                if (owner) this.selectedCategoryId = owner.id;
-            }
-        },
-
-        setCategoryPath({
-                categoryId = null, categoryName = null,
-                subcategoryId = null, subcategoryName = null,
-                subsubcategoryId = null, subsubcategoryName = null
-            }) {
-            this.selected.categoryPath = {
-                categoryId, categoryName,
-                subcategoryId, subcategoryName,
-                subsubcategoryId, subsubcategoryName
-            };
-        }
-        ,
-
-        collapseTree() {
-            const closeBranch = (node) => {
-                if (!node) return;
-                node.open = false;
-                // close any filter accordions at this node
-                (node.filters || []).forEach(f => f.open = false);
-                // recurse into children
-                (node.subcategories || []).forEach(closeBranch);
-            };
-
-            this.categories.forEach(cat => {
-                cat.open = false;
-                (cat.filters || []).forEach(f => f.open = false);
-                (cat.subcategories || []).forEach(closeBranch);
-            });
-        },
-
-
-
-
-
-        /* END Summary Helpers for current selections display */
-
-        async toggleCategory(category) {
-            if (this.selectedCategoryId !== category.id) {
-                // A new category is selected
-                this.categories.forEach(cat => {
-                    if (cat.id !== category.id) {
-                        cat.open = false;
-                    }
                 });
+            });
+            this.selectedCategoryId = cp.categoryId ? Number(cp.categoryId) : null;
+        },
 
+        // ---- purge/close logic ----
+        clearFilterValuesOwnedBy(node) {
+            if (!node) return;
+            const owned = new Set((node.filters || []).map(f => f.name));
+            if (!owned.size) return;
+            Object.keys(this.selected.filters).forEach(name => { if (owned.has(name)) delete this.selected.filters[name]; });
+        },
+
+        closeBranchDeep(node) {
+            if (!node) return;
+            node.open = false;
+            (node.filters || []).forEach(f => f.open = false);
+            this.clearFilterValuesOwnedBy(node);
+            (node.subcategories || []).forEach(ch => this.closeBranchDeep(ch));
+        },
+
+        closeSiblings(parent, node) {
+            const arr = parent ? (parent.subcategories || []) : this.categories;
+            arr.forEach(sib => { if (sib !== node && sib.open) this.closeBranchDeep(sib); });
+        },
+
+        // ---- node toggles ----
+        async toggleCategory(category) {
+            const isOpeningNew = String(this.selectedCategoryId) !== String(category.id);
+
+            if (isOpeningNew) {
+                // close other categories and purge
+                this.categories.forEach(cat => { if (cat !== category) this.closeBranchDeep(cat); });
                 category.open = true;
                 this.selectedCategoryId = category.id;
 
-                if (!category.loaded) {
-                    category.loaded = true;  // Set this BEFORE the await to avoid race condition
-                    await this.loadCategoryFilters(category);
-                }
+                // reset path below category + filters
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: null, subcategoryName: null,
+                    subsubcategoryId: null, subsubcategoryName: null
+                });
+                this.selected.filters = {};
+
+                // URL should show only the category (no fetch)
+                this.syncUrl();
             } else {
-                // Toggling same category closed
+                // toggle close
                 category.open = !category.open;
                 if (!category.open) {
+                    this.closeBranchDeep(category);
                     this.selectedCategoryId = null;
+                    this.setCategoryPath({
+                        categoryId: null, categoryName: null,
+                        subcategoryId: null, subcategoryName: null,
+                        subsubcategoryId: null, subsubcategoryName: null
+                    });
+                    this.selected.filters = {};
+                    this.syncUrl();
+                    // No fetch; empty state
                 }
             }
         },
 
+        async toggleSubcategory(category, subcat) {
+            subcat.open = !subcat.open;
 
-        async loadCategoryFilters(category) {
-            try {
-                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?category_id=${category.id}`);
-                const data = await res.json();
-                category.filters = data.filters;
-            } catch (error) {
-                category.loaded = false; // allow retry if it fails
-            }
-        }
-        ,
+            if (subcat.open) {
+                // close siblings under same category
+                this.closeSiblings(category, subcat);
 
-        async loadSubcategoryFilters(subcat, level = 'subcategory') {
-            subcat.loaded = true;
+                // switching subcategory clears deeper path + filters
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: subcat.id, subcategoryName: subcat.name,
+                    subsubcategoryId: null, subsubcategoryName: null
+                });
+                this.selected.filters = {};
 
-            let paramName = 'subcategory_id';
-            if (level === 'subsub') paramName = 'subcategory_id';
-
-            try {
-                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${subcat.id}`);
-                const data = await res.json();
-
-                if (data.filters) {
-                    subcat.filters = data.filters;
-                } else {
-                    subcat.filters = [];
-                }
-                this.indexFilters(subcat);
-            } catch (e) {
-                console.error("Failed to load filters for " + level + ":", e);
-                subcat.filters = [];
-            }
-        },
-
-
-
-        async loadFiltersForNode(node, paramName, id) {
-            if (node.loaded) return;
-            try {
-                const res = await fetch(`/product_search_scripts_testing/backend/load_filters.php?${paramName}=${id}`);
-                const data = await res.json();
-                node.filters = data.filters;
-                node.loaded = true;
-            } catch (error) {
-                console.error(`Failed to load filters for ${paramName}=${id}:`, error);
-            }
-        },
-
-        toggleFilter(filterName, optionValue, checked) {
-            if (!this.selected.filters[filterName]) {
-                this.selected.filters[filterName] = { name: filterName, values: [] };
-            }
-            const vals = this.selected.filters[filterName].values;
-
-            if (checked) {
-                if (!vals.includes(optionValue)) vals.push(optionValue);
+                this.syncUrl();
+                this.runSearch(0); // baseline fetch for subcategory
             } else {
-                this.selected.filters[filterName].values = vals.filter(v => v !== optionValue);
-                if (this.selected.filters[filterName].values.length === 0) {
-                    delete this.selected.filters[filterName];
-                }
+                // closing subcategory clears its subtree + filters and path
+                this.closeBranchDeep(subcat);
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: null, subcategoryName: null,
+                    subsubcategoryId: null, subsubcategoryName: null
+                });
+                this.selected.filters = {};
+
+                this.syncUrl();
+                // empty state after closing subcategory
             }
         },
 
-        isChecked(filterName, optionValue) {
-            const group = this.selected.filters[filterName];
-            return !!(group && group.values && group.values.includes(optionValue));
+        async toggleSubsubcategory(category, subcat, subsub) {
+            subsub.open = !subsub.open;
+
+            if (subsub.open) {
+                this.closeSiblings(subcat, subsub);
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: subcat.id, subcategoryName: subcat.name,
+                    subsubcategoryId: subsub.id, subsubcategoryName: subsub.name
+                });
+                this.selected.filters = {};
+
+                this.syncUrl();
+                this.runSearch(0);
+            } else {
+                this.closeBranchDeep(subsub);
+                this.setCategoryPath({
+                    categoryId: category.id, categoryName: category.name,
+                    subcategoryId: subcat.id, subcategoryName: subcat.name,
+                    subsubcategoryId: null, subsubcategoryName: null
+                });
+                this.selected.filters = {};
+
+                this.syncUrl();
+                this.runSearch(0); // you can omit if you prefer empty state
+            }
         },
 
+        // ---- filters ----
+        toggleFilterHeading(filterGroup) {
+            filterGroup.open = !filterGroup.open; // opening a heading does NOT touch URL
+        },
+
+        toggleFilter(filterName, value, checked) {
+            if (!this.selected.filters[filterName]) this.selected.filters[filterName] = { name: filterName, values: [] };
+            const vals = this.selected.filters[filterName].values;
+            const idx = vals.indexOf(value);
+
+            if (checked && idx === -1) vals.push(value);
+            if (!checked && idx !== -1) vals.splice(idx, 1);
+            if (this.selected.filters[filterName] && this.selected.filters[filterName].values.length === 0) delete this.selected.filters[filterName];
+
+            // breadcrumb + URL + maybe fetch
+            this.onSelectionChange();
+        },
+
+        isChecked(filterName, value) {
+            return !!(this.selected.filters[filterName] && this.selected.filters[filterName].values.includes(value));
+        },
+
+        // ---- selection change ----
         onSelectionChange() {
-            const params = buildParamsFromSelections({
-                categories: this.categories,
-                selected: this.selected,
-                globals:  this.globalFilters
-            });
-            window.history.replaceState({}, '', `?${params.toString()}`);
-            runSearchWithOffset(0);
+            this.syncUrl();
+            const cp = this.selected.categoryPath;
+            if (cp.subcategoryId || cp.subsubcategoryId) this.runSearch(0);
+            // If only a category is selected, we keep results empty.
         },
 
-        async submitFilters() {
-            this.isLoadingFilters = true;
+        // ---- URL sync ----
+        syncUrl() {
+            const p = new URLSearchParams();
 
-            // Build params from the structured state
-            const params = buildParamsFromSelections({
-                categories: this.categories,
-                selected: this.selected,
-                globals:   this.globalFilters
+            // path
+            const cp = this.selected.categoryPath;
+            if (cp.categoryId) { p.set('cat_id', cp.categoryId); if (cp.categoryName) p.set('cat_name', cp.categoryName); }
+            if (cp.subcategoryId) { p.set('subcat_id', cp.subcategoryId); if (cp.subcategoryName) p.set('subcat_name', cp.subcategoryName); }
+            if (cp.subsubcategoryId) { p.set('subsub_id', cp.subsubcategoryId); if (cp.subsubcategoryName) p.set('subsub_name', cp.subsubcategoryName); }
+
+            // globals (optional – include what you actually use)
+            if (this.globalFilters.keywords) p.set('k', this.globalFilters.keywords);
+            if (this.globalFilters.minPrice) p.set('min_price', this.globalFilters.minPrice);
+            if (this.globalFilters.maxPrice) p.set('max_price', this.globalFilters.maxPrice);
+            (this.globalFilters.condition || []).forEach(c => p.append('condition', c));
+            p.set('sort', this.globalFilters.sortOrder === 'low_to_high' ? 'price' : '-price');
+
+            // filters (by name → multiple values)
+            Object.values(this.selected.filters).forEach(group => {
+                (group.values || []).forEach(v => p.append(group.name, v));
             });
 
-            // Push to URL so pagination/share works, then search
-            window.history.replaceState({}, '', `?${params.toString()}`);
-            runSearchWithOffset(0);
+            window.history.replaceState({}, '', `?${p.toString()}`);
+        },
 
-            // Close drawer on mobile
-            if (window.innerWidth < 768) {
-                const outer = document.querySelector('[x-data]')?.__x?.$data;
-                if (outer && typeof outer.showFilters !== 'undefined') {
-                    outer.showFilters = false;
-                }
+        hydrateFromUrl(p) {
+            this.setCategoryPath({
+                categoryId: p.get('cat_id') || null,
+                categoryName: p.get('cat_name') || null,
+                subcategoryId: p.get('subcat_id') || null,
+                subcategoryName: p.get('subcat_name') || null,
+                subsubcategoryId: p.get('subsub_id') || null,
+                subsubcategoryName: p.get('subsub_name') || null
+            });
+
+            this.selected.filters = {};
+            p.forEach((v, k) => {
+                if (['k','min_price','max_price','condition','sort','cat_id','cat_name','subcat_id','subcat_name','subsub_id','subsub_name'].includes(k)) return;
+                if (!this.selected.filters[k]) this.selected.filters[k] = { name: k, values: [] };
+                if (!this.selected.filters[k].values.includes(v)) this.selected.filters[k].values.push(v);
+            });
+
+            this.globalFilters.keywords = p.get('k') || '';
+            this.globalFilters.minPrice = p.get('min_price') || '';
+            this.globalFilters.maxPrice = p.get('max_price') || '';
+            this.globalFilters.condition = p.getAll('condition') || [];
+            this.globalFilters.sortOrder = (p.get('sort') === 'price') ? 'low_to_high' : 'high_to_low';
+        },
+
+        // ---- search trigger (kept simple) ----
+        runSearch(offset) {
+            // Call through if your page defines it; otherwise no-op
+            if (typeof window.runSearchWithOffset === 'function') {
+                window.runSearchWithOffset(offset);
             }
+        },
 
-            this.isLoadingFilters = false;
+        // ---- breadcrumb, chips, clear ----
+        hasAnySelection() {
+            const cp = this.selected.categoryPath;
+            const anyPath = cp.categoryId || cp.subcategoryId || cp.subsubcategoryId;
+            const anyFilters = Object.keys(this.selected.filters).length > 0;
+            return !!(anyPath || anyFilters);
+        },
+
+        breadcrumb() {
+            const cp = this.selected.categoryPath;
+            const parts = [];
+            if (cp.categoryName) parts.push(cp.categoryName);
+            if (cp.subcategoryName) parts.push(cp.subcategoryName);
+            if (cp.subsubcategoryName) parts.push(cp.subsubcategoryName);
+            return parts;
+        },
+
+        groupedSelections() {
+            return Object.values(this.selected.filters).map(g => ({
+                name: g.name,
+                options: (g.values || []).map((v, i) => ({ id: `${g.name}:${v}:${i}`, value: v }))
+            }));
+        },
+
+        removeOption(optId) {
+            // optId is `${name}:${value}:${i}`
+            const [name, ...rest] = optId.split(':');
+            const value = rest.slice(0, rest.length - 1).join(':'); // in case value contains ':'
+            const group = this.selected.filters[name];
+            if (!group) return;
+            group.values = group.values.filter(v => v !== value);
+            if (!group.values.length) delete this.selected.filters[name];
+            this.onSelectionChange();
+        },
+
+        clearAll() {
+            // close everything
+            this.categories.forEach(cat => this.closeBranchDeep(cat));
+
+            // reset selection
+            this.selectedCategoryId = null;
+            this.setCategoryPath({
+                categoryId: null, categoryName: null,
+                subcategoryId: null, subcategoryName: null,
+                subsubcategoryId: null, subsubcategoryName: null
+            });
+            this.selected.filters = {};
+
+            // keep sort but clear other globals (optional)
+            this.globalFilters.keywords = '';
+            this.globalFilters.minPrice = '';
+            this.globalFilters.maxPrice = '';
+            this.globalFilters.condition = [];
+
+            // URL + empty results
+            this.syncUrl();
+            // no fetch (empty state)
         }
-
-
     };
 }
 
