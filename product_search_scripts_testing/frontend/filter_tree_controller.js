@@ -22,7 +22,7 @@ function filterTree() {
         },
         initialized: false,
 
-        // track active branch and options
+        //track active branch and options
         activeSubcategoryId: null,
         activeSubsubcategoryId: null,
         optionIndex: {},
