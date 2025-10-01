@@ -187,16 +187,17 @@ Date: Sept 2025
                                             @click="
                                                 setCategoryPath({
                                                   categoryId: category.id,     categoryName: category.name,
-                                                  subcategoryId: sub.id,       subcategoryName: sub.name,
+                                                  subcategoryId: subcat.id,    subcategoryName: subcat.name,
                                                   subsubcategoryId: null,      subsubcategoryName: null
                                                 });
                                                 subcat.open = !subcat.open;
                                                 onSelectionChange();
-                                                "
+                                              "
                                             class="bm-node text-left"
                                             :class="subcat.open ? 'bm-active' : ''">
                                         <span x-text="subcat.name"></span>
                                     </button>
+
                                 </div>
 
                                 <template x-if="subcat.open">
@@ -291,17 +292,18 @@ Date: Sept 2025
                                                     </button>
                                                     <button type="button"
                                                             @click="
-                                                                    setCategoryPath({
-                                                                      categoryId: category.id, categoryName: category.name,
-                                                                      subcategoryId: sub.id, subcategoryName: sub.name,
-                                                                      subsubcategoryId: null, subsubcategoryName: null
-                                                                    });
-                                                                    onSelectionChange()
-                                                                   "
+                                                                setCategoryPath({
+                                                                  categoryId: category.id,     categoryName: category.name,
+                                                                  subcategoryId: subcat.id,    subcategoryName: subcat.name,
+                                                                  subsubcategoryId: subsub.id, subsubcategoryName: subsub.name
+                                                                });
+                                                                onSelectionChange();
+                                                              "
                                                             class="bm-node text-left"
                                                             :class="subsub.open ? 'bm-active' : ''">
                                                         <span x-text="subsub.name"></span>
                                                     </button>
+
                                                 </div>
 
                                                 <template x-if="subsub.open">

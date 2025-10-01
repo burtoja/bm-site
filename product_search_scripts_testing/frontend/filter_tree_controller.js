@@ -106,7 +106,7 @@ function filterTree() {
         },
 
         /* =======================================
-         * GROUPED SELECTIONS (for your chips block)
+         * GROUPED SELECTIONS (for chips block)
          * Returns: [{ name, options: [{id, value}] }]
          * ======================================= */
         groupedSelections() {
