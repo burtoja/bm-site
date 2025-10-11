@@ -147,7 +147,7 @@ Date: Sept 2025
                                                                       subsubcategoryId: null, subsubcategoryName: null
                                                                     });
                                                                   }
-                                                                  toggleFilter(filter.name, opt.value, $event.target.checked);
+                                                                  toggleFilter(filter.name, opt.value, $event.target.checked, { filterId: filter.id, optionId: opt.id, ownerType: (typeof subsub !== 'undefined' ? 'subsubcategory' : (typeof subcat !== 'undefined' ? 'subcategory' : 'category')), ownerId: (typeof subsub !== 'undefined' ? subsub.id : (typeof subcat !== 'undefined' ? subcat.id : category.id)) });
                                                                   onSelectionChange();
                                                                 "
                                                                 class="shrink-0"
@@ -168,7 +168,7 @@ Date: Sept 2025
                                 <div class="flex items-start gap-1.5">
                                     <button class="bm-hit shrink-0"
                                             @click="
-                                                subcat.open = !subcat.open;
+                                                subcat.open = true;
                                                 setActiveBranch(subcat);
                                                 setCategoryPath({
                                                   categoryId: category.id, categoryName: category.name,
@@ -188,7 +188,7 @@ Date: Sept 2025
                                                   subcategoryId: subcat.id,    subcategoryName: subcat.name,
                                                   subsubcategoryId: null,      subsubcategoryName: null
                                                 });
-                                                subcat.open = !subcat.open;
+                                                subcat.open = true;
                                                 onSelectionChange();
                                               "
                                             class="bm-node text-left"
@@ -241,7 +241,7 @@ Date: Sept 2025
                                                                                         subsubcategoryName: (typeof subsub !== 'undefined' ? subsub.name : null)
                                                                                       });
                                                                                     }
-                                                                                    toggleFilter(filter.name, opt.value, $event.target.checked);
+                                                                                    toggleFilter(filter.name, opt.value, $event.target.checked, { filterId: filter.id, optionId: opt.id, ownerType: (typeof subsub !== 'undefined' ? 'subsubcategory' : (typeof subcat !== 'undefined' ? 'subcategory' : 'category')), ownerId: (typeof subsub !== 'undefined' ? subsub.id : (typeof subcat !== 'undefined' ? subcat.id : category.id)) });
                                                                                     onSelectionChange();
                                                                                   "
                                                                                 class="shrink-0"
@@ -275,7 +275,7 @@ Date: Sept 2025
                                                 <div class="flex items-start gap-1.5">
                                                     <button class="bm-hit shrink-0"
                                                             @click="
-                                                                subsub.open = !subsub.open;
+                                                                subsub.open = true;
                                                                 setActiveBranch(subcat, subsub);
                                                                 setCategoryPath({
                                                                   categoryId: category.id, categoryName: category.name,
@@ -357,7 +357,7 @@ Date: Sept 2025
                                                                                                         subsubcategoryId: subsub.id, subsubcategoryName: subsub.name
                                                                                                       });
                                                                                                     }
-                                                                                                    toggleFilter(filter.name, opt.value, $event.target.checked);
+                                                                                                    toggleFilter(filter.name, opt.value, $event.target.checked, { filterId: filter.id, optionId: opt.id, ownerType: (typeof subsub !== 'undefined' ? 'subsubcategory' : (typeof subcat !== 'undefined' ? 'subcategory' : 'category')), ownerId: (typeof subsub !== 'undefined' ? subsub.id : (typeof subcat !== 'undefined' ? subcat.id : category.id)) });
                                                                                                     onSelectionChange();
                                                                                                   "
                                                                                                 class="shrink-0"
